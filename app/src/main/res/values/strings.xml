@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Byzantine Ison</string>
+    <string-array name="notes">
+        <item >Nh</item>
+        <item >Pa</item>
+        <item >Bou</item>
+        <item >Ga</item>
+        <item >Di</item>
+        <item >Ke</item>
+        <item >Zw</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,146 @@
+[
+    {
+        "outputFile": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endLine": 10,
+                    "endColumn": 19,
+                    "endOffset": 271
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 111,
+                        "endLine": 12,
+                        "endColumn": 19,
+                        "endOffset": 334
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 55,
+                    "startColumn": 4,
+                    "startOffset": 2375,
+                    "endColumn": 57,
+                    "endOffset": 2428
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\dimens.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 92,
+                        "endColumn": 57,
+                        "endOffset": 145
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 56,
+                    "startColumn": 4,
+                    "startOffset": 2433,
+                    "endColumn": 55,
+                    "endOffset": 2484
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\dimens.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 151,
+                        "endColumn": 55,
+                        "endOffset": 202
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 57,
+                    "startColumn": 4,
+                    "startOffset": 2489,
+                    "endColumn": 43,
+                    "endOffset": 2528
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\build\\intermediates\\exploded-aar\\com.android.support\\gridlayout-v7\\18.0.0\\res\\values\\values.xml",
+                    "position": {
+                        "startLine": 188,
+                        "startColumn": 4,
+                        "startOffset": 8767,
+                        "endColumn": 43,
+                        "endOffset": 8806
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 58,
+                    "startColumn": 4,
+                    "startOffset": 2533,
+                    "endColumn": 51,
+                    "endOffset": 2580
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 58,
+                        "endColumn": 51,
+                        "endOffset": 105
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 59,
+                    "startColumn": 4,
+                    "startOffset": 2585,
+                    "endLine": 65,
+                    "endColumn": 12,
+                    "endOffset": 2871
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 191,
+                        "endLine": 12,
+                        "endColumn": 12,
+                        "endOffset": 481
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 66,
+                    "startColumn": 4,
+                    "startOffset": 2876,
+                    "endLine": 68,
+                    "endColumn": 12,
+                    "endOffset": 3031
+                },
+                "from": {
+                    "file": "C:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 522,
+                        "endLine": 17,
+                        "endColumn": 12,
+                        "endOffset": 679
+                    }
+                }
+            }
+        ]
+    }
+]

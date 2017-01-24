@@ -1,0 +1,63 @@
+Diatonic
+12
+10
+8
+12
+12
+10
+8
+0
+Enharmonic
+12
+12
+6
+12
+12
+6
+12
+0
+Soft Chromatic
+8
+14
+8
+12
+8
+14
+8
+0
+Hard Chromatic
+4
+6
+20
+4
+12
+6
+20
+1
+Grave (Diatonic)
+12
+10
+8
+12
+12
+10
+8
+6
+Grave (Enharmonic)
+12
+6
+12
+12
+12
+6
+12
+6
+Diatonic (Chrysanthos)
+12
+9
+7
+12
+12
+9
+7
+0

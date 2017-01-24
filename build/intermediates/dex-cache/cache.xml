@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stephen\OneDrive\School\Programs\AndroidCode\Projects\Byzantine_Ison\app\build\intermediates\exploded-aar\com.android.support\gridlayout-v7\18.0.0\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="19.1.0"
+        sha1="dafab6ae358e6c801605d50ff1fa761e77200c1a">
+        <dex dex="C:\Users\Stephen\OneDrive\School\Programs\AndroidCode\Projects\Byzantine_Ison\app\build\intermediates\pre-dexed\debug\com.android.support-gridlayout-v7-18.0.0_5fcdca6bc8464f39d12c1e6c9f177b9356b4b83a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\Stephen\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-v4\18.0.0\support-v4-18.0.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="19.1.0"
+        sha1="44ec51e9d395a47aab135e5e1b556c0007442156">
+        <dex dex="C:\Users\Stephen\OneDrive\School\Programs\AndroidCode\Projects\Byzantine_Ison\app\build\intermediates\pre-dexed\debug\support-v4-18.0.0_e54695344e94fd1541d356143f6850dd47e099a9.jar" />
+    </item>
+
+</items>
