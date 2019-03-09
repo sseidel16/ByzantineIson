@@ -1,4 +1,0 @@
-#Tue Jan 24 10:18:57 MST 2017
-base.0=C\:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
-renamed.0=classes.dex
-file.0=C\:\\Users\\Stephen\\OneDrive\\School\\Programs\\AndroidCode\\Projects\\Byzantine_Ison\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex

@@ -56,7 +56,7 @@ public class DockService extends Service {
 			stopSelf();
 			return Service.START_NOT_STICKY;
 		}
-		player = new Player(IsonActivity.soundSet, 0.0, 0.0);
+		player = new Player(IsonActivity.soundSet, 0, 0);
 		scales = Scale.loadScales(this);
         currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
     	base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
@@ -131,7 +131,6 @@ public class DockService extends Service {
 				return false;
 			}
 		});
-		player.start();
 		wm.addView(parentDockLayout, dockParams);
 		return Service.START_NOT_STICKY;
 	}
@@ -161,13 +160,11 @@ public class DockService extends Service {
 		halt = (Button)new Button(this);
 		halt.setText("Stop");
 		setHaltButtonText();
-		halt.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				if (player.prefVolume > 0.0) buttonPressed(-1);
-				else {
-					DockService.this.stopSelf();
-				}
+		halt.setOnClickListener(arg0 -> {
+			if (player.getPrefVolume() > 0.0) {
+				buttonPressed(-1);
+			} else {
+				DockService.this.stopSelf();
 			}
 		});
 		layout.addView(halt);
@@ -197,7 +194,7 @@ public class DockService extends Service {
 	
 	public void onDestroy() {
 		super.onDestroy();
-		player.speaker.cancel(false);
+		player.stop();
 		wm.removeView(parentDockLayout);
 	}
 	
@@ -209,24 +206,27 @@ public class DockService extends Service {
 					Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps),
 							(double)scales.get(pick).notes[i]);
 		}
-		player.changeFreq(getFrequency());
+		player.changeFreq((float)getFrequency());
 	}
 	
 	public void buttonPressed(int index) {
 		removeButtonColorFilter();
 		note = index;
 		if (index != -1) {
-			player.playFreq(getFrequency());
+			player.playFreq((float)getFrequency());
 		} else {
-			player.changeVolume(0.0);
+			player.changeVolume(0);
 		}
 		addButtonColorFilter();
 		setHaltButtonText();
 	}
 	
 	public void setHaltButtonText() {
-		if (player.prefVolume == 0.0) halt.setText("Exit");
-		else halt.setText("Stop");
+		if (player.getPrefVolume() == 0.0) {
+		    halt.setText("Exit");
+        } else {
+		    halt.setText("Stop");
+        }
 	}
 	
 	public void removeButtonColorFilter() {

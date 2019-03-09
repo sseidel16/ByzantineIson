@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -25,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
@@ -83,7 +86,14 @@ public class IsonActivity extends FragmentActivity {
 		//this is called when the view/activity is loaded
 		super.onCreate(savedInstanceState);
 		System.out.println("Starting");
-		if (soundSet == null) {
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+        int sampleRate = Integer.parseInt(sampleRateStr);
+        System.out.println(sampleRateStr);
+        if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
+
+
+        if (soundSet == null) {
 			loadSoundSet(this, 0);
 			//this will change activities and destroy the current one
 			
@@ -97,11 +107,11 @@ public class IsonActivity extends FragmentActivity {
 			base = savedInstanceState.getDouble("Base");
 			note = savedInstanceState.getInt("Note");
 			System.out.println(volume + "," + freq); //debugging statement
-			player = new Player(soundSet, volume, freq); //create Player
+			player = new Player(soundSet, (float)volume, (float)freq); //create Player
 		} else {
 			note = -1;			//no button pressed at first
 			base = 261.6;		//default base is 261.6
-			player = new Player(soundSet, 0.0, 0.0); //create player
+			player = new Player(soundSet, 0, 0); //create player
 		}
 		scales = Scale.loadScales(this); //load all scales
 		
@@ -116,8 +126,8 @@ public class IsonActivity extends FragmentActivity {
 		//this code saves the app state.
 		//For example, if the app is closed it saves the note and base frequency
 		super.onSaveInstanceState(savedInstanceState);
-		savedInstanceState.putDouble("Volume", player.volume);
-		savedInstanceState.putDouble("Frequency", player.freq);
+		savedInstanceState.putDouble("Volume", player.getPrefVolume());
+		savedInstanceState.putDouble("Frequency", player.getPrefFreq());
 		savedInstanceState.putInt("Note", note);
 		savedInstanceState.putDouble("Base", base);
 		System.out.println("Saving");
@@ -131,7 +141,7 @@ public class IsonActivity extends FragmentActivity {
     	
 		//start the audio stream.
     	//The volume will just be zero until somebody selects a note to be played
-    	player.start();
+    	//player.start();
 		
     	//Add all the note buttons to the screen
 		setUpComponents(); //this method is defined later in this file
@@ -142,7 +152,7 @@ public class IsonActivity extends FragmentActivity {
 		super.onStop();
 		
 		//this stops any note that is playing
-		player.speaker.cancel(false);
+		player.stop();
 	}
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -181,7 +191,21 @@ public class IsonActivity extends FragmentActivity {
 				(int)(this.getResources().getDisplayMetrics().densityDpi * BUTTON_HEIGHT), 1);
 		
 		for (int i = 0; i < Scale.TOTAL_KEYS; ++i) {
-			button[i] = new Button(this);
+			button[i] = new Button(this) {
+			    public boolean performClick() {
+                    buttonPressed(getId());
+                    return super.performClick();
+                }
+
+                @Override
+                public boolean onTouchEvent(MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        performClick();
+                        return true;
+                    }
+                    return false;
+                }
+            };
 		}
 		for (int y = 0; y < ROWS; ++y) {
 			TableRow row = new TableRow(this);
@@ -203,14 +227,6 @@ public class IsonActivity extends FragmentActivity {
 				if (index >= 0 && index < Scale.TOTAL_KEYS) {
 					button[index].setId(index);
 					button[index].setTypeface(Typeface.createFromAsset(getResources().getAssets(), "greek.ttf"));
-					button[index].setOnClickListener(new Button.OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							buttonPressed(v.getId());
-						}
-					
-					});
 					button[index].setLayoutParams(buttonParams);
 					row.addView(button[index]);
 				} else {
@@ -226,16 +242,15 @@ public class IsonActivity extends FragmentActivity {
 		addButtonColorFilter();
 		halt = (Button)this.findViewById(R.id.halt);
 		setHaltButtonText();
-		halt.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View arg0) {
-				if (player.prefVolume > 0.0) buttonPressed(-1);
-				else {
-					SoundPicker dialog = new SoundPicker();
-					Bundle args = new Bundle();
-					args.putInt("sound_set_index", player.soundSet.soundSetIndex);
-					dialog.setArguments(args);
-					dialog.show(getSupportFragmentManager(), "dialog");
-				}
+		halt.setOnClickListener(arg0 -> {
+            if (player.getPrefVolume() > 0.0) {
+                buttonPressed(-1);
+            } else {
+                SoundPicker dialog = new SoundPicker();
+                Bundle args = new Bundle();
+                args.putInt("sound_set_index", soundSet.soundSetIndex);
+                dialog.setArguments(args);
+                dialog.show(getSupportFragmentManager(), "dialog");
 			}
 		});
 		SeekBar i = (SeekBar)this.findViewById(R.id.seekBar1);
@@ -339,16 +354,16 @@ public class IsonActivity extends FragmentActivity {
 					Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps),
 							(double)scales.get(pick).notes[i]);
 		}
-		player.changeFreq(getFrequency());
+		player.changeFreq((float)getFrequency());
 	}
 	
 	public void buttonPressed(int index) {
 		removeButtonColorFilter();
 		note = index;
 		if (index != -1) {
-			player.playFreq(getFrequency());
+			player.playFreq((float)getFrequency());
 		} else {
-			player.changeVolume(0.0);
+			player.changeVolume(0);
 		}
 		addButtonColorFilter();
 		setHaltButtonText();
@@ -364,15 +379,19 @@ public class IsonActivity extends FragmentActivity {
 	}
 	
 	public void setHaltButtonText() {
-		if (player.prefVolume == 0.0) halt.setText("Select Sound");
-		else halt.setText("Stop");
+		if (player.getPrefVolume() == 0.0) {
+		    halt.setText("Select Sound");
+        } else {
+		    halt.setText("Stop");
+        }
 	}
 	
 	public void setFrequencyText() {
-		if (player.prefVolume == 0.0) frequency.setText("Frequency");
-		else {
+		if (player.getPrefVolume() == 0.0) {
+		    frequency.setText("Frequency");
+        } else {
 			DecimalFormat format = new DecimalFormat("###.#Hz");
-			String formatted = format.format(player.prefFreq);
+			String formatted = format.format(player.getPrefFreq());
 			frequency.setText(formatted);
 		}
 	}

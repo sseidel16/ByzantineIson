@@ -3,6 +3,7 @@ package com.coderss.ison;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.coderss.ison.SoundSetLoader.Loader;
 
@@ -62,15 +63,20 @@ public class SoundSet {
 		}
 	}
 	
-	public void fillSoundBuffer(short[] buffer, Player player) {
+	public void fillSoundBuffer(short[] buffer,
+                                AtomicReference<Float> atomicFreq,
+                                AtomicReference<Float> atomicVolume,
+                                Runnable checkPref) {
 		for (int i = 0; i < buffer.length; ++i) {
-			setBestSound(player.freq);
+		    float freq = atomicFreq.get();
+		    float volume = atomicVolume.get();
+			setBestSound(freq);
 			if (bufferIndex >= scaledBufferSize) {
-				bestSound.fillNextBuffer(this, player.freq, player.volume);
+				bestSound.fillNextBuffer(this, freq, volume);
 				bufferIndex = 0;
 			}
 			buffer[i] = scaledBuffer[bufferIndex];
-			player.getCloserToFreq();
+			checkPref.run();
 			++bufferIndex;
 		}
 	}
