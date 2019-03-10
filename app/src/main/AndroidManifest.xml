@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.coderss.ison"
-    android:versionCode="9"
-    android:versionName="2.4" >
+    package="com.coderss.ison">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <activity
             android:name="com.coderss.ison.IsonActivity"
             android:label="@string/app_name" >
@@ -22,10 +22,8 @@
         </activity>
         <activity android:name="com.coderss.ison.ScaleManager"></activity>
         <activity android:name="com.coderss.ison.SoundSetLoader"></activity>
-        <activity android:name="com.coderss.ison.LayoutSettings"></activity>
-        <service
-            android:name="com.coderss.ison.DockService"
-        />
+        <activity android:name="com.coderss.ison.AppSettings"></activity>
+        <service android:name="com.coderss.ison.DockService" />
     </application>
 
 </manifest>

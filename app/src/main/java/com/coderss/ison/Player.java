@@ -11,60 +11,60 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Player {
-	
-	static final float FREQ_SHIFT_TIME = 0.05f;//in seconds
-	static final float MAX_VOL_SHIFT = 0.00005f;
-	float MAX_FREQ_SHIFT;
-	private SoundSet soundSet;
-	private float freq;
-	private float volume;
-	private float prefFreq;
-	private float prefVolume;
+
+    static final float FREQ_SHIFT_TIME = 0.05f;//in seconds
+    static final float MAX_VOL_SHIFT = 0.00005f;
+    float MAX_FREQ_SHIFT;
+    private SoundSet soundSet;
+    private float freq;
+    private float volume;
+    private float prefFreq;
+    private float prefVolume;
     private int minSize;
 
     private LinkedList<Speaker> speakers;
 
-	public Player(SoundSet soundSet, float volume, float freq) {
-		this.soundSet = soundSet;
-		this.freq = freq;
-		this.volume = volume;
-		this.prefFreq = freq;
-		this.prefVolume = volume;
+    public Player(SoundSet soundSet, float volume, float freq) {
+        this.soundSet = soundSet;
+        this.freq = freq;
+        this.volume = volume;
+        this.prefFreq = freq;
+        this.prefVolume = volume;
 
-		speakers = new LinkedList<>();
+        speakers = new LinkedList<>();
 
-		// calculate minimum size
+        // calculate minimum size
         minSize = AudioTrack.getMinBufferSize(44100,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
     }
-	
-	private void startSpeaker() {
-	    while (!speakers.isEmpty()) {
+
+    private void startSpeaker() {
+        while (!speakers.isEmpty()) {
             speakers.pollFirst().quiet();
         }
 
-		Speaker speaker = new Speaker(freq, volume);
-		speaker.start();
-		speakers.offerLast(speaker);
-	}
-	
-	public class Speaker extends Thread {
+        Speaker speaker = new Speaker(freq, volume);
+        speaker.start();
+        speakers.offerLast(speaker);
+    }
+
+    public class Speaker extends Thread {
 
         private final float MAX_VOL_SHIFT = 0.005f;
 
-		private short[] data;
-		private AudioTrack track;
+        private short[] data;
+        private AudioTrack track;
         private AtomicReference<Float> prefFreq = new AtomicReference<>();
         private AtomicReference<Float> prefVolume = new AtomicReference<>();
-		private AtomicReference<Float> freq = new AtomicReference<>();
-		private AtomicReference<Float> volume = new AtomicReference<>();
+        private AtomicReference<Float> freq = new AtomicReference<>();
+        private AtomicReference<Float> volume = new AtomicReference<>();
 
-		private Runnable checkPrefs;
+        private Runnable checkPrefs;
 
-		public Speaker(float freq, float volume) {
-		    this.freq.set(freq);
-		    this.volume.set(volume);
+        public Speaker(float freq, float volume) {
+            this.freq.set(freq);
+            this.volume.set(volume);
             this.prefFreq.set(freq);
             this.prefVolume.set(volume);
 
@@ -88,14 +88,14 @@ public class Player {
         }
 
         private void quiet() {
-		    prefVolume.set(0f);
+            prefVolume.set(0f);
         }
 
         private void kill() {
-		    interrupt();
+            interrupt();
         }
 
-		public void run() {
+        public void run() {
             System.out.println("Playing sound at frequency: " + freq);
 
             data = new short[minSize / 2];
@@ -112,10 +112,10 @@ public class Player {
             }
             track.stop();
             track.release();
-		}
-	}
-	
-	public void playFreq(float f) {//Play this frequency
+        }
+    }
+
+    public void playFreq(float f) {//Play this frequency
         volume = 1f;
         prefVolume = 1f;
         freq = f;
@@ -123,30 +123,34 @@ public class Player {
         startSpeaker();
 //		changeFreq(f);
 //		changeVolume(1.0);
-	}
-	
-	public void changeVolume(float volume) {
-		prefVolume = volume;
-	}
-	
-	public void changeFreq(float f) {
-		System.out.println("Changing to " + f);
-		if (freq == 0.0) freq = f;
-		prefFreq = f;
-		MAX_FREQ_SHIFT = Math.abs(freq - f) / (FREQ_SHIFT_TIME * 44100f);
-	}
-	
-	public double getPrefVolume() {
-	    return prefVolume;
+    }
+
+    public void changeVolume(float volume) {
+        prefVolume = volume;
+    }
+
+    public void changeFreq(float f) {
+        System.out.println("Changing to " + f);
+        if (freq == 0.0) freq = f;
+        prefFreq = f;
+        MAX_FREQ_SHIFT = Math.abs(freq - f) / (FREQ_SHIFT_TIME * 44100f);
+    }
+
+    public double getPrefVolume() {
+        return prefVolume;
     }
 
     public double getPrefFreq() {
-	    return prefFreq;
+        return prefFreq;
     }
 
-    public void stop() {
-	    while (!speakers.isEmpty()) {
-	        speakers.pollFirst().kill();
+    public void stop(boolean kill) {
+        while (!speakers.isEmpty()) {
+            if (kill) {
+                speakers.pollFirst().kill();
+            } else {
+                speakers.pollFirst().quiet();
+            }
         }
     }
 
