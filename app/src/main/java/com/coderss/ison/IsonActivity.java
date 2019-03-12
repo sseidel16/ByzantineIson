@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -49,28 +45,28 @@ public class IsonActivity extends AppCompatActivity {
     static boolean BY_ROW = false;
 
     //Button array referring to the different note buttons
-    Button[] button;
+    private Button[] button;
 
     //Button instance referring to the Stop/Select Sound button
-    Button halt;
+    private Button halt;
 
     //TextView that is updated to show frequency
-    TextView frequency;
+    private TextView frequency;
 
     //Player instance controlling sound output
-    Player player;
+    private Player player;
 
     //array of current frequencies
-    double[] frequencies;
+    private double[] frequencies;
 
     //current scale that is selected
-    int currentScaleIndex;
+    private int currentScaleIndex;
 
     //current base note frequency
-    double base;
+    private double base;
 
     //current note being pressed, -1 if not is being pressed
-    int note;
+    private int note;
 
     //all scale objects, previously vector
     ArrayList<Scale> scales;
@@ -79,33 +75,25 @@ public class IsonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
-        System.out.println("Starting");
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-        int sampleRate = Integer.parseInt(sampleRateStr);
-        System.out.println(sampleRateStr);
-        if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
 
-
+        // ensure we have a sound set
         if (soundSet == null) {
+            // this will change activities to load sound set and destroy the current one
             loadSoundSet(this, 0);
-            //this will change activities and destroy the current one
-
             return;
-            //forget the rest of the code
         }
+
         if (savedInstanceState != null) {
-            //if we are resuming the app, then resume the previous state
+            // if we are resuming the app, then resume the previous state
             double volume = savedInstanceState.getDouble("Volume");
             double freq = savedInstanceState.getDouble("Frequency");
             base = savedInstanceState.getDouble("Base");
             note = savedInstanceState.getInt("Note");
-            System.out.println(volume + "," + freq); //debugging statement
-            player = new Player(soundSet, (float)volume, (float)freq); //create Player
+            player = new Player(this, soundSet, (float)volume, (float)freq); //create Player
         } else {
             note = -1;			//no button pressed at first
             base = 261.6;		//default base is 261.6
-            player = new Player(soundSet, 0, 0); //create player
+            player = new Player(this, soundSet, 0, 0); //create player
         }
         scales = Scale.loadScales(this); //load all scales
 
@@ -135,7 +123,7 @@ public class IsonActivity extends AppCompatActivity {
 
         //start the audio stream.
         //The volume will just be zero until somebody selects a note to be played
-        //player.start();
+        player.start();
 
         //Add all the note buttons to the screen
         setUpComponents(); //this method is defined later in this file
@@ -146,7 +134,7 @@ public class IsonActivity extends AppCompatActivity {
         super.onStop();
 
         //this stops any note that is playing
-        player.stop(true);
+        player.stop();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -234,7 +222,7 @@ public class IsonActivity extends AppCompatActivity {
 
         setButtonText();
         addButtonColorFilter();
-        halt = (Button)this.findViewById(R.id.halt);
+        halt = this.findViewById(R.id.halt);
         setHaltButtonText();
         halt.setOnClickListener(arg0 -> {
             if (player.getPrefVolume() > 0.0) {
@@ -257,7 +245,7 @@ public class IsonActivity extends AppCompatActivity {
                         261.63, 277.18, 293.66, 311.13, 329.63};
                 base = bases[progress];
                 setScale(currentScaleIndex);
-                player.playFreq((float)getFrequency());
+                player.changeFreq((float)getFrequency());
                 setFrequencyText();
             }
             @Override
@@ -345,7 +333,7 @@ public class IsonActivity extends AppCompatActivity {
                     Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps),
                             (double)scales.get(pick).notes[i]);
         }
-        //player.playFreq((float)getFrequency());
+        player.changeFreq((float)getFrequency());
     }
 
     public void buttonPressed(int index) {
@@ -354,7 +342,7 @@ public class IsonActivity extends AppCompatActivity {
         if (index != -1) {
             player.playFreq((float)getFrequency());
         } else {
-            player.stop(false);
+            player.changeVolume(0);
         }
         addButtonColorFilter();
         setHaltButtonText();
@@ -424,6 +412,14 @@ public class IsonActivity extends AppCompatActivity {
     public double getFrequency() {
         if (note == -1) return frequencies[0];
         else return frequencies[note];
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (player != null) {
+            player.destroy();
+        }
     }
 
 }

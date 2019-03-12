@@ -56,7 +56,7 @@ public class DockService extends Service {
             stopSelf();
             return Service.START_NOT_STICKY;
         }
-        player = new Player(IsonActivity.soundSet, 0, 0);
+        player = new Player(this, IsonActivity.soundSet, 0, 0);
         scales = Scale.loadScales(this);
         currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
         base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
@@ -131,6 +131,7 @@ public class DockService extends Service {
                 return false;
             }
         });
+        player.start();
         wm.addView(parentDockLayout, dockParams);
         return Service.START_NOT_STICKY;
     }
@@ -194,7 +195,7 @@ public class DockService extends Service {
 
     public void onDestroy() {
         super.onDestroy();
-        player.stop(true);
+        player.stop();
         wm.removeView(parentDockLayout);
     }
 
@@ -215,7 +216,7 @@ public class DockService extends Service {
         if (index != -1) {
             player.playFreq((float)getFrequency());
         } else {
-            player.stop(false);
+            player.changeVolume(0);
         }
         addButtonColorFilter();
         setHaltButtonText();

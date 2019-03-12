@@ -44,16 +44,15 @@ public class Sound {
                 break;
             }
         }
+
         //Ok, now scale and fill soundSet buffer
         int index = 0;
         //index of scaled soundSet buffer - always starts at 0 and increments by 1
         double scaledIncrement = frequency / this.frequency;
         //for every 1 increment of soundSet buffer, sound buffer (data) will increment by scaledIncrement
         double scaledIndex = soundSet.startingPoint;
-        while (true) {
-            if (startIndex + scaledIndex >= finalIndex) {
-                break;
-            }
+
+        while (startIndex + scaledIndex < finalIndex && index < soundSet.scaledBuffer.length) {
             soundSet.scaledBuffer[index] =
                     (short)(volume * getDataAt(scaledIndex, soundSet.preSample));
             scaledIndex += scaledIncrement;
@@ -61,6 +60,7 @@ public class Sound {
             //		(short)(Player.volume * getDataAt(scaledIndex, soundSet.preSample)));
             ++index;
         }
+
         soundSet.startingPoint = (startIndex + scaledIndex) - (finalIndex + 1);
         soundSet.scaledBufferSize = index;
         soundSet.preSample = data[finalIndex];

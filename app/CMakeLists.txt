@@ -17,4 +17,13 @@ add_library( # Specifies the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
+             src/main/cpp/native-lib.cpp
+             src/main/cpp/jni_bridge.cc
+             src/main/cpp/audio_player.cc
+             src/main/cpp/synthesizer.cc
+             src/main/cpp/load_stabilizer.cc
+             src/main/cpp/trace.cc
+             src/main/cpp/audio_common.cc
+        )
+
+target_link_libraries( native-lib log OpenSLES android)
