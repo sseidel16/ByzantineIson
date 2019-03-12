@@ -26,8 +26,9 @@ public class Player {
     private static native void native_destroyAudioPlayer();
     private static native void native_setFrequency(float frequency);
     private static native void native_setVolume(float volume);
-    private static native void native_setWorkCycles(int workCycles);
-    private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
+    private static native void native_setSoundSet(short[][] soundDataArray, float[] frequencyArray);
+//    private static native void native_setWorkCycles(int workCycles);
+//    private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
 
     // load the native sound processor
     static {
@@ -76,6 +77,15 @@ public class Player {
 
         native_createEngine(Build.VERSION.SDK_INT);
         native_createAudioPlayer(sampleRate, framesPerBuffer, NUM_BUFFERS);
+
+        short[][] soundDataArray = new short[soundSet.notes.length][];
+        float[] frequencyArray = new float[soundSet.notes.length];
+
+        for (int soundI = 0; soundI < soundDataArray.length; soundI++) {
+            soundDataArray[soundI] = soundSet.notes[soundI].data;
+            frequencyArray[soundI] = soundSet.notes[soundI].frequency;
+        }
+        native_setSoundSet(soundDataArray, frequencyArray);
     }
 
     public void start() {

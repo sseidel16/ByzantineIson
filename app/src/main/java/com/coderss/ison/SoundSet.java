@@ -44,7 +44,7 @@ public class SoundSet {
                 if (parent.isCancelled()) break;
                 String line = br.readLine();
                 if (line == null || line.equals("")) break;
-                double frequency = Double.parseDouble(line);
+                float frequency = Float.parseFloat(line);
                 Sound current = new Sound(frequency,
                         "SoundSets/" + folder + "/" + line,
                         assets,

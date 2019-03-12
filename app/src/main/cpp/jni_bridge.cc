@@ -163,4 +163,28 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setLoadStabilization
     load_stabilizer->setStabilizationEnabled((bool) is_enabled);
 }
 
+JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSoundSet(
+        JNIEnv *env,
+        jclass clazz,
+        jobjectArray sound_data_array,
+        jfloatArray frequency_array) {
+
+    int sound_data_array_n = env->GetArrayLength(sound_data_array);
+    jfloat *frequencies = env->GetFloatArrayElements(frequency_array, 0);
+
+    for (int sound_i = 0; sound_i < sound_data_array_n; sound_i++) {
+        jshortArray sound_data = (jshortArray) env->GetObjectArrayElement(sound_data_array, 0);
+        int sound_samples_n = env->GetArrayLength(sound_data);
+        jshort *sound_samples = env->GetShortArrayElements(sound_data, 0);
+
+        for (int sound_sample_i = 0; sound_sample_i < sound_samples_n; sound_sample_i++) {
+            // copy sound samples here
+        }
+
+        env->ReleaseShortArrayElements(sound_data, sound_samples, JNI_ABORT);
+    }
+
+    env->ReleaseFloatArrayElements(frequency_array, frequencies, JNI_ABORT);
+}
+
 } // end extern "C"

@@ -6,11 +6,11 @@ import android.content.res.AssetManager;
 
 public class Sound {
 
-    double frequency;
+    float frequency;
     short[] data;
-    int startIndex = 0;
+    private int startIndex = 0;
 
-    public Sound(double frequency, String path, AssetManager assets, Loader parent) {
+    public Sound(float frequency, String path, AssetManager assets, Loader parent) {
         this.frequency = frequency;
         data = Reader.readWAV(path, assets, parent);
     }

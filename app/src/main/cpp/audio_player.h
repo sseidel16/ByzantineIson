@@ -34,90 +34,90 @@ typedef void (*sl_player_callback_function)(SLAndroidSimpleBufferQueueItf buffer
 class AudioPlayer {
 
 public:
-  AudioPlayer(SLEngineItf sl_engine_itf,
-              SLObjectItf output_mix_itf,
-              AudioRenderer *renderer,
-              AudioStreamFormat stream_format,
-              int api_level);
+    AudioPlayer(SLEngineItf sl_engine_itf,
+                SLObjectItf output_mix_itf,
+                AudioRenderer *renderer,
+                AudioStreamFormat stream_format,
+                int api_level);
 
-  virtual ~AudioPlayer();
+    virtual ~AudioPlayer();
 
-  void processSLCallback(SLAndroidSimpleBufferQueueItf buffer_queue_itf);
+    void processSLCallback(SLAndroidSimpleBufferQueueItf buffer_queue_itf);
 
-  void play();
+    void play();
 
-  void stop();
+    void stop();
 
-  void setCallbackThreadCPUIds(std::vector<int> core_ids);
+    void setCallbackThreadCPUIds(std::vector<int> core_ids);
 
-  jobject getAudioTrack();
+    jobject getAudioTrack();
 
 private:
 
-  // Methods
-  void initAudioBuffer(int frames_per_buffer,
-                       int num_audio_channels,
-                       int16_t *&audio_buffer);
+    // Methods
+    void initAudioBuffer(int frames_per_buffer,
+                         int num_audio_channels,
+                         int16_t *&audio_buffer);
 
-  void initDataLocatorBufferQueue(SLuint32 num_buffers,
-                                  SLDataLocator_AndroidSimpleBufferQueue *data_locator);
+    void initDataLocatorBufferQueue(SLuint32 num_buffers,
+                                    SLDataLocator_AndroidSimpleBufferQueue *data_locator);
 
-  void initDataFormat(SLuint32 frame_rate,
-                      SLuint32 num_channels,
-                      SLDataFormat_PCM *data_format);
+    void initDataFormat(SLuint32 frame_rate,
+                        SLuint32 num_channels,
+                        SLDataFormat_PCM *data_format);
 
-  void initDataSource(SLDataLocator_AndroidSimpleBufferQueue *data_locator,
-                      SLDataFormat_PCM *data_format,
-                      SLDataSource *data_source);
+    void initDataSource(SLDataLocator_AndroidSimpleBufferQueue *data_locator,
+                        SLDataFormat_PCM *data_format,
+                        SLDataSource *data_source);
 
-  void initDataLocatorOutputMix(SLObjectItf output_mix_itf,
-                                SLDataLocator_OutputMix *data_locator);
+    void initDataLocatorOutputMix(SLObjectItf output_mix_itf,
+                                  SLDataLocator_OutputMix *data_locator);
 
-  void initDataSink(SLDataLocator_OutputMix *data_locator,
-                    SLDataSink *data_sink);
+    void initDataSink(SLDataLocator_OutputMix *data_locator,
+                      SLDataSink *data_sink);
 
-  void createPlayer(SLEngineItf engine_itf,
-                    SLDataSource *data_source,
-                    SLDataSink *data_sink,
-                    SLObjectItf *player_object_itf);
+    void createPlayer(SLEngineItf engine_itf,
+                      SLDataSource *data_source,
+                      SLDataSink *data_sink,
+                      SLObjectItf *player_object_itf);
 
-  void getAndroidConfigurationInterface(SLObjectItf player_object_itf,
-                                        SLAndroidConfigurationItf *config_itf);
+    void getAndroidConfigurationInterface(SLObjectItf player_object_itf,
+                                          SLAndroidConfigurationItf *config_itf);
 
-  void getAndroidConfigurationInterfaceAPI24(SLObjectItf player_object_itf,
-                                             SLAndroidConfigurationItfAPI24 *config_itf);
+    void getAndroidConfigurationInterfaceAPI24(SLObjectItf player_object_itf,
+                                               SLAndroidConfigurationItfAPI24 *config_itf);
 
-  void realizePlayer(SLObjectItf player_object_itf);
+    void realizePlayer(SLObjectItf player_object_itf);
 
-  void getPlayInterface(SLObjectItf player_object_itf, SLPlayItf *play_itf);
+    void getPlayInterface(SLObjectItf player_object_itf, SLPlayItf *play_itf);
 
-  void getBufferQueueInterface(SLObjectItf player_object_itf,
-                               SLAndroidSimpleBufferQueueItf *buffer_queue_itf);
+    void getBufferQueueInterface(SLObjectItf player_object_itf,
+                                 SLAndroidSimpleBufferQueueItf *buffer_queue_itf);
 
-  void registerCallback(SLAndroidSimpleBufferQueueItf buffer_queue_itf,
-                        sl_player_callback_function callback_function,
-                        void *context);
+    void registerCallback(SLAndroidSimpleBufferQueueItf buffer_queue_itf,
+                          sl_player_callback_function callback_function,
+                          void *context);
 
-  void setThreadAffinity();
+    void setThreadAffinity();
 
-  void acquireJavaProxy(SLAndroidConfigurationItfAPI24 config_itf, jobject *java_proxy);
+    void acquireJavaProxy(SLAndroidConfigurationItfAPI24 config_itf, jobject *java_proxy);
 
-  // Member variables
-  AudioRenderer *renderer_ = nullptr;
-  AudioStreamFormat stream_format_;
-  int16_t *audio_buffer_;
-  jobject java_proxy_ = nullptr;
+    // Member variables
+    AudioRenderer *renderer_ = nullptr;
+    AudioStreamFormat stream_format_;
+    int16_t *audio_buffer_;
+    jobject java_proxy_ = nullptr;
 
-  // OpenSL objects
-  SLObjectItf sl_player_object_itf_ = nullptr;
-  SLAndroidConfigurationItf sl_android_config_itf_ = nullptr;
-  SLAndroidConfigurationItfAPI24 sl_android_config_itf_api24_ = nullptr;
-  SLPlayItf sl_play_itf_ = nullptr;
-  SLAndroidSimpleBufferQueueItf sl_buffer_queue_itf_ = nullptr;
+    // OpenSL objects
+    SLObjectItf sl_player_object_itf_ = nullptr;
+    SLAndroidConfigurationItf sl_android_config_itf_ = nullptr;
+    SLAndroidConfigurationItfAPI24 sl_android_config_itf_api24_ = nullptr;
+    SLPlayItf sl_play_itf_ = nullptr;
+    SLAndroidSimpleBufferQueueItf sl_buffer_queue_itf_ = nullptr;
 
-  // Performance options
-  bool is_thread_affinity_set_ = false;
-  std::vector<int> callback_cpu_ids_;
+    // Performance options
+    bool is_thread_affinity_set_ = false;
+    std::vector<int> callback_cpu_ids_;
 };
 
 
