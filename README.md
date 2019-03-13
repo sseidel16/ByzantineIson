@@ -4,10 +4,18 @@ https://play.google.com/store/apps/details?id=com.coderss.ison
 This Android application plays isokratima (ison) for chanters of Byzantine music.
 It comes with 6 main scales and allows users to edit scales.
 
+Updates:
+* The delay moving from note to note has been fixed. Switching is now more or less instant.
+* Sound sets all work on the native layer with instant switching between notes
+
 Known issues:
-* There is a delay moving from note to note: I have taken a long break from developing and am now back on and working to fix this delay.
+* Volume does not gradually change
+* Frequency change is instant and unnatural
+* Player is not destroyed and created properly
 
 Future features:
+* Add settings option for volume change time
+* Add settings option for frequency change time
 * Control width of the ison dock
 * Dark mode for when in church
 
@@ -18,4 +26,4 @@ Future features:
 ## Thanks for any help you can give!
 
 ### Thoughts moving forward
-I am attempting to move all of the sound processing down to the native layer to improve the audio delay.
+I have successfully moved all of the sound processing down to the native layer to improve the audio delay. Settings now needs to be added with darm theme and audio and layout settings.
