@@ -22,14 +22,14 @@
 class AudioRenderer {
 
 public:
-  /**
-    * Render signed 16-bit audio samples into the supplied audio buffer
-    *
-    * @param num_samples number of samples to render
-    * @param audio_buffer array into which samples should be rendered
-    * @return number of samples which were actually rendered
-    */
-  virtual int render(int num_samples, int16_t *audio_buffer) = 0;
+    /**
+      * Render signed 16-bit audio samples into the supplied audio buffer
+      *
+      * @param num_samples number of samples to render
+      * @param audio_buffer array into which samples should be rendered
+      * @return number of samples which were actually rendered
+      */
+    virtual int render(int num_samples, int16_t *audio_buffer) = 0;
 };
 
 

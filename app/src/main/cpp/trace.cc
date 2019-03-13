@@ -31,38 +31,38 @@ bool Trace::is_tracing_supported_ = false;
 
 void Trace::beginSection(const char *sectionName) {
 
-  if (is_tracing_supported_) {
-    ATrace_beginSection(sectionName);
-  } else {
-    LOGE("Tracing is either not initialized (call Trace::initialize()) "
+    if (is_tracing_supported_) {
+        ATrace_beginSection(sectionName);
+    } else {
+        LOGE("Tracing is either not initialized (call Trace::initialize()) "
              "or not supported on this device");
-  }
+    }
 }
 
 void Trace::endSection() {
 
-  if (is_tracing_supported_) {
-    ATrace_endSection();
-  }
+    if (is_tracing_supported_) {
+        ATrace_endSection();
+    }
 }
 
 void Trace::initialize() {
 
-  // Using dlsym allows us to use tracing on API 21+ without needing android/trace.h which wasn't
-  // published until API 23
-  void *lib = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
-  if (lib == nullptr) {
-    LOGE("Could not open libandroid.so to dynamically load tracing symbols");
-  } else {
-    ATrace_beginSection =
-        reinterpret_cast<fp_ATrace_beginSection >(
-            dlsym(lib, "ATrace_beginSection"));
-    ATrace_endSection =
-        reinterpret_cast<fp_ATrace_endSection >(
-            dlsym(lib, "ATrace_endSection"));
+    // Using dlsym allows us to use tracing on API 21+ without needing android/trace.h which wasn't
+    // published until API 23
+    void *lib = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+    if (lib == nullptr) {
+        LOGE("Could not open libandroid.so to dynamically load tracing symbols");
+    } else {
+        ATrace_beginSection =
+                reinterpret_cast<fp_ATrace_beginSection >(
+                        dlsym(lib, "ATrace_beginSection"));
+        ATrace_endSection =
+                reinterpret_cast<fp_ATrace_endSection >(
+                        dlsym(lib, "ATrace_endSection"));
 
-    if (ATrace_beginSection != nullptr && ATrace_endSection != nullptr){
-      is_tracing_supported_ = true;
+        if (ATrace_beginSection != nullptr && ATrace_endSection != nullptr) {
+            is_tracing_supported_ = true;
+        }
     }
-  }
 }

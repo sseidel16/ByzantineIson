@@ -16,12 +16,12 @@
 
 #include "audio_common.h"
 
-int64_t timestamp_to_nanos(timespec ts){
-  return (ts.tv_sec * (int64_t) NANOS_IN_SECOND) + ts.tv_nsec;
+int64_t timestamp_to_nanos(timespec ts) {
+    return (ts.tv_sec * (int64_t) NANOS_IN_SECOND) + ts.tv_nsec;
 }
 
-int64_t get_time(){
-  timespec ts;
-  clock_gettime(CLOCK_MONOTONIC, &ts);
-  return timestamp_to_nanos(ts);
+int64_t get_time() {
+    timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return timestamp_to_nanos(ts);
 }

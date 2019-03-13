@@ -22,13 +22,14 @@ public class Player {
     private static native void native_destroyEngine();
     private static native AudioTrack native_createAudioPlayer(int frameRate,
                                                               int framesPerBuffer,
-                                                              int numBuffers);
+                                                              int numBuffers,
+                                                              short[][] soundDataArray,
+                                                              float[] frequencyArray);
     private static native void native_destroyAudioPlayer();
     private static native void native_setFrequency(float frequency);
     private static native void native_setVolume(float volume);
-    private static native void native_setSoundSet(short[][] soundDataArray, float[] frequencyArray);
-//    private static native void native_setWorkCycles(int workCycles);
-//    private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
+    private static native void native_setWorkCycles(int workCycles);
+    private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
 
     // load the native sound processor
     static {
@@ -75,9 +76,6 @@ public class Player {
         if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
         if (framesPerBuffer == 0) framesPerBuffer = 256; // Use a default value if property not found
 
-        native_createEngine(Build.VERSION.SDK_INT);
-        native_createAudioPlayer(sampleRate, framesPerBuffer, NUM_BUFFERS);
-
         short[][] soundDataArray = new short[soundSet.notes.length][];
         float[] frequencyArray = new float[soundSet.notes.length];
 
@@ -85,13 +83,21 @@ public class Player {
             soundDataArray[soundI] = soundSet.notes[soundI].data;
             frequencyArray[soundI] = soundSet.notes[soundI].frequency;
         }
-        native_setSoundSet(soundDataArray, frequencyArray);
+
+        native_createEngine(Build.VERSION.SDK_INT);
+        native_createAudioPlayer(
+                sampleRate,
+                framesPerBuffer,
+                NUM_BUFFERS,
+                soundDataArray,
+                frequencyArray);
     }
 
     public void start() {
         //startJavaSpeaker();
         native_setFrequency(freq.get());
         native_setVolume(volume.get());
+        //native_setWorkCycles(60000);
     }
 
     private void startJavaSpeaker() {

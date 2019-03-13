@@ -24,18 +24,21 @@
 class LoadStabilizer : public AudioRenderer {
 
 public:
-  LoadStabilizer(AudioRenderer *audio_renderer, int64_t callback_period_ns);
-  int render(int num_samples, int16_t *audio_buffer);
-  void generateLoad(int64_t duration_in_nanos);
-  void setStabilizationEnabled(bool is_enabled);
+    LoadStabilizer(AudioRenderer *audio_renderer, int64_t callback_period_ns);
+
+    int render(int num_samples, int16_t *audio_buffer);
+
+    void generateLoad(int64_t duration_in_nanos);
+
+    void setStabilizationEnabled(bool is_enabled);
 
 private:
-  AudioRenderer *audio_renderer_;
-  int64_t callback_period_;
-  double ops_per_nano_ = 1;
-  bool is_stabilization_enabled_;
-  int64_t callback_count_;
-  int64_t callback_epoch_;
+    AudioRenderer *audio_renderer_;
+    int64_t callback_period_;
+    double ops_per_nano_ = 1;
+    bool is_stabilization_enabled_;
+    int64_t callback_count_;
+    int64_t callback_epoch_;
 };
 
 #endif //SIMPLESYNTH_LOAD_STABILIZER_H

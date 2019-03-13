@@ -23,27 +23,30 @@
 
 /** Android Configuration interface methods */
 struct SLAndroidConfigurationItfAPI24_;
-typedef const struct SLAndroidConfigurationItfAPI24_ * const * SLAndroidConfigurationItfAPI24;
+typedef const struct SLAndroidConfigurationItfAPI24_ *const *SLAndroidConfigurationItfAPI24;
 /*
  * Java Proxy Type IDs
  */
 #define SL_ANDROID_JAVA_PROXY_ROUTING   0x0001
 
 struct SLAndroidConfigurationItfAPI24_ {
-  SLresult (*SetConfiguration) (SLAndroidConfigurationItfAPI24 self,
-                                const SLchar *configKey,
-                                const void *pConfigValue,
-                                SLuint32 valueSize);
-  SLresult (*GetConfiguration) (SLAndroidConfigurationItfAPI24 self,
-                                const SLchar *configKey,
-                                SLuint32 *pValueSize,
-                                void *pConfigValue
-  );
-  SLresult (*AcquireJavaProxy) (SLAndroidConfigurationItfAPI24 self,
-                                SLuint32 proxyType,
-                                jobject *pProxyObj);
-  SLresult (*ReleaseJavaProxy) (SLAndroidConfigurationItfAPI24 self,
-                                SLuint32 proxyType);
+    SLresult (*SetConfiguration)(SLAndroidConfigurationItfAPI24 self,
+                                 const SLchar *configKey,
+                                 const void *pConfigValue,
+                                 SLuint32 valueSize);
+
+    SLresult (*GetConfiguration)(SLAndroidConfigurationItfAPI24 self,
+                                 const SLchar *configKey,
+                                 SLuint32 *pValueSize,
+                                 void *pConfigValue
+    );
+
+    SLresult (*AcquireJavaProxy)(SLAndroidConfigurationItfAPI24 self,
+                                 SLuint32 proxyType,
+                                 jobject *pProxyObj);
+
+    SLresult (*ReleaseJavaProxy)(SLAndroidConfigurationItfAPI24 self,
+                                 SLuint32 proxyType);
 };
 
 #endif //SIMPLESYNTH_OPENSLES_ANDROID_API24_H

@@ -20,12 +20,14 @@
 class Trace {
 
 public:
-  static void beginSection(const char * sectionName);
-  static void endSection();
-  static void initialize();
+    static void beginSection(const char *sectionName);
+
+    static void endSection();
+
+    static void initialize();
 
 private:
-  static bool is_tracing_supported_;
+    static bool is_tracing_supported_;
 };
 
 #endif //SIMPLESYNTH_TRACE_H

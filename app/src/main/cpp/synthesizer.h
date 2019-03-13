@@ -19,28 +19,45 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <jni.h>
+#include <mutex>
 #include "audio_renderer.h"
 
 class Synthesizer : public AudioRenderer {
-
-public:
-  Synthesizer(int num_audio_channels, int frame_rate);
-
-  virtual int render(int num_samples, int16_t *audio_buffer);
-
-  void setVolume(float volume);
-
-  void setWaveFrequency(float wave_frequency);
-
-  void setWorkCycles(int work_cycles);
-
 private:
-  int num_audio_channels_;
-  int frame_rate_;
-  double phase_increment_;
-  double current_phase_ = 0.0;
-  float current_volume_ = 0;
-  int work_cycles_ = 0;
+    int num_audio_channels_;
+    int frame_rate_;
+    float current_volume_ = 0;
+    float frequency;
+    float sample_index_increment_;
+    int work_cycles_ = 0;
+
+    int16_t **soundDataArray;
+    float *frequencyArray;
+    float *samplePositions;
+
+    int sounds_n;
+    int *soundSamples_n;
+
+    // Java code passing in next frequency
+    std::mutex frequencyLock;
+    float nextFrequency;
+
+    float retrieve(int sound_i);
+    int getBestSound(float frequency);
+public:
+    Synthesizer(
+            int num_audio_channels,
+            int frame_rate,
+            JNIEnv *env,
+            jobjectArray sound_data_array,
+            jfloatArray frequency_array);
+
+    virtual int render(int num_samples, int16_t *audio_buffer);
+    void setVolume(float volume);
+    void setWaveFrequency(float wave_frequency);
+    void setWorkCycles(int work_cycles);
+    ~Synthesizer();
 };
 
 #endif //SIMPLESYNTH_SYNTHESIZER_H

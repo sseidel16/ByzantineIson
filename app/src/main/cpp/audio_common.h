@@ -28,13 +28,14 @@
     } while (0)
 
 struct AudioStreamFormat {
-  uint32_t   frame_rate;
-  uint32_t   frames_per_buffer;
-  uint16_t   num_audio_channels;
-  uint16_t   num_buffers;
+    uint32_t frame_rate;
+    uint32_t frames_per_buffer;
+    uint16_t num_audio_channels;
+    uint16_t num_buffers;
 };
 
 int64_t timestamp_to_nanos(timespec ts);
+
 int64_t get_time();
 
 #endif //SIMPLESYNTH_AUDIO_COMMON_H

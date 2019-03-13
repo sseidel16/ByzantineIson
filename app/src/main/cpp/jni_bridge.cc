@@ -30,6 +30,7 @@ static SLObjectItf sl_output_mix_object_itf = nullptr;
 static LoadStabilizer *load_stabilizer;
 static Synthesizer *synth;
 static AudioPlayer *player;
+
 static int api_level;
 
 #define NUM_AUDIO_CHANNELS 2 // 1 = mono, 2 = stereo
@@ -99,7 +100,9 @@ JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer
         jclass clazz,
         jint j_frame_rate,
         jint j_frames_per_buffer,
-        jint j_num_buffers) {
+        jint j_num_buffers,
+        jobjectArray sound_data_array,
+        jfloatArray frequency_array) {
 
     AudioStreamFormat format;
     format.frame_rate = (uint32_t) j_frame_rate;
@@ -107,7 +110,10 @@ JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer
     format.num_audio_channels = NUM_AUDIO_CHANNELS;
     format.num_buffers = (uint16_t) j_num_buffers;
 
-    synth = new Synthesizer(format.num_audio_channels, format.frame_rate);
+    synth = new Synthesizer(
+            format.num_audio_channels,
+            format.frame_rate,
+            env, sound_data_array, frequency_array);
 
     int64_t callback_period_ns =
             ((int64_t) format.frames_per_buffer * NANOS_IN_SECOND) / format.frame_rate;
@@ -161,30 +167,6 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setLoadStabilization
         jclass clazz,
         jboolean is_enabled) {
     load_stabilizer->setStabilizationEnabled((bool) is_enabled);
-}
-
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSoundSet(
-        JNIEnv *env,
-        jclass clazz,
-        jobjectArray sound_data_array,
-        jfloatArray frequency_array) {
-
-    int sound_data_array_n = env->GetArrayLength(sound_data_array);
-    jfloat *frequencies = env->GetFloatArrayElements(frequency_array, 0);
-
-    for (int sound_i = 0; sound_i < sound_data_array_n; sound_i++) {
-        jshortArray sound_data = (jshortArray) env->GetObjectArrayElement(sound_data_array, 0);
-        int sound_samples_n = env->GetArrayLength(sound_data);
-        jshort *sound_samples = env->GetShortArrayElements(sound_data, 0);
-
-        for (int sound_sample_i = 0; sound_sample_i < sound_samples_n; sound_sample_i++) {
-            // copy sound samples here
-        }
-
-        env->ReleaseShortArrayElements(sound_data, sound_samples, JNI_ABORT);
-    }
-
-    env->ReleaseFloatArrayElements(frequency_array, frequencies, JNI_ABORT);
 }
 
 } // end extern "C"
