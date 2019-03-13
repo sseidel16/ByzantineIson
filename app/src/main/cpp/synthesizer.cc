@@ -99,7 +99,7 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             audio_buffer[sample_count++] = data;
         }
 
-        samplePositions[sound_i] += 1;sample_index_increment_;
+        samplePositions[sound_i] += sample_index_increment_;
 
         // check for new sound if we crossed form negative to positive sample
         if (data > 0) {
@@ -112,8 +112,6 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
                         frequency = nextFrequency;
                         sound_i = getBestSound(frequency);
                         sample_index_increment_ = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound_i]));
-                        LOGV("Increment: %f", sample_index_increment_);
-                        LOGV("SoundI: %i", sound_i);
                     }
                     frequencyLock.unlock();
                 }

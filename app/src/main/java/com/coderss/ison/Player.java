@@ -166,7 +166,6 @@ public class Player {
     }
 
     public void changeFreq(float f) {
-        System.out.println("Changing to " + f);
         if (freq.get() <= 0) freq.set(f);
         prefFreq = f;
         MAX_FREQ_SHIFT = Math.abs(freq.get() - f) / (FREQ_SHIFT_TIME * 44100f);
