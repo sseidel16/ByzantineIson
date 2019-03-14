@@ -17,8 +17,8 @@
 #ifndef SIMPLESYNTH_SYNTHESIZER_H
 #define SIMPLESYNTH_SYNTHESIZER_H
 
-#include <stdint.h>
-#include <math.h>
+#include <cstdint>
+#include <cmath>
 #include <jni.h>
 #include <mutex>
 #include "audio_renderer.h"
@@ -27,7 +27,6 @@ class Synthesizer : public AudioRenderer {
 private:
     int num_audio_channels_;
     int frame_rate_;
-    float current_volume_ = 0;
     int work_cycles_ = 0;
 
     int16_t **soundDataArray;
@@ -40,6 +39,10 @@ private:
     // Java code passing in next frequency
     std::mutex frequencyLock;
     float nextFrequency;
+
+    // Java code passing in next volume
+    std::mutex volumeLock;
+    float nextVolume;
 
     float retrieve(int sound_i);
     void getBestSound(float frequency, int& sound1_i, int& sound2_i,

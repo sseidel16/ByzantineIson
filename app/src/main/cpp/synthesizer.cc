@@ -31,6 +31,9 @@ Synthesizer::Synthesizer(
         num_audio_channels_(num_audio_channels),
         frame_rate_(frame_rate) {
 
+    setWaveFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
+    setVolume(0);
+
     // load sound set
     sounds_n = env->GetArrayLength(sound_data_array);
 
@@ -62,8 +65,6 @@ Synthesizer::Synthesizer(
 
     env->ReleaseFloatArrayElements(frequency_array, frequencies, JNI_ABORT);
 
-    setWaveFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
-    setVolume(0);
 }
 
 int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
@@ -89,9 +90,13 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
     static float sound1_index_increment = 1;
     static float sound2_index_increment = 1;
     static float frequency = DEFAULT_SINE_WAVE_FREQUENCY;
-    static float desired_frequency = DEFAULT_SINE_WAVE_FREQUENCY;
+    static float desired_frequency = frequency;
+    static float volume = 0;
+    static float desired_volume = volume;
     static float frequency_change_time = 0.05;
+    static float volume_change_time = 0.2;
     static float frequency_delta_per_frame = 0;
+    static float volume_delta_per_frame = 0;
 
     // render an interleaved output with the same sample value per channel
     // For example: 6 samples of a 2 channel output stream could look like this
@@ -102,35 +107,44 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
     int sample_count = 0;
 
     for (int i = 0; i < frames; i++) {
-        int16_t data1 = (int16_t) (retrieve(sound1_i) * current_volume_ * sound1_volume);
-        int16_t data2 = (int16_t) (retrieve(sound2_i) * current_volume_ * sound2_volume);
-        audio_buffer[sample_count++] = data1 + data2;
-        audio_buffer[sample_count++] = data2 + data1;
-//        for (int j = 0; j < num_audio_channels_; j++) {
-//            audio_buffer[sample_count++] = data1;
-//        }
+        int16_t data = (int16_t) (volume *
+                (retrieve(sound1_i) * sound1_volume + retrieve(sound2_i) * sound2_volume)
+        );
+        for (int j = 0; j < num_audio_channels_; j++) {
+            audio_buffer[sample_count++] = data;
+        }
 
-        // change our sample position increment if it is not as desired
+        // change our frequency if it is not as desired
         if (frequency != desired_frequency) {
-            if (abs(frequency - desired_frequency) < frequency_delta_per_frame) {
+            if (frequency_delta_per_frame *
+                    ((frequency + frequency_delta_per_frame) - desired_frequency) >= 0) {
                 frequency = desired_frequency;
             } else {
-                if (frequency < desired_frequency) {
-                    frequency += frequency_delta_per_frame;
-                } else {
-                    frequency -= frequency_delta_per_frame;
-                }
+                frequency += frequency_delta_per_frame;
             }
 
             // recalculate best sounds for frequency change
             getBestSound(frequency, sound1_i, sound2_i, sound1_volume, sound2_volume);
+
+            // sound1 is below the desired frequency and will be raised
+            // sound2 is above the desired frequency and will be lowered
             sound1_index_increment = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound1_i]));
             sound2_index_increment = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound2_i]));
         }
 
+        // change our volume if it is not as desired
+        if (volume != desired_volume) {
+            if (volume_delta_per_frame *
+                    ((volume + volume_delta_per_frame) - desired_volume) >= 0) {
+                volume = desired_volume;
+            } else {
+                volume += volume_delta_per_frame;
+            }
+        }
+
         // increment our sample position
-        if (sound1_volume > 0.1) samplePositions[sound1_i] += sound1_index_increment;
-        if (sound2_volume > 0.1) samplePositions[sound2_i] += sound2_index_increment;
+        if (sound1_volume > 0) samplePositions[sound1_i] += sound1_index_increment;
+        if (sound2_volume > 0) samplePositions[sound2_i] += sound2_index_increment;
     }
 
     // check for new frequency
@@ -139,16 +153,26 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             desired_frequency = nextFrequency;
 
             if (frequency_change_time > 0) {
-                frequency_delta_per_frame = abs(
-                        (desired_frequency - frequency) /
-                        frequency_change_time /
-                        frame_rate_
-                );
+                frequency_delta_per_frame = (desired_frequency - frequency) / frequency_change_time / frame_rate_;
             } else {
-                frequency_delta_per_frame = MAXFLOAT;
+                frequency_delta_per_frame = desired_frequency - frequency;
             }
         }
         frequencyLock.unlock();
+    }
+
+    // check for new volume
+    if (volumeLock.try_lock()) {
+        if (nextVolume != desired_volume) {
+            desired_volume = nextVolume;
+
+            if (volume_change_time > 0) {
+                volume_delta_per_frame = (desired_volume - volume) / volume_change_time / frame_rate_;
+            } else {
+                volume_delta_per_frame = desired_volume - volume;
+            }
+        }
+        volumeLock.unlock();
     }
 
     Trace::endSection();
@@ -163,40 +187,38 @@ void Synthesizer::getBestSound(
 
     sound1_i = -1;
     sound2_i = -1;
-    float sound1_best_margin = 0;
-    float sound2_best_margin = 0;
+    float sound1_best_margin = MAXFLOAT;
+    float sound2_best_margin = MAXFLOAT;
     float margin;
 
     for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
         margin = frequency - frequencyArray[sound_i];
         if (margin >= 0) {
-            if (sound1_i == -1 || margin < sound1_best_margin) {
+            if (margin < sound1_best_margin) {
                 sound1_i = sound_i;
                 sound1_best_margin = margin;
             }
         } else {
-            if (sound2_i == -1 || -margin < sound2_best_margin) {
+            if (-margin < sound2_best_margin) {
                 sound2_i = sound_i;
                 sound2_best_margin = -margin;
             }
         }
     }
 
-    // ensure sounds are valid (volume will simply be 0 if sound index was -1)
-    if (sound1_i == -1) sound1_i = 0;
-    if (sound2_i == -1) sound2_i = 0;
-
     sound1_volume = sound2_best_margin / (sound1_best_margin + sound2_best_margin);
     sound2_volume = sound1_best_margin / (sound1_best_margin + sound2_best_margin);
 
-    if (sound1_volume > 0 && sound1_i % 2) {
-        int tempI = sound1_i;
-        sound1_i = sound2_i;
-        sound2_i = tempI;
-        float tempF = sound1_volume;
-        sound1_volume = sound2_volume;
-        sound2_volume = tempF;
+    // ensure sounds are valid (volume will simply be 0 if sound index was -1)
+    if (sound1_i < 0) {
+        sound1_i = 0;
+        sound1_volume = 0;
     }
+    if (sound2_i < 0) {
+        sound2_i = 0;
+        sound2_volume = 0;
+    }
+
 }
 
 float Synthesizer::retrieve(int sound_i) {
@@ -215,12 +237,14 @@ float Synthesizer::retrieve(int sound_i) {
 }
 
 void Synthesizer::setVolume(float volume) {
-    current_volume_ = volume < 1 ? volume : 1;
+    volumeLock.lock();
+    nextVolume = volume;
+    volumeLock.unlock();
 }
 
-void Synthesizer::setWaveFrequency(float wave_frequency) {
+void Synthesizer::setWaveFrequency(float frequency) {
     frequencyLock.lock();
-    nextFrequency = wave_frequency;
+    nextFrequency = frequency;
     frequencyLock.unlock();
 }
 
