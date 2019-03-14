@@ -4,13 +4,28 @@ https://play.google.com/store/apps/details?id=com.coderss.ison
 This Android application plays isokratima (ison) for chanters of Byzantine music.
 It comes with 6 main scales and allows users to edit scales.
 
+## Native audio
+To provide lower audio latency, this application sends all sound samples to the native layer through the JNI.
+This allows it bypass the delays in buffering samples at the Java layer and then passing these buffers down to the hardware in real time.
+Once the application has loaded all samples in the native layer, it processes, manipulates, and streams audio to the speaker using native C and C++ code.
+These files can be found in the cpp directory under main.
+
+## Sound blending
+The application can play any audio frequency by distorting recorded audio sounds.
+However, the more these sounds are distorted, the less natural and more robotic the output sound becomes.
+Sound sets are therefore used which are multiple recordings at several different frequencies, and the application chooses the recording to use based on how close its frequency is to the desired output frequency.
+The goal is to minimize distortion.
+When a note changes, however, the result is often that a separate audio buffer is played, and this results in a slight sound glitch as the buffer switches.
+The application therefore changes frequency over a short period of time and blends the two sounds together, fading the first out while the second fades in, to provide a smooth transition between notes.
+THis transition time will be provided as a setting in the future (see future features)
+
 Updates:
-* The delay moving from note to note has been fixed. Switching is now more or less instant.
+* Frequency changes changes gradually and audio buffers blend for a smooth transition
+* Volume changes gradually
 * Sound sets all work on the native layer with instant switching between notes
+* The delay moving from note to note has been fixed. Switching is now more or less instant.
 
 Known issues:
-* Volume does not gradually change
-* Frequency change is instant and unnatural
 * Player is not destroyed and created properly
 
 Future features:
