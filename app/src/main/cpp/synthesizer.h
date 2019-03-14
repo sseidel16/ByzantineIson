@@ -28,8 +28,6 @@ private:
     int num_audio_channels_;
     int frame_rate_;
     float current_volume_ = 0;
-    float frequency;
-    float sample_index_increment_;
     int work_cycles_ = 0;
 
     int16_t **soundDataArray;
@@ -44,7 +42,8 @@ private:
     float nextFrequency;
 
     float retrieve(int sound_i);
-    int getBestSound(float frequency);
+    void getBestSound(float frequency, int& sound1_i, int& sound2_i,
+            float& sound1_volume, float& sound2_volume);
 public:
     Synthesizer(
             int num_audio_channels,
