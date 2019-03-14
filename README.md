@@ -27,6 +27,7 @@ Updates:
 
 Known issues:
 * Player is not destroyed and created properly
+* Female choir does not play properly
 
 Future features:
 * Add settings option for volume change time
