@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceFragmentCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,7 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
-public class AppSettings extends Activity {
+public class AppSettings extends AppCompatActivity {
 
     public static void readLayoutSettings(Context context) {
         File filev2 = new File(context.getFilesDir().getPath() + "/layout.v2");
@@ -47,22 +48,26 @@ public class AppSettings extends Activity {
         }
     }
 
-    RadioButton byRow;
-    RadioButton byColumn;
-    RadioButton leftToRight;
-    RadioButton rightToLeft;
-    RadioButton topToBottom;
-    RadioButton bottomToTop;
-    Spinner numberOfRows;
-    Spinner numberOfColumns;
-    Spinner offset;
-    Spinner buttonHeight;
+    private RadioButton byRow;
+    private RadioButton byColumn;
+    private RadioButton leftToRight;
+    private RadioButton rightToLeft;
+    private RadioButton topToBottom;
+    private RadioButton bottomToTop;
+    private Spinner numberOfRows;
+    private Spinner numberOfColumns;
+    private Spinner offset;
+    private Spinner buttonHeight;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_settings);
         setTitle("Layout Settings");
         setUpComponents();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.settings_container, new MySettingsFragment())
+                .commit();
     }
 
     public void setUpComponents() {
@@ -266,6 +271,13 @@ public class AppSettings extends Activity {
 
     public static void readLayoutSettings() {
 
+    }
+
+    public static class MySettingsFragment extends PreferenceFragmentCompat {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences, rootKey);
+        }
     }
 
 }
