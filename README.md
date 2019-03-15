@@ -27,12 +27,21 @@ Updates:
 
 Known issues:
 * Player is not destroyed and created properly
-* Female choir does not play properly
+* Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 
 Future features:
-* Add settings option for volume change time
-* Add settings option for frequency change time
-* Control width of the ison dock
+* Add layout preferences
+  * Preference for notes arrangement (grid vs list)
+  * If grid, preference for row vs column major
+  * Preference for notes ordering (increasing vs decreasing)
+  * Preference for total buttons below base note
+  * Preference for total buttons above base note
+  * Preference for note button height
+  * Preference for width of the ison dock
+* Add audio preferences
+  * Preference for volume change time
+  * Preference for frequency change time
+  * Preference for base note slider (discrete vs continuous) 
 * Dark mode for when in church
 
 ## Please help me out!!
