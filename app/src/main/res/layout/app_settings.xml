@@ -276,7 +276,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/default_gap"
-        android:text="Layout Settings"
+        android:text="Preferences"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button

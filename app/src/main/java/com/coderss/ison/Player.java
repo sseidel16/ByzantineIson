@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Player {
@@ -84,19 +83,29 @@ public class Player {
             frequencyArray[soundI] = soundSet.notes[soundI].frequency;
         }
 
+        System.out.println("Native create1 in");
         native_createEngine(Build.VERSION.SDK_INT);
+        System.out.println("Native create1 out");
+        System.out.println("Native create2 in");
         native_createAudioPlayer(
                 sampleRate,
                 framesPerBuffer,
                 NUM_BUFFERS,
                 soundDataArray,
                 frequencyArray);
+        System.out.println("Native create2 out");
     }
 
     public void start() {
         //startJavaSpeaker();
+
+        System.out.println("Native setFrequency in: " + freq.get());
         native_setFrequency(freq.get());
+        System.out.println("Native setFrequency out");
+
+        System.out.println("Native setVolume in: " + volume.get());
         native_setVolume(volume.get());
+        System.out.println("Native setVolume out");
         //native_setWorkCycles(60000);
     }
 
@@ -162,15 +171,19 @@ public class Player {
     public void changeVolume(float volume) {
         prefVolume = volume;
 
+        System.out.println("Native_setVolume in: " + volume);
         native_setVolume(volume);
+        System.out.println("Native_setVolume out");
     }
 
-    public void changeFreq(float f) {
-        if (freq.get() <= 0) freq.set(f);
-        prefFreq = f;
-        MAX_FREQ_SHIFT = Math.abs(freq.get() - f) / (FREQ_SHIFT_TIME * 44100f);
+    public void changeFreq(float frequency) {
+        if (freq.get() <= 0) freq.set(frequency);
+        prefFreq = frequency;
+        MAX_FREQ_SHIFT = Math.abs(freq.get() - frequency) / (FREQ_SHIFT_TIME * 44100f);
 
-        native_setFrequency(f);
+        System.out.println("Native setFrequency in" + frequency);
+        native_setFrequency(frequency);
+        System.out.println("Native setFrequency out");
     }
 
     public double getPrefVolume() {
@@ -190,8 +203,12 @@ public class Player {
     }
 
     public void destroy() {
+        System.out.println("Native destroy1 in");
         native_destroyAudioPlayer();
+        System.out.println("Native destroy1 out");
+        System.out.println("Native destroy2 in");
         native_destroyEngine();
+        System.out.println("Native destroy2 out");
     }
 
 }

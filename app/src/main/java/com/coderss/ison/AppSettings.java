@@ -62,7 +62,7 @@ public class AppSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_settings);
-        setTitle("Layout Settings");
+        setTitle("Preferences");
         setUpComponents();
         getSupportFragmentManager()
                 .beginTransaction()
@@ -71,10 +71,10 @@ public class AppSettings extends AppCompatActivity {
     }
 
     public void setUpComponents() {
-        (this.findViewById(R.id.tableRow1)).setBackgroundColor(Color.LTGRAY);
-        (this.findViewById(R.id.tableRow3)).setBackgroundColor(Color.LTGRAY);
-        (this.findViewById(R.id.tableRow6)).setBackgroundColor(Color.LTGRAY);
-        (this.findViewById(R.id.tableRow9)).setBackgroundColor(Color.LTGRAY);
+        this.findViewById(R.id.tableRow1).setBackgroundColor(Color.LTGRAY);
+        this.findViewById(R.id.tableRow3).setBackgroundColor(Color.LTGRAY);
+        this.findViewById(R.id.tableRow6).setBackgroundColor(Color.LTGRAY);
+        this.findViewById(R.id.tableRow9).setBackgroundColor(Color.LTGRAY);
 
         byRow = this.findViewById(R.id.byRow);
         byRow.setChecked(IsonActivity.BY_ROW);

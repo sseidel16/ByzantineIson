@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="prefBaseSliderTypeEntries">
+        <item>Discrete</item>
+        <item>Continuous</item>
+    </string-array>
+    <string-array name="prefBaseSliderTypeEntryValues">
+        <item>discrete</item>
+        <item>continuous</item>
+    </string-array>
+
+    <string-array name="prefNoteLayoutEntries">
+        <item>List</item>
+        <item>Grid</item>
+    </string-array>
+    <string-array name="prefNoteLayoutEntryValues">
+        <item>list</item>
+        <item>grid</item>
+    </string-array>
+</resources>

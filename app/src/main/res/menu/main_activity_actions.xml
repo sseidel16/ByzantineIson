@@ -5,7 +5,9 @@
         android:title="Dock"
         app:showAsAction="ifRoom"
         />
-    <item android:id="@+id/openLayoutSettings" android:title="Layout" android:showAsAction="ifRoom"></item>
-
+    <item android:id="@+id/openLayoutSettings"
+        android:title="Preferences"
+        app:showAsAction="ifRoom"
+        />
 
 </menu>

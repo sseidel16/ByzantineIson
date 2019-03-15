@@ -1,18 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+
     persistent="true"
     selectable="true"
     shouldDisableView="true">
 
-    <SwitchPreferenceCompat
-        app:key="notifications"
-        app:title="Enable message notifications" />
+    <PreferenceCategory android:title="Layout Preferences">
 
-    <Preference
-        app:key="feedback"
-        app:summary="Report technical issues or suggest new features"
-        app:title="Send feedback"
-        tools:selectable="true" />
+        <ListPreference
+            android:entries="@array/prefNoteLayoutEntries"
+            android:entryValues="@array/prefNoteLayoutEntryValues"
+            android:key="listButtonLayout"
+            android:title="Note button layout type"
+            android:summary="%s"
+            android:defaultValue="list"/>
+
+        <ListPreference
+            android:entries="@array/prefNoteLayoutEntries"
+            android:entryValues="@array/prefNoteLayoutEntryValues"
+            android:key="listButtonLayout"
+            android:title="Grid orderings"
+            android:summary="%s"
+            android:defaultValue="list"/>
+
+        <ListPreference
+            android:entries="@array/prefNoteLayoutEntries"
+            android:entryValues="@array/prefNoteLayoutEntryValues"
+            android:key="listButtonLayout"
+            android:title="Note button ordering"
+            android:summary="%s"
+            android:defaultValue="list"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Audio Preferences">
+
+        <ListPreference
+            android:entries="@array/prefBaseSliderTypeEntries"
+            android:entryValues="@array/prefBaseSliderTypeEntryValues"
+            android:key="listBaseSlider"
+            android:title="Audio change time"
+            android:summary="%s"
+            android:defaultValue="discrete"/>
+
+        <ListPreference
+            android:entries="@array/prefBaseSliderTypeEntries"
+            android:entryValues="@array/prefBaseSliderTypeEntryValues"
+            android:key="listBaseSlider"
+            android:title="Frequency change time"
+            android:summary="%s"
+            android:defaultValue="discrete"/>
+
+        <ListPreference
+            android:entries="@array/prefBaseSliderTypeEntries"
+            android:entryValues="@array/prefBaseSliderTypeEntryValues"
+            android:key="listBaseSlider"
+            android:title="Base note slider type"
+            android:summary="%s"
+            android:defaultValue="discrete"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>
