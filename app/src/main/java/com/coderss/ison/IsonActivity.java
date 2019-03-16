@@ -3,12 +3,10 @@ package com.coderss.ison;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -79,6 +77,8 @@ public class IsonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
 

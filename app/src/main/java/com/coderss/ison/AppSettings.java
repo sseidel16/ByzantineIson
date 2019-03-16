@@ -22,32 +22,6 @@ import android.widget.Spinner;
 
 public class AppSettings extends AppCompatActivity {
 
-    public static void readLayoutSettings(Context context) {
-        File filev2 = new File(context.getFilesDir().getPath() + "/layout.v2");
-        if (filev2.exists()) {//get scales from v2 file format
-            try {
-                DataInputStream dis = new DataInputStream(
-                        new FileInputStream(filev2));
-                //read here
-                dis.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (filev2 != null && filev2.exists()) filev2.delete();
-            }
-        }
-        if (!filev2.exists()) {//get scales from assets (last resort)
-            try {
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(context.getResources().getAssets().open("layout.txt")));
-                //load here
-                br.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(0);
-            }
-        }
-    }
-
     private RadioButton byRow;
     private RadioButton byColumn;
     private RadioButton leftToRight;
@@ -60,6 +34,8 @@ public class AppSettings extends AppCompatActivity {
     private Spinner buttonHeight;
 
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_settings);
         setTitle("Preferences");
