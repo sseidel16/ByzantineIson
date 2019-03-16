@@ -1,7 +1,6 @@
 package com.coderss.ison;
 
 import android.content.Context;
-import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Build;
@@ -49,16 +48,7 @@ public class Player {
         }
     }
 
-    private static final float FREQ_SHIFT_TIME = 0.05f;//in seconds
-
-    private float MAX_FREQ_SHIFT;
     private SoundSet soundSet;
-    private int minSize;
-
-    private Speaker speaker;
-
-    private float prefFreq;
-    private float prefVolume;
     private AtomicReference<Float> freq = new AtomicReference<>();
     private AtomicReference<Float> volume = new AtomicReference<>();
 
@@ -66,13 +56,6 @@ public class Player {
         this.soundSet = soundSet;
         this.freq.set(freq);
         this.volume.set(volume);
-        this.prefFreq = freq;
-        this.prefVolume = volume;
-
-        // calculate minimum size
-        minSize = AudioTrack.getMinBufferSize(44100,
-                AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
 
         System.out.println("Grabbing audio parameters");
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -116,67 +99,13 @@ public class Player {
         //native_setWorkCycles(60000);
     }
 
-    private void startJavaSpeaker() {
-        speaker = new Speaker();
-        speaker.start();
-    }
-
-    public class Speaker extends Thread {
-
-        private final float MAX_VOL_SHIFT = 0.00005f;
-
-        private short[] data;
-        private AudioTrack track;
-
-        private Runnable checkPrefs;
-
-        private Speaker() {
-
-            checkPrefs = () -> {
-                if (Math.abs(freq.get() - prefFreq) < MAX_FREQ_SHIFT) {
-                    freq.set(prefFreq);
-                } else if (freq.get() > prefFreq) {
-                    freq.set(freq.get() - MAX_FREQ_SHIFT);
-                } else if (freq.get() < prefFreq) {
-                    freq.set(freq.get() + MAX_FREQ_SHIFT);
-                }
-                if (Math.abs(volume.get() - prefVolume) < MAX_VOL_SHIFT) {
-                    volume.set(prefVolume);
-                } else if (volume.get() > prefVolume) {
-                    volume.set(volume.get() - MAX_VOL_SHIFT);
-                } else if (volume.get() < prefVolume) {
-                    volume.set(volume.get() + MAX_VOL_SHIFT);
-                }
-            };
-        }
-
-        public void run() {
-            System.out.println("Playing sound at frequency: " + freq);
-
-            data = new short[minSize / 2];
-            track = new AudioTrack(
-                    AudioManager.STREAM_MUSIC,
-                    44100,
-                    AudioFormat.CHANNEL_OUT_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT,
-                    minSize, AudioTrack.MODE_STREAM);
-            track.play();
-            while (!interrupted()) {
-                soundSet.fillSoundBuffer(data, freq, volume, checkPrefs);
-                track.write(data, 0, data.length);
-            }
-            track.stop();
-            track.release();
-        }
-    }
-
-    public void setFrequency(float f) {//Play this frequency
-		changeFreq(f);
+    public void setFrequency(float frequency) {//Play this frequency
+		changeFreq(frequency);
 		setVolume(1);
     }
 
     public void setVolume(float volume) {
-        prefVolume = volume;
+        this.volume.set(volume);
 
         System.out.println("Native_setVolume in: " + volume);
         native_setVolume(volume);
@@ -191,8 +120,6 @@ public class Player {
 
     public void changeFreq(float frequency) {
         if (freq.get() <= 0) freq.set(frequency);
-        prefFreq = frequency;
-        MAX_FREQ_SHIFT = Math.abs(freq.get() - frequency) / (FREQ_SHIFT_TIME * 44100f);
 
         System.out.println("Native setFrequency in" + frequency);
         native_setFrequency(frequency);
@@ -200,19 +127,14 @@ public class Player {
     }
 
     public double getVolume() {
-        return prefVolume;
+        return volume.get();
     }
 
     public double getFrequency() {
-        return prefFreq;
+        return freq.get();
     }
 
     public void stop() {
-        //stopJavaPlayer();
-    }
-
-    public void stopJavaPlayer() {
-        if (speaker != null) speaker.interrupt();
     }
 
     private void destroy() {

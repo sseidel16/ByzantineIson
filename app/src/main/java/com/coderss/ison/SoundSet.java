@@ -3,7 +3,6 @@ package com.coderss.ison;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.coderss.ison.SoundSetLoader.Loader;
 
@@ -12,24 +11,8 @@ import android.content.res.AssetManager;
 public class SoundSet {
 
     Sound[] notes;
-    Sound bestSound;
 
     int soundSetIndex;//indicates the sound set
-
-    short preSample = 0;
-    //the final sample of the previous buffer
-
-    double startingPoint = 0.0;
-    //used by Sound.getNextBuffer, usually negative indicates whether preSample will be factored in
-
-    short[] scaledBuffer = new short[1024];
-    //array filled by Sound.getNextBuffer
-    //since the amount of data returned is unknown, 1024 is specified as a maximum
-
-    int scaledBufferSize;
-    //indicates how full scaledBuffer is (of relevant data)
-
-    int bufferIndex = 0;
 
     public SoundSet(int soundSetIndex, AssetManager assets, Loader parent) {
         this.soundSetIndex = soundSetIndex;
@@ -61,38 +44,6 @@ public class SoundSet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void fillSoundBuffer(short[] buffer,
-                                AtomicReference<Float> atomicFreq,
-                                AtomicReference<Float> atomicVolume,
-                                Runnable checkPref) {
-        for (int i = 0; i < buffer.length; ++i) {
-            float freq = atomicFreq.get();
-            float volume = atomicVolume.get();
-            setBestSound(freq);
-            if (bufferIndex >= scaledBufferSize) {
-                bestSound.fillNextBuffer(this, freq, volume);
-                bufferIndex = 0;
-            }
-            buffer[i] = scaledBuffer[bufferIndex];
-            checkPref.run();
-            ++bufferIndex;
-        }
-    }
-
-    public void setBestSound(double frequency) {
-        double shortestDistance = -1.0;
-        Sound best = null;
-        for (int i = 0; i < notes.length; ++i) {
-            double distance = Math.abs(notes[i].frequency - frequency);
-            if (shortestDistance == -1.0 ||
-                    distance < shortestDistance) {
-                shortestDistance = distance;
-                best = notes[i];
-            }
-        }
-        bestSound = best;
     }
 
     public void destroy() {
