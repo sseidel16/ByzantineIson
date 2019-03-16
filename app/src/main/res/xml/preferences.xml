@@ -36,20 +36,20 @@
     <PreferenceCategory android:title="Audio Preferences">
 
         <ListPreference
-            android:entries="@array/prefBaseSliderTypeEntries"
-            android:entryValues="@array/prefBaseSliderTypeEntryValues"
-            android:key="listBaseSlider"
-            android:title="Audio change time"
+            android:entries="@array/prefChangeTimeEntries"
+            android:entryValues="@array/prefChangeTimeEntryValues"
+            android:key="listVolumeChangeTime"
+            android:title="Volume change time"
             android:summary="%s"
-            android:defaultValue="discrete"/>
+            android:defaultValue="0.200"/>
 
         <ListPreference
-            android:entries="@array/prefBaseSliderTypeEntries"
-            android:entryValues="@array/prefBaseSliderTypeEntryValues"
-            android:key="listBaseSlider"
+            android:entries="@array/prefChangeTimeEntries"
+            android:entryValues="@array/prefChangeTimeEntryValues"
+            android:key="listFrequencyChangeTime"
             android:title="Frequency change time"
             android:summary="%s"
-            android:defaultValue="discrete"/>
+            android:defaultValue="0.050"/>
 
         <ListPreference
             android:entries="@array/prefBaseSliderTypeEntries"

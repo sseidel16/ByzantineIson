@@ -41,13 +41,12 @@ private:
     int sounds_n;
     int *soundSamples_n;
 
-    // Java code passing in next frequency
-    std::mutex frequencyLock;
-    float nextFrequency;
-
-    // Java code passing in next volume
-    std::mutex volumeLock;
-    float nextVolume;
+    // Java code passing in frequency
+    std::mutex java_lock;
+    float java_frequency;
+    float java_volume;
+    float java_frequency_change_time;
+    float java_volume_change_time;
 
     float retrieve(int sound_i);
     void getBestSound(float frequency, int& sound1_i, int& sound2_i,
@@ -59,7 +58,8 @@ public:
 
     virtual int render(int num_samples, int16_t *audio_buffer);
     void setVolume(float volume);
-    void setWaveFrequency(float wave_frequency);
+    void setFrequency(float frequency);
+    void setPreferences(float frequency_change_time, float volume_change_time);
     void setSounds(JNIEnv *env, jobjectArray sound_data_array, jfloatArray frequency_array);
     void setWorkCycles(int work_cycles);
     ~Synthesizer();

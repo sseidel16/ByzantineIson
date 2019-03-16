@@ -30,7 +30,7 @@ Synthesizer::Synthesizer(
 
     soundDataArray = nullptr;
 
-    setWaveFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
+    setFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
     setVolume(0);
 
 }
@@ -76,6 +76,42 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
 
     if (soundDataArray != nullptr && soundLock.try_lock()) {
 
+        if (java_lock.try_lock()) {
+            // check for new preferences
+            if (java_frequency_change_time != frequency_change_time) {
+                frequency_change_time = java_frequency_change_time;
+            }
+            if (java_volume_change_time != volume_change_time) {
+                volume_change_time = java_volume_change_time;
+            }
+
+            // check for new frequency
+            if (java_frequency != desired_frequency) {
+                desired_frequency = java_frequency;
+
+                if (frequency_change_time > 0) {
+                    frequency_delta_per_frame =
+                            (desired_frequency - frequency) / frequency_change_time / frame_rate_;
+                } else {
+                    frequency_delta_per_frame = desired_frequency - frequency;
+                }
+            }
+
+            // check for new volume
+            if (java_volume != desired_volume) {
+                desired_volume = java_volume;
+
+                if (volume_change_time > 0) {
+                    volume_delta_per_frame =
+                            (desired_volume - volume) / volume_change_time / frame_rate_;
+                } else {
+                    volume_delta_per_frame = desired_volume - volume;
+                }
+            }
+
+            java_lock.unlock();
+        }
+
         for (int i = 0; i < frames; i++) {
             int16_t data = (int16_t) (volume *
                                       (retrieve(sound1_i) * sound1_volume +
@@ -118,36 +154,6 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             // increment our sample position
             if (sound1_volume > 0) samplePositions[sound1_i] += sound1_index_increment;
             if (sound2_volume > 0) samplePositions[sound2_i] += sound2_index_increment;
-        }
-
-        // check for new frequency
-        if (frequencyLock.try_lock()) {
-            if (nextFrequency != desired_frequency) {
-                desired_frequency = nextFrequency;
-
-                if (frequency_change_time > 0) {
-                    frequency_delta_per_frame =
-                            (desired_frequency - frequency) / frequency_change_time / frame_rate_;
-                } else {
-                    frequency_delta_per_frame = desired_frequency - frequency;
-                }
-            }
-            frequencyLock.unlock();
-        }
-
-        // check for new volume
-        if (volumeLock.try_lock()) {
-            if (nextVolume != desired_volume) {
-                desired_volume = nextVolume;
-
-                if (volume_change_time > 0) {
-                    volume_delta_per_frame =
-                            (desired_volume - volume) / volume_change_time / frame_rate_;
-                } else {
-                    volume_delta_per_frame = desired_volume - volume;
-                }
-            }
-            volumeLock.unlock();
         }
 
         soundLock.unlock();
@@ -222,15 +228,22 @@ float Synthesizer::retrieve(int sound_i) {
 }
 
 void Synthesizer::setVolume(float volume) {
-    volumeLock.lock();
-    nextVolume = volume;
-    volumeLock.unlock();
+    java_lock.lock();
+    java_volume = volume;
+    java_lock.unlock();
 }
 
-void Synthesizer::setWaveFrequency(float frequency) {
-    frequencyLock.lock();
-    nextFrequency = frequency;
-    frequencyLock.unlock();
+void Synthesizer::setFrequency(float frequency) {
+    java_lock.lock();
+    java_frequency = frequency;
+    java_lock.unlock();
+}
+
+void Synthesizer::setPreferences(float frequency_change_time, float volume_change_time) {
+    java_lock.lock();
+    java_frequency_change_time = frequency_change_time;
+    java_volume_change_time = volume_change_time;
+    java_lock.unlock();
 }
 
 void Synthesizer::setWorkCycles(int work_cycles) {

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -165,7 +164,7 @@ public class DockService extends Service {
         halt.setText("Stop");
         setHaltButtonText();
         halt.setOnClickListener(arg0 -> {
-            if (player.getPrefVolume() > 0.0) {
+            if (player.getVolume() > 0.0) {
                 buttonPressed(-1);
             } else {
                 DockService.this.stopSelf();
@@ -214,16 +213,16 @@ public class DockService extends Service {
         removeButtonColorFilter();
         note = index;
         if (index != -1) {
-            player.playFreq((float)getFrequency());
+            player.setFrequency((float)getFrequency());
         } else {
-            player.changeVolume(0);
+            player.setVolume(0);
         }
         addButtonColorFilter();
         setHaltButtonText();
     }
 
     public void setHaltButtonText() {
-        if (player.getPrefVolume() == 0.0) {
+        if (player.getVolume() == 0.0) {
             halt.setText("Exit");
         } else {
             halt.setText("Stop");

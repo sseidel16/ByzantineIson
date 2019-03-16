@@ -24,6 +24,10 @@ public class Player {
     private static native void native_setFrequency(float frequency);
     private static native void native_setVolume(float volume);
     private static native void native_setSounds(short[][] soundDataArray, float[] frequencyArray);
+    private static native void native_setPlayerPreferences(
+            float frequencyChangeTime,
+            float volumeChangeTime);
+
     private static native void native_setWorkCycles(int workCycles);
     private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
 
@@ -166,17 +170,23 @@ public class Player {
         }
     }
 
-    public void playFreq(float f) {//Play this frequency
+    public void setFrequency(float f) {//Play this frequency
 		changeFreq(f);
-		changeVolume(1);
+		setVolume(1);
     }
 
-    public void changeVolume(float volume) {
+    public void setVolume(float volume) {
         prefVolume = volume;
 
         System.out.println("Native_setVolume in: " + volume);
         native_setVolume(volume);
         System.out.println("Native_setVolume out");
+    }
+
+    public void setPreferences(float frequencyChangeTime, float volumeChangeTime) {
+        native_setPlayerPreferences(
+                frequencyChangeTime,
+                volumeChangeTime);
     }
 
     public void changeFreq(float frequency) {
@@ -189,11 +199,11 @@ public class Player {
         System.out.println("Native setFrequency out");
     }
 
-    public double getPrefVolume() {
+    public double getVolume() {
         return prefVolume;
     }
 
-    public double getPrefFreq() {
+    public double getFrequency() {
         return prefFreq;
     }
 

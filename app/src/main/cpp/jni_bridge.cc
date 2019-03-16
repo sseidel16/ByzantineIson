@@ -145,7 +145,7 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setFrequency(
         JNIEnv *env,
         jclass clazz,
         jfloat frequency) {
-    synth->setWaveFrequency(frequency);
+    synth->setFrequency(frequency);
 }
 
 JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setVolume(
@@ -153,6 +153,14 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setVolume(
         jclass clazz,
         jfloat volume) {
     synth->setVolume(volume);
+}
+
+JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setPlayerPreferences(
+        JNIEnv *env,
+        jclass clazz,
+        jfloat frequency_change_time,
+        jfloat volume_change_time) {
+    synth->setPreferences(frequency_change_time, volume_change_time);
 }
 
 JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSounds(

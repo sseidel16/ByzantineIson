@@ -105,7 +105,26 @@ public class IsonActivity extends AppCompatActivity {
         }
         scales = Scale.loadScales(this); //load all scales
 
+        // load shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        // send preferences to player
+        float frequencyChangeTime, volumeChangeTime;
+        try {
+            frequencyChangeTime =
+                    Float.parseFloat(sharedPreferences.getString("listFrequencyChangeTime", "0.0"));
+        } catch (Throwable th) {
+            th.printStackTrace();
+            frequencyChangeTime = 0;
+        }
+        try {
+            volumeChangeTime =
+                    Float.parseFloat(sharedPreferences.getString("listVolumeChangeTime", "0.0"));
+        } catch (Throwable th) {
+            th.printStackTrace();
+            volumeChangeTime = 0;
+        }
+        player.setPreferences(frequencyChangeTime, volumeChangeTime);
 
         setScale(0); //set the current scale to Diatonic (index 0)
         //the setScale method is defined below
@@ -118,8 +137,8 @@ public class IsonActivity extends AppCompatActivity {
         //this code saves the app state.
         //For example, if the app is closed it saves the note and base frequency
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putDouble("Volume", player.getPrefVolume());
-        savedInstanceState.putDouble("Frequency", player.getPrefFreq());
+        savedInstanceState.putDouble("Volume", player.getVolume());
+        savedInstanceState.putDouble("Frequency", player.getFrequency());
         savedInstanceState.putInt("Note", note);
         savedInstanceState.putDouble("Base", base);
         System.out.println("Saving");
@@ -235,7 +254,7 @@ public class IsonActivity extends AppCompatActivity {
         halt = this.findViewById(R.id.halt);
         setHaltButtonText();
         halt.setOnClickListener(arg0 -> {
-            if (player.getPrefVolume() > 0.0) {
+            if (player.getVolume() > 0.0) {
                 buttonPressed(-1);
             } else {
                 SoundPicker dialog = new SoundPicker();
@@ -251,6 +270,7 @@ public class IsonActivity extends AppCompatActivity {
                 261.63, 277.18, 293.66, 311.13, 329.63};
         boolean isBaseNoteSliderDiscrete =
                 sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
+
         SeekBar baseNoteSlider = this.findViewById(R.id.seekBar1);
 
         if (isBaseNoteSliderDiscrete) {
@@ -368,9 +388,9 @@ public class IsonActivity extends AppCompatActivity {
         removeButtonColorFilter();
         note = index;
         if (index != -1) {
-            player.playFreq((float)getFrequency());
+            player.setFrequency((float)getFrequency());
         } else {
-            player.changeVolume(0);
+            player.setVolume(0);
         }
         addButtonColorFilter();
         setHaltButtonText();
@@ -386,7 +406,7 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     public void setHaltButtonText() {
-        if (player.getPrefVolume() == 0.0) {
+        if (player.getVolume() == 0.0) {
             halt.setText("Select Sound");
         } else {
             halt.setText("Stop");
@@ -394,11 +414,11 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     public void setFrequencyText() {
-        if (player.getPrefVolume() == 0.0) {
+        if (player.getVolume() == 0.0) {
             frequency.setText("Frequency");
         } else {
             DecimalFormat format = new DecimalFormat("###.#Hz");
-            String formatted = format.format(player.getPrefFreq());
+            String formatted = format.format(player.getFrequency());
             frequency.setText(formatted);
         }
     }

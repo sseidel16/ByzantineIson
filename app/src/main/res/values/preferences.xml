@@ -17,4 +17,29 @@
         <item>list</item>
         <item>grid</item>
     </string-array>
+
+    <string-array name="prefChangeTimeEntries">
+        <item>Immediate</item>
+        <item>25 ms</item>
+        <item>50 ms</item>
+        <item>75 ms</item>
+        <item>100 ms</item>
+        <item>200 ms</item>
+        <item>500 ms</item>
+        <item>1000 ms (1 s)</item>
+        <item>1500 ms (1.5 s)</item>
+        <item>2000 ms (2 s)</item>
+    </string-array>
+    <string-array name="prefChangeTimeEntryValues">
+        <item>0.000</item>
+        <item>0.025</item>
+        <item>0.050</item>
+        <item>0.075</item>
+        <item>0.100</item>
+        <item>0.200</item>
+        <item>0.500</item>
+        <item>1.000</item>
+        <item>1.500</item>
+        <item>2.000</item>
+    </string-array>
 </resources>
