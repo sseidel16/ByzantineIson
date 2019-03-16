@@ -17,19 +17,19 @@ Sound sets are therefore used which are multiple recordings at several different
 The goal is to minimize distortion.
 When a note changes, however, the result is often that a separate audio buffer is played, and this results in a slight sound glitch as the buffer switches.
 The application therefore changes frequency over a short period of time and blends the two sounds together, fading the first out while the second fades in, to provide a smooth transition between notes.
-THis transition time will be provided as a setting in the future (see future features)
+This transition time is provided as a new preference (see updates)
 
 Updates:
-* Frequency changes changes gradually and audio buffers blend for a smooth transition
-* Volume changes gradually
-* Sound sets all work on the native layer with instant switching between notes
-* The delay moving from note to note has been fixed. Switching is now more or less instant
-* Preference features:
+* Preference features added
   * Audio preferences
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
     * Preference for volume change time
-* Sound set loading performance drastically improved
+* Sound set loading activity removed because performance drastically improved
+* Frequency changes gradually and audio buffers blend for a smooth transition
+* Volume changes gradually
+* Sound sets all work on the native layer with instant switching between notes
+* The delay moving from note to note has been fixed. Switching is now more or less instant
 
 Known issues:
 * Player is not destroyed and created properly
