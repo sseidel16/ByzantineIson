@@ -21,7 +21,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.coderss.ison.ScaleManager"></activity>
-        <activity android:name="com.coderss.ison.SoundSetLoader"></activity>
         <activity android:name="com.coderss.ison.AppSettings"></activity>
         <service android:name="com.coderss.ison.DockService" />
     </application>

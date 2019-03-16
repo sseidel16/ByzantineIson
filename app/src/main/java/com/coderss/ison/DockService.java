@@ -51,12 +51,11 @@ public class DockService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (IsonActivity.soundSet == null) {
-            loadSoundSet(0);
-            stopSelf();
-            return Service.START_NOT_STICKY;
+        player = new Player(this, 0, 0);
+        if (SoundSet.soundSetIndex != -1) {
+            SoundSet.loadSoundSet(player, getAssets(), 0);
         }
-        player = new Player(this, IsonActivity.soundSet, 0, 0);
+
         scales = Scale.loadScales(this);
         currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
         base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
@@ -194,7 +193,6 @@ public class DockService extends Service {
 
     public void onDestroy() {
         super.onDestroy();
-        player.stop();
         wm.removeView(parentDockLayout);
     }
 
@@ -252,12 +250,6 @@ public class DockService extends Service {
                 button[i].setText(Scale.noteNames[currentNote]);
             currentNote = Scale.correctZeroToSix(currentNote - 1);
         }
-    }
-
-    protected void loadSoundSet(int index) {
-        SoundSetLoader.currentIndex = index;
-        Intent intent = new Intent(this.getApplicationContext(), SoundSetLoader.class);
-        startActivity(intent);
     }
 
     public double getFrequency() {

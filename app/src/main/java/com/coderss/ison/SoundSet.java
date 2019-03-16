@@ -1,54 +1,44 @@
 package com.coderss.ison;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.InputStreamReader;
-import java.util.Vector;
-
-import com.coderss.ison.SoundSetLoader.Loader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import android.content.res.AssetManager;
 
 public class SoundSet {
 
-    Sound[] notes;
+//    Sound[] notes;
+    public static int soundSetIndex = -1;
 
-    int soundSetIndex;//indicates the sound set
-
-    public SoundSet(int soundSetIndex, AssetManager assets, Loader parent) {
-        this.soundSetIndex = soundSetIndex;
+    public static void loadSoundSet(Player player, AssetManager assets, int soundSetIndex) {
         try {
-            parent.setPrimaryProgress(0.0);
             String folder = getSoundSets(assets)[soundSetIndex];
+
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(assets.open("SoundSets/" + folder + "/list.txt")));
-            Vector<Sound> temp = new Vector<>(10, 10);
+
             int totalSounds = Integer.parseInt(br.readLine());
+
+            short[][] soundDataArray = new short[totalSounds][];
+            float[] frequencyArray = new float[totalSounds];
+
             for (int i = 0; i < totalSounds; ++i) {
-                if (parent.isCancelled()) break;
-                String line = br.readLine();
-                if (line == null || line.equals("")) break;
-                float frequency = Float.parseFloat(line);
-                Sound current = new Sound(frequency,
-                        "SoundSets/" + folder + "/" + line,
-                        assets,
-                        parent);
-                if (current.data == null) break;//out of memory
-                temp.add(current);
-                parent.setPrimaryProgress((100.0 * (i + 1)) / totalSounds);
+                String frequencyStr = br.readLine();
+
+                float frequency = Float.parseFloat(frequencyStr);
+                String path = "SoundSets/" + folder + "/" + frequencyStr;
+                short[] data = loadSound(path, assets);
+                soundDataArray[i] = data;
+                frequencyArray[i] = frequency;
             }
-            notes = new Sound[temp.size()];
-            for (int i = 0; i < notes.length; ++i) {
-                notes[i] = temp.get(i);
-            }
-            temp.removeAllElements();
+
+            player.setSounds(soundDataArray, frequencyArray);
+            SoundSet.soundSetIndex = soundSetIndex;
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public void destroy() {
-        for (int i = 0; i < notes.length; ++i) {
-            notes[i].destroy();
         }
     }
 
@@ -65,6 +55,21 @@ public class SoundSet {
             e.printStackTrace();
         }
         return new String[0];
+    }
+
+    private static short[] loadSound(String path, AssetManager assets) {
+        try {
+            DataInputStream dis = new DataInputStream(assets.open(path));
+            int byteDataLength = dis.readInt() * 2;
+            byte[] byteData = new byte[byteDataLength];
+            short[] shortData = new short[byteDataLength / 2];
+            dis.readFully(byteData);
+            ByteBuffer.wrap(byteData).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(shortData);
+            return shortData;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;//out of memory
+        }
     }
 
 }

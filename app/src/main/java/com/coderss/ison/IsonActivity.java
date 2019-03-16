@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,9 +37,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class IsonActivity extends AppCompatActivity {
-
-    //SoundSet instance initialized by SoundSetLoader
-    static SoundSet soundSet;
 
     //Statics set by AppSettings
     static int OFFSET = 0;
@@ -74,7 +72,7 @@ public class IsonActivity extends AppCompatActivity {
     private int note;
 
     //all scale objects, previously vector
-    ArrayList<Scale> scales;
+    private ArrayList<Scale> scales;
 
     // application preferences
     private SharedPreferences sharedPreferences;
@@ -84,26 +82,24 @@ public class IsonActivity extends AppCompatActivity {
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
 
-        // ensure we have a sound set
-        if (soundSet == null) {
-            // this will change activities to load sound set and destroy the current one
-            loadSoundSet(this, 0);
-            return;
-        }
-
         if (savedInstanceState != null) {
             // if we are resuming the app, then resume the previous state
             double volume = savedInstanceState.getDouble("Volume");
             double freq = savedInstanceState.getDouble("Frequency");
             base = savedInstanceState.getDouble("Base");
             note = savedInstanceState.getInt("Note");
-            player = new Player(this, soundSet, (float)volume, (float)freq); //create Player
+            player = new Player(this, (float)volume, (float)freq); //create Player
         } else {
             note = -1;			//no button pressed at first
             base = 261.6;		//default base is 261.6
-            player = new Player(this, soundSet, 0, 0); //create player
+            player = new Player(this, 0, 0); //create player
         }
         scales = Scale.loadScales(this); //load all scales
+
+        // ensure we have a sound set
+        if (SoundSet.soundSetIndex == -1) {
+            SoundSet.loadSoundSet(player, getAssets(), 0);
+        }
 
         // load shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -161,9 +157,6 @@ public class IsonActivity extends AppCompatActivity {
     public void onStop() {
         //this is called when the view/activity stops showing on the screen
         super.onStop();
-
-        //this stops any note that is playing
-        player.stop();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -258,9 +251,6 @@ public class IsonActivity extends AppCompatActivity {
                 buttonPressed(-1);
             } else {
                 SoundPicker dialog = new SoundPicker();
-                Bundle args = new Bundle();
-                args.putInt("sound_set_index", soundSet.soundSetIndex);
-                dialog.setArguments(args);
                 dialog.show(getSupportFragmentManager(), "dialog");
             }
         });
@@ -362,12 +352,11 @@ public class IsonActivity extends AppCompatActivity {
     public static class SoundPicker extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            IsonActivity isonActivity = (IsonActivity)getActivity();
             builder.setSingleChoiceItems(
                     SoundSet.getSoundSets(getResources().getAssets()),
-                    getArguments().getInt("sound_set_index"),
-                    (dialog, which) -> {
-                        loadSoundSet(getActivity(), which);
-                    }
+                    SoundSet.soundSetIndex,
+                    (dialog, which) -> SoundSet.loadSoundSet(isonActivity.player, getResources().getAssets(), which)
             );
             return builder.create();
         }
@@ -448,13 +437,6 @@ public class IsonActivity extends AppCompatActivity {
                 button[i].setText(Scale.noteNames[currentNoteIndex]);
             currentNoteIndex = Scale.correctZeroToSix(currentNoteIndex + 1);
         }
-    }
-
-    protected static void loadSoundSet(Activity activity, int index) {
-        SoundSetLoader.currentIndex = index;
-        Intent intent = new Intent(activity.getApplicationContext(), SoundSetLoader.class);
-        activity.startActivity(intent);
-        activity.finish();
     }
 
     public double getFrequency() {

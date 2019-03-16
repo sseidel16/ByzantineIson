@@ -269,10 +269,6 @@ public class AppSettings extends AppCompatActivity {
         } else return super.onKeyDown(keyCode, event);
     }
 
-    public static void readLayoutSettings() {
-
-    }
-
     public static class MySettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

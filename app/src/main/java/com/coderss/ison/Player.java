@@ -48,12 +48,10 @@ public class Player {
         }
     }
 
-    private SoundSet soundSet;
     private AtomicReference<Float> freq = new AtomicReference<>();
     private AtomicReference<Float> volume = new AtomicReference<>();
 
-    public Player(Context context, SoundSet soundSet, float volume, float freq) {
-        this.soundSet = soundSet;
+    public Player(Context context, float volume, float freq) {
         this.freq.set(freq);
         this.volume.set(volume);
 
@@ -74,15 +72,9 @@ public class Player {
 
         // load library if not already loaded
         loadLibrary(sampleRate, framesPerBuffer);
+    }
 
-        short[][] soundDataArray = new short[soundSet.notes.length][];
-        float[] frequencyArray = new float[soundSet.notes.length];
-
-        for (int soundI = 0; soundI < soundDataArray.length; soundI++) {
-            soundDataArray[soundI] = soundSet.notes[soundI].data;
-            frequencyArray[soundI] = soundSet.notes[soundI].frequency;
-        }
-
+    public void setSounds(short[][] soundDataArray, float[] frequencyArray) {
         native_setSounds(soundDataArray, frequencyArray);
     }
 
@@ -132,9 +124,6 @@ public class Player {
 
     public double getFrequency() {
         return freq.get();
-    }
-
-    public void stop() {
     }
 
     private void destroy() {
