@@ -7,12 +7,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.preference.PreferenceManager;
+
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,6 +76,9 @@ public class IsonActivity extends AppCompatActivity {
     //all scale objects, previously vector
     ArrayList<Scale> scales;
 
+    // application preferences
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //this is called when the view/activity is loaded
@@ -97,6 +105,8 @@ public class IsonActivity extends AppCompatActivity {
         }
         scales = Scale.loadScales(this); //load all scales
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
         setScale(0); //set the current scale to Diatonic (index 0)
         //the setScale method is defined below
 
@@ -104,7 +114,7 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         //this code saves the app state.
         //For example, if the app is closed it saves the note and base frequency
         super.onSaveInstanceState(savedInstanceState);
@@ -235,15 +245,32 @@ public class IsonActivity extends AppCompatActivity {
                 dialog.show(getSupportFragmentManager(), "dialog");
             }
         });
-        SeekBar i = this.findViewById(R.id.seekBar1);
-        i.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+        double[] bases = {
+                196.00, 207.65, 220.00, 233.08, 246.94,
+                261.63, 277.18, 293.66, 311.13, 329.63};
+        boolean isBaseNoteSliderDiscrete =
+                sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
+        SeekBar baseNoteSlider = this.findViewById(R.id.seekBar1);
+
+        if (isBaseNoteSliderDiscrete) {
+            baseNoteSlider.setMax(bases.length - 1);
+            baseNoteSlider.setProgress(5);
+        } else {
+            baseNoteSlider.setMax(100);
+            baseNoteSlider.setProgress(50);
+        }
+
+        baseNoteSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
-                double[] bases = {
-                        196.00, 207.65, 220.00, 233.08, 246.94,
-                        261.63, 277.18, 293.66, 311.13, 329.63};
-                base = bases[progress];
+                if (isBaseNoteSliderDiscrete) {
+                    base = bases[progress];
+                } else {
+                    base = bases[0] + (bases[bases.length - 1] - bases[0]) * progress / seekBar.getMax();
+                }
+
                 setScale(currentScaleIndex);
                 player.changeFreq((float)getFrequency());
                 setFrequencyText();
@@ -259,6 +286,7 @@ public class IsonActivity extends AppCompatActivity {
 
             }
         });
+
         String[] scaleStrings = new String[scales.size() + 1];
         scaleStrings[0] = "Manage Scales";
         for (int index = 1; index < scaleStrings.length; ++index) {
@@ -417,9 +445,9 @@ public class IsonActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
 
-        if (player != null) {
-            player.destroy();
-        }
+        //if (player != null) {
+        //    player.destroy();
+        //}
     }
 
 }

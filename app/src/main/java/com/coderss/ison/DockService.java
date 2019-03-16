@@ -9,6 +9,7 @@ import android.content.res.AssetManager;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -68,17 +69,19 @@ public class DockService extends Service {
         dockParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                        ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                        : WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.RGBA_8888);
-        dockParams.gravity = Gravity.LEFT | Gravity.TOP;
+        dockParams.gravity = Gravity.START | Gravity.TOP;
         dockParams.x = 0;
         dockParams.y = 0;
         parentDockLayout = new LinearLayout(this);
         parentDockLayout.setOrientation(LinearLayout.VERTICAL);
         TextView move = new TextView(this);
         move.setText("<<>>");
-        move.setTextSize(metrics.densityDpi / 6);
+        move.setTextSize(metrics.densityDpi / 6f);
         move.setGravity(Gravity.CENTER_HORIZONTAL);
         parentDockLayout.addView(move);
         scroller = new ScrollView(this);
@@ -154,11 +157,11 @@ public class DockService extends Service {
                 }
 
             });
-            layout.addView(button[y]);
+            layout.addView(button[realY]);
         }
         setButtonText();
         addButtonColorFilter();
-        halt = (Button)new Button(this);
+        halt = new Button(this);
         halt.setText("Stop");
         setHaltButtonText();
         halt.setOnClickListener(arg0 -> {
@@ -169,16 +172,13 @@ public class DockService extends Service {
             }
         });
         layout.addView(halt);
-        back = (Button)new Button(this);
+        back = new Button(this);
         back.setText("Return");
-        back.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent intent = new Intent(getBaseContext(), IsonActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplication().startActivity(intent);
-                stopSelf();
-            }
+        back.setOnClickListener(arg0 -> {
+            Intent intent = new Intent(getBaseContext(), IsonActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplication().startActivity(intent);
+            stopSelf();
         });
         layout.addView(back);
     }

@@ -16,7 +16,7 @@
 
 #include <jni.h>
 #include <SLES/OpenSLES.h>
-#include <assert.h>
+#include <cassert>
 #include "audio_player.h"
 #include "synthesizer.h"
 #include "load_stabilizer.h"
@@ -100,9 +100,7 @@ JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer
         jclass clazz,
         jint j_frame_rate,
         jint j_frames_per_buffer,
-        jint j_num_buffers,
-        jobjectArray sound_data_array,
-        jfloatArray frequency_array) {
+        jint j_num_buffers) {
 
     AudioStreamFormat format;
     format.frame_rate = (uint32_t) j_frame_rate;
@@ -110,10 +108,7 @@ JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer
     format.num_audio_channels = NUM_AUDIO_CHANNELS;
     format.num_buffers = (uint16_t) j_num_buffers;
 
-    synth = new Synthesizer(
-            format.num_audio_channels,
-            format.frame_rate,
-            env, sound_data_array, frequency_array);
+    synth = new Synthesizer(format.num_audio_channels, format.frame_rate);
 
     int64_t callback_period_ns =
             ((int64_t) format.frames_per_buffer * NANOS_IN_SECOND) / format.frame_rate;
@@ -135,10 +130,15 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1destroyAudioPlayer(
         JNIEnv *env,
         jclass type) {
 
+    LOGV("Destroy checkpoint A");
     player->stop();
+    LOGV("Destroy checkpoint B");
     delete player;
+    LOGV("Destroy checkpoint C");
     delete load_stabilizer;
+    LOGV("Destroy checkpoint D");
     delete synth;
+    LOGV("Destroy checkpoint E");
 }
 
 JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setFrequency(
@@ -153,6 +153,14 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setVolume(
         jclass clazz,
         jfloat volume) {
     synth->setVolume(volume);
+}
+
+JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSounds(
+        JNIEnv *env,
+        jclass clazz,
+        jobjectArray sound_data_array,
+        jfloatArray frequency_array) {
+    synth->setSounds(env, sound_data_array, frequency_array);
 }
 
 JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setWorkCycles(

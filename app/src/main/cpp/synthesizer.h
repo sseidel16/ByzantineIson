@@ -29,10 +29,15 @@ private:
     int frame_rate_;
     int work_cycles_ = 0;
 
+    std::mutex soundLock;
     int16_t **soundDataArray;
-    float *frequencyArray;
-    float *samplePositions;
 
+    // this array specifies the frequency for every sound sample array
+    float *frequencyArray;
+
+    // the current sample position/index in each sound sample array
+    // This value is float because different frequencies may play fractions of a sample because of distortion
+    float *samplePositions;
     int sounds_n;
     int *soundSamples_n;
 
@@ -47,17 +52,15 @@ private:
     float retrieve(int sound_i);
     void getBestSound(float frequency, int& sound1_i, int& sound2_i,
             float& sound1_volume, float& sound2_volume);
+
+
 public:
-    Synthesizer(
-            int num_audio_channels,
-            int frame_rate,
-            JNIEnv *env,
-            jobjectArray sound_data_array,
-            jfloatArray frequency_array);
+    Synthesizer(int num_audio_channels, int frame_rate);
 
     virtual int render(int num_samples, int16_t *audio_buffer);
     void setVolume(float volume);
     void setWaveFrequency(float wave_frequency);
+    void setSounds(JNIEnv *env, jobjectArray sound_data_array, jfloatArray frequency_array);
     void setWorkCycles(int work_cycles);
     ~Synthesizer();
 };

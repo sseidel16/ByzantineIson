@@ -19,20 +19,30 @@ public class Player {
     // Native methods
     private static native void native_createEngine(int apiLevel);
     private static native void native_destroyEngine();
-    private static native AudioTrack native_createAudioPlayer(int frameRate,
-                                                              int framesPerBuffer,
-                                                              int numBuffers,
-                                                              short[][] soundDataArray,
-                                                              float[] frequencyArray);
+    private static native AudioTrack native_createAudioPlayer(int frameRate, int framesPerBuffer, int numBuffers);
     private static native void native_destroyAudioPlayer();
     private static native void native_setFrequency(float frequency);
     private static native void native_setVolume(float volume);
+    private static native void native_setSounds(short[][] soundDataArray, float[] frequencyArray);
     private static native void native_setWorkCycles(int workCycles);
     private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
 
     // load the native sound processor
-    static {
-        System.loadLibrary("native-lib");
+    private static boolean libraryLoaded = false;
+
+    private static synchronized void loadLibrary(int sampleRate, int framesPerBuffer) {
+        if (!libraryLoaded) {
+            libraryLoaded = true;
+
+            System.loadLibrary("native-lib");
+
+            System.out.println("Native create1 in");
+            native_createEngine(Build.VERSION.SDK_INT);
+            System.out.println("Native create1 out");
+            System.out.println("Native create2 in");
+            native_createAudioPlayer(sampleRate, framesPerBuffer, NUM_BUFFERS);
+            System.out.println("Native create2 out");
+        }
     }
 
     private static final float FREQ_SHIFT_TIME = 0.05f;//in seconds
@@ -47,9 +57,6 @@ public class Player {
     private float prefVolume;
     private AtomicReference<Float> freq = new AtomicReference<>();
     private AtomicReference<Float> volume = new AtomicReference<>();
-
-    private int sampleRate = 0;
-    private int framesPerBuffer = 0;
 
     public Player(Context context, SoundSet soundSet, float volume, float freq) {
         this.soundSet = soundSet;
@@ -66,6 +73,9 @@ public class Player {
         System.out.println("Grabbing audio parameters");
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
+        int sampleRate = 0;
+        int framesPerBuffer = 0;
+
         if (am != null) {
             String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
             sampleRate = Integer.parseInt(sampleRateStr);
@@ -75,6 +85,9 @@ public class Player {
         if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
         if (framesPerBuffer == 0) framesPerBuffer = 256; // Use a default value if property not found
 
+        // load library if not already loaded
+        loadLibrary(sampleRate, framesPerBuffer);
+
         short[][] soundDataArray = new short[soundSet.notes.length][];
         float[] frequencyArray = new float[soundSet.notes.length];
 
@@ -83,17 +96,7 @@ public class Player {
             frequencyArray[soundI] = soundSet.notes[soundI].frequency;
         }
 
-        System.out.println("Native create1 in");
-        native_createEngine(Build.VERSION.SDK_INT);
-        System.out.println("Native create1 out");
-        System.out.println("Native create2 in");
-        native_createAudioPlayer(
-                sampleRate,
-                framesPerBuffer,
-                NUM_BUFFERS,
-                soundDataArray,
-                frequencyArray);
-        System.out.println("Native create2 out");
+        native_setSounds(soundDataArray, frequencyArray);
     }
 
     public void start() {
@@ -202,7 +205,7 @@ public class Player {
         if (speaker != null) speaker.interrupt();
     }
 
-    public void destroy() {
+    private void destroy() {
         System.out.println("Native destroy1 in");
         native_destroyAudioPlayer();
         System.out.println("Native destroy1 out");

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <assert.h>
+#include <cassert>
 #include <cstdlib>
 #include "synthesizer.h"
 #include "trace.h"
@@ -24,46 +24,14 @@
 
 Synthesizer::Synthesizer(
         int num_audio_channels,
-        int frame_rate,
-        JNIEnv *env,
-        jobjectArray sound_data_array,
-        jfloatArray frequency_array) :
+        int frame_rate) :
         num_audio_channels_(num_audio_channels),
         frame_rate_(frame_rate) {
 
+    soundDataArray = nullptr;
+
     setWaveFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
     setVolume(0);
-
-    // load sound set
-    sounds_n = env->GetArrayLength(sound_data_array);
-
-    // initialize arrays in this object
-    soundDataArray = new int16_t*[sounds_n];
-    frequencyArray = new float[sounds_n];
-    samplePositions = new float[sounds_n];
-    soundSamples_n = new int[sounds_n];
-
-    jfloat *frequencies = env->GetFloatArrayElements(frequency_array, 0);
-
-    for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
-        jshortArray sound_data = (jshortArray) env->GetObjectArrayElement(sound_data_array, sound_i);
-        soundSamples_n[sound_i] = env->GetArrayLength(sound_data);
-        jshort *sound_samples = env->GetShortArrayElements(sound_data, 0);
-
-        // initialize elements of native arrays
-        soundDataArray[sound_i] = new int16_t[soundSamples_n[sound_i]];
-        frequencyArray[sound_i] = frequencies[sound_i];
-        samplePositions[sound_i] = 0;
-
-        for (int sound_sample_i = 0; sound_sample_i < soundSamples_n[sound_i]; sound_sample_i++) {
-            // copy sound samples here
-            soundDataArray[sound_i][sound_sample_i] = sound_samples[sound_sample_i];
-        }
-
-        env->ReleaseShortArrayElements(sound_data, sound_samples, JNI_ABORT);
-    }
-
-    env->ReleaseFloatArrayElements(frequency_array, frequencies, JNI_ABORT);
 
 }
 
@@ -106,73 +74,89 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
     int frames = num_samples / num_audio_channels_;
     int sample_count = 0;
 
-    for (int i = 0; i < frames; i++) {
-        int16_t data = (int16_t) (volume *
-                (retrieve(sound1_i) * sound1_volume + retrieve(sound2_i) * sound2_volume)
-        );
-        for (int j = 0; j < num_audio_channels_; j++) {
-            audio_buffer[sample_count++] = data;
-        }
+    if (soundDataArray != nullptr && soundLock.try_lock()) {
 
-        // change our frequency if it is not as desired
-        if (frequency != desired_frequency) {
-            if (frequency_delta_per_frame *
+        for (int i = 0; i < frames; i++) {
+            int16_t data = (int16_t) (volume *
+                                      (retrieve(sound1_i) * sound1_volume +
+                                       retrieve(sound2_i) * sound2_volume)
+            );
+            for (int j = 0; j < num_audio_channels_; j++) {
+                audio_buffer[sample_count++] = data;
+            }
+
+            // change our frequency if it is not as desired
+            if (frequency != desired_frequency) {
+                if (frequency_delta_per_frame *
                     ((frequency + frequency_delta_per_frame) - desired_frequency) >= 0) {
-                frequency = desired_frequency;
-            } else {
-                frequency += frequency_delta_per_frame;
+                    frequency = desired_frequency;
+                } else {
+                    frequency += frequency_delta_per_frame;
+                }
+
+                // recalculate best sounds for frequency change
+                getBestSound(frequency, sound1_i, sound2_i, sound1_volume, sound2_volume);
+
+                // sound1 is below the desired frequency and will be raised
+                // sound2 is above the desired frequency and will be lowered
+                sound1_index_increment = ((44100 * frequency) /
+                                          (frame_rate_ * frequencyArray[sound1_i]));
+                sound2_index_increment = ((44100 * frequency) /
+                                          (frame_rate_ * frequencyArray[sound2_i]));
             }
 
-            // recalculate best sounds for frequency change
-            getBestSound(frequency, sound1_i, sound2_i, sound1_volume, sound2_volume);
-
-            // sound1 is below the desired frequency and will be raised
-            // sound2 is above the desired frequency and will be lowered
-            sound1_index_increment = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound1_i]));
-            sound2_index_increment = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound2_i]));
-        }
-
-        // change our volume if it is not as desired
-        if (volume != desired_volume) {
-            if (volume_delta_per_frame *
+            // change our volume if it is not as desired
+            if (volume != desired_volume) {
+                if (volume_delta_per_frame *
                     ((volume + volume_delta_per_frame) - desired_volume) >= 0) {
-                volume = desired_volume;
-            } else {
-                volume += volume_delta_per_frame;
+                    volume = desired_volume;
+                } else {
+                    volume += volume_delta_per_frame;
+                }
             }
+
+            // increment our sample position
+            if (sound1_volume > 0) samplePositions[sound1_i] += sound1_index_increment;
+            if (sound2_volume > 0) samplePositions[sound2_i] += sound2_index_increment;
         }
 
-        // increment our sample position
-        if (sound1_volume > 0) samplePositions[sound1_i] += sound1_index_increment;
-        if (sound2_volume > 0) samplePositions[sound2_i] += sound2_index_increment;
-    }
+        // check for new frequency
+        if (frequencyLock.try_lock()) {
+            if (nextFrequency != desired_frequency) {
+                desired_frequency = nextFrequency;
 
-    // check for new frequency
-    if (frequencyLock.try_lock()) {
-        if (nextFrequency != desired_frequency) {
-            desired_frequency = nextFrequency;
+                if (frequency_change_time > 0) {
+                    frequency_delta_per_frame =
+                            (desired_frequency - frequency) / frequency_change_time / frame_rate_;
+                } else {
+                    frequency_delta_per_frame = desired_frequency - frequency;
+                }
+            }
+            frequencyLock.unlock();
+        }
 
-            if (frequency_change_time > 0) {
-                frequency_delta_per_frame = (desired_frequency - frequency) / frequency_change_time / frame_rate_;
-            } else {
-                frequency_delta_per_frame = desired_frequency - frequency;
+        // check for new volume
+        if (volumeLock.try_lock()) {
+            if (nextVolume != desired_volume) {
+                desired_volume = nextVolume;
+
+                if (volume_change_time > 0) {
+                    volume_delta_per_frame =
+                            (desired_volume - volume) / volume_change_time / frame_rate_;
+                } else {
+                    volume_delta_per_frame = desired_volume - volume;
+                }
+            }
+            volumeLock.unlock();
+        }
+
+        soundLock.unlock();
+    } else {
+        for (int i = 0; i < frames; i++) {
+            for (int j = 0; j < num_audio_channels_; j++) {
+                audio_buffer[sample_count++] = 0;
             }
         }
-        frequencyLock.unlock();
-    }
-
-    // check for new volume
-    if (volumeLock.try_lock()) {
-        if (nextVolume != desired_volume) {
-            desired_volume = nextVolume;
-
-            if (volume_change_time > 0) {
-                volume_delta_per_frame = (desired_volume - volume) / volume_change_time / frame_rate_;
-            } else {
-                volume_delta_per_frame = desired_volume - volume;
-            }
-        }
-        volumeLock.unlock();
     }
 
     Trace::endSection();
@@ -182,8 +166,8 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
 
 void Synthesizer::getBestSound(
         float frequency,
-        int& sound1_i, int& sound2_i,
-        float& sound1_volume, float& sound2_volume) {
+        int &sound1_i, int &sound2_i,
+        float &sound1_volume, float &sound2_volume) {
 
     sound1_i = -1;
     sound2_i = -1;
@@ -229,9 +213,10 @@ float Synthesizer::retrieve(int sound_i) {
         position -= samples_n;
     }
 
-    int position_int = (int)position;
+    int position_int = (int) position;
     int16_t sample1 = soundDataArray[sound_i][position_int];
-    int16_t sample2 = soundDataArray[sound_i][(position_int + 1 < samples_n ? position_int + 1 : 0)];
+    int16_t sample2 = soundDataArray[sound_i][(position_int + 1 < samples_n ? position_int + 1
+                                                                            : 0)];
 
     return sample1 + ((position - position_int) * (sample2 - sample1));
 }
@@ -252,15 +237,72 @@ void Synthesizer::setWorkCycles(int work_cycles) {
     work_cycles_ = work_cycles;
 }
 
-Synthesizer::~Synthesizer() {
-    // deallocate arrays in this object
-    for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
-        delete[] soundDataArray[sound_i];
+void Synthesizer::setSounds(JNIEnv *env, jobjectArray sound_data_array, jfloatArray frequency_array) {
+
+    soundLock.lock();
+
+    if (soundDataArray != nullptr) {
+        // deallocate arrays in this object
+        for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
+            delete[] soundDataArray[sound_i];
+        }
+
+        delete[] soundSamples_n;
+        delete[] samplePositions;
+        delete[] frequencyArray;
+        delete[] soundDataArray;
+        soundDataArray = nullptr;
     }
 
-    delete[] soundSamples_n;
-    delete[] samplePositions;
-    delete[] frequencyArray;
-    delete[] soundDataArray;
+    // load sound set
+    sounds_n = env->GetArrayLength(sound_data_array);
 
+    // initialize arrays in this object
+    soundDataArray = new int16_t *[sounds_n];
+    frequencyArray = new float[sounds_n];
+    samplePositions = new float[sounds_n];
+    soundSamples_n = new int[sounds_n];
+
+    jfloat *frequencies = env->GetFloatArrayElements(frequency_array, nullptr);
+
+    for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
+        jshortArray sound_data = (jshortArray) env->GetObjectArrayElement(sound_data_array,
+                                                                          sound_i);
+        soundSamples_n[sound_i] = env->GetArrayLength(sound_data);
+        jshort *sound_samples = env->GetShortArrayElements(sound_data, nullptr);
+
+        // initialize elements of native arrays
+        soundDataArray[sound_i] = new int16_t[soundSamples_n[sound_i]];
+        frequencyArray[sound_i] = frequencies[sound_i];
+        samplePositions[sound_i] = 0;
+
+        for (int sound_sample_i = 0;
+             sound_sample_i < soundSamples_n[sound_i]; sound_sample_i++) {
+            // copy sound samples here
+            soundDataArray[sound_i][sound_sample_i] = sound_samples[sound_sample_i];
+        }
+
+        env->ReleaseShortArrayElements(sound_data, sound_samples, JNI_ABORT);
+    }
+
+    env->ReleaseFloatArrayElements(frequency_array, frequencies, JNI_ABORT);
+
+    LOGV("Loaded sounds");
+    soundLock.unlock();
+
+}
+
+Synthesizer::~Synthesizer() {
+    if (soundDataArray != nullptr) {
+        // deallocate arrays in this object
+        for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
+            delete[] soundDataArray[sound_i];
+        }
+
+        delete[] soundSamples_n;
+        delete[] samplePositions;
+        delete[] frequencyArray;
+        delete[] soundDataArray;
+        soundDataArray = nullptr;
+    }
 }
