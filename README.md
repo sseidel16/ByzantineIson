@@ -27,10 +27,14 @@ Updates:
 * Preference features:
   * Audio preferences
     * Preference for base note slider (discrete vs continuous)
+    * Preference for frequency change time
+    * Preference for volume change time
+* Sound set loading performance drastically improved
 
 Known issues:
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
+* Preferences do not load their default values
 
 Future features:
 * Add layout preferences
@@ -41,9 +45,6 @@ Future features:
   * Preference for total buttons above base note
   * Preference for note button height
   * Preference for width of the ison dock
-* Add audio preferences
-  * Preference for volume change time
-  * Preference for frequency change time
 * Dark mode for when in church
 
 ## Please help me out!!
