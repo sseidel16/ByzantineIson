@@ -23,16 +23,19 @@ Updates:
 * Frequency changes changes gradually and audio buffers blend for a smooth transition
 * Volume changes gradually
 * Sound sets all work on the native layer with instant switching between notes
-* The delay moving from note to note has been fixed. Switching is now more or less instant.
+* The delay moving from note to note has been fixed. Switching is now more or less instant
+* Preference features:
+  * Audio preferences
+    * Preference for base note slider (discrete vs continuous)
 
 Known issues:
 * Player is not destroyed and created properly
-* Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
+* This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 
 Future features:
 * Add layout preferences
   * Preference for notes arrangement (grid vs list)
-  * If grid, preference for row vs column major
+  * If grid, preference for flow direction by row vs by column
   * Preference for notes ordering (increasing vs decreasing)
   * Preference for total buttons below base note
   * Preference for total buttons above base note
@@ -41,7 +44,6 @@ Future features:
 * Add audio preferences
   * Preference for volume change time
   * Preference for frequency change time
-  * Preference for base note slider (discrete vs continuous) 
 * Dark mode for when in church
 
 ## Please help me out!!
