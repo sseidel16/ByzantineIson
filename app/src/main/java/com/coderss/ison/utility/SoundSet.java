@@ -10,7 +10,6 @@ import android.content.res.AssetManager;
 
 public class SoundSet {
 
-//    Sound[] notes;
     public static int soundSetIndex = -1;
 
     public static void loadSoundSet(Player player, AssetManager assets, int soundSetIndex) {
