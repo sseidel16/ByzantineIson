@@ -25,9 +25,9 @@ import android.widget.TextView;
 
 public class ScaleManager extends FragmentActivity {
 
-    static int selectedScale = 0;
-    static Scale editedScale;
-    static SeekBar[] seekBar;
+    private int selectedScale = 0;
+    private Scale editedScale;
+    private SeekBar[] seekBar;
     private EditText nameBox;
     private Spinner scaleSelector;
     //changed by ChangeScaleConfirmation
@@ -111,7 +111,8 @@ public class ScaleManager extends FragmentActivity {
             seekBar[i].setProgress(editedScale.widths[i]);
             //must be after the listener so it is called
         }
-        scaleSelector = (Spinner)findViewById(R.id.numberOfColumns);
+
+        scaleSelector = findViewById(R.id.numberOfColumns);
         updateSpinner(this);
         scaleSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -136,9 +137,11 @@ public class ScaleManager extends FragmentActivity {
 
             }
         });
-        nameBox = (EditText)this.findViewById(R.id.editText1);
+
+        nameBox = this.findViewById(R.id.editText1);
         nameBox.setText(scales.get(selectedScale).name);
-        baseNoteSelector = (Spinner)this.findViewById(R.id.spinner2);
+
+        baseNoteSelector = this.findViewById(R.id.spinner2);
         ArrayAdapter<String> baseNoteAdapter =
                 new ArrayAdapter<String>(this,
                         android.R.layout.simple_spinner_item,
@@ -157,44 +160,37 @@ public class ScaleManager extends FragmentActivity {
         baseNoteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         baseNoteSelector.setAdapter(baseNoteAdapter);
         baseNoteSelector.setSelection(editedScale.baseNote);
-        Button save = (Button)this.findViewById(R.id.save);
-        save.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                scales.add(scaleSelector.getSelectedItemPosition(),
-                        new Scale(editedScale.widths, nameBox.getText().toString(),
-                                baseNoteSelector.getSelectedItemPosition()));
-                scales.remove(scaleSelector.getSelectedItemPosition() + 1);
-                Scale.writeScales(ScaleManager.this, scales);
-                goBackToIsonActivity(ScaleManager.this);
-            }
+
+        Button save = this.findViewById(R.id.save);
+        save.setOnClickListener(arg0 -> {
+            scales.add(scaleSelector.getSelectedItemPosition(),
+                    new Scale(editedScale.widths, nameBox.getText().toString(),
+                            baseNoteSelector.getSelectedItemPosition()));
+            scales.remove(scaleSelector.getSelectedItemPosition() + 1);
+            Scale.writeScales(ScaleManager.this, scales);
+            goBackToIsonActivity();
         });
-        Button reset = (Button)this.findViewById(R.id.reset);
-        reset.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                ResetConfirmation dialog = new ResetConfirmation();
-                dialog.show(getSupportFragmentManager(),"dialog");
-            }
+
+        Button reset = this.findViewById(R.id.reset);
+        reset.setOnClickListener(arg0 -> {
+            ResetConfirmation dialog = new ResetConfirmation();
+            dialog.show(getSupportFragmentManager(),"dialog");
         });
-        Button cancel = (Button)this.findViewById(R.id.cancel);
-        cancel.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                cancelButton();
-            }
+
+        Button cancel = this.findViewById(R.id.cancel);
+        cancel.setOnClickListener(arg0 -> {
+            cancelButton();
         });
-        Button delete = (Button)this.findViewById(R.id.delete);
-        delete.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                DeleteConfirmation dialog = new DeleteConfirmation();
-                Bundle args = new Bundle();
-                args.putInt("selected_scale_position", scaleSelector.getSelectedItemPosition());
-                dialog.setArguments(args);
-                dialog.show(getSupportFragmentManager(),"dialog");
-            }
+
+        Button delete = this.findViewById(R.id.delete);
+        delete.setOnClickListener(arg0 -> {
+            DeleteConfirmation dialog = new DeleteConfirmation();
+            Bundle args = new Bundle();
+            args.putInt("selected_scale_position", scaleSelector.getSelectedItemPosition());
+            dialog.setArguments(args);
+            dialog.show(getSupportFragmentManager(),"dialog");
         });
+
         Button create = this.findViewById(R.id.create);
         create.setOnClickListener(arg0 -> {
             createNewScale(ScaleManager.this);
@@ -209,19 +205,15 @@ public class ScaleManager extends FragmentActivity {
             dialogOpen = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(scaleManager);
             builder.setMessage("Are you sure? Your changes to " +
-                    scales.get(selectedScale).name +
+                    scales.get(scaleManager.selectedScale).name +
                     " will be lost");
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    scaleManager.setScale(getArguments().getInt("new_scale_position"));
-                    dialogOpen = false;
-                }
+            builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
+                scaleManager.setScale(getArguments().getInt("new_scale_position"));
+                dialogOpen = false;
             });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    scaleManager.scaleSelector.setSelection(selectedScale);//revert
-                    dialogOpen = false;
-                }
+            builder.setNegativeButton("Cancel", (DialogInterface dialog, int id) -> {
+                scaleManager.scaleSelector.setSelection(scaleManager.selectedScale);//revert
+                dialogOpen = false;
             });
             return builder.create();
         }
@@ -229,12 +221,13 @@ public class ScaleManager extends FragmentActivity {
 
     public static class ResetConfirmation extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
+            ScaleManager scaleManager = (ScaleManager) getActivity();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? All created and edited scales will be lost");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Scale.emergencyReset(getActivity());
-                    goBackToIsonActivity(getActivity());
+                    scaleManager.goBackToIsonActivity();
                 }
             });
             builder.setNegativeButton("Cancel", null);
@@ -247,7 +240,7 @@ public class ScaleManager extends FragmentActivity {
             ScaleManager scaleManager = (ScaleManager)getActivity();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? " +
-                    scales.get(selectedScale).name +
+                    scales.get(scaleManager.selectedScale).name +
                     " will be lost");
             builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
                 scales.remove(getArguments().getInt("selected_scale_position"));
@@ -260,8 +253,8 @@ public class ScaleManager extends FragmentActivity {
                 int newSelection;
 
                 //if the selectedScale was deleted, decrease the selectedScale
-                if (selectedScale >= scales.size()) newSelection = scales.size() - 1;
-                else newSelection = selectedScale;
+                if (scaleManager.selectedScale >= scales.size()) newSelection = scales.size() - 1;
+                else newSelection = scaleManager.selectedScale;
                 System.out.println(newSelection);
                 //since the scale was deleted, no confirmation necessary
                 scaleManager.setScale(newSelection);
@@ -274,13 +267,14 @@ public class ScaleManager extends FragmentActivity {
 
     public static class CancelConfirmation extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
+            ScaleManager scaleManager = (ScaleManager) getActivity();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? Your changes to " +
-                    scales.get(selectedScale).name +
+                    scaleManager.scales.get(scaleManager.selectedScale).name +
                     " will be lost");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    goBackToIsonActivity(getActivity());
+                    scaleManager.goBackToIsonActivity();
                 }
             });
             builder.setNegativeButton("Cancel", null);
@@ -315,7 +309,7 @@ public class ScaleManager extends FragmentActivity {
         return false;
     }
 
-    public static Scale getSelectedScale() {
+    public Scale getSelectedScale() {
         return scales.get(selectedScale);
     }
 
@@ -338,7 +332,7 @@ public class ScaleManager extends FragmentActivity {
             CancelConfirmation dialog = new CancelConfirmation();
             dialog.show(getSupportFragmentManager(),"dialog");
         } else {
-            goBackToIsonActivity(this);
+            goBackToIsonActivity();
         }
     }
 
@@ -350,14 +344,14 @@ public class ScaleManager extends FragmentActivity {
         } else return super.onKeyDown(keyCode, event);
     }
 
-    protected static void goBackToIsonActivity(Activity activity) {
+    protected void goBackToIsonActivity() {
         //these are static so we cannot wait around for onDestroy which is not called right away
         editedScale = null;
         scales.clear();
 
-        activity.finish();
-        Intent intent = new Intent(activity.getApplicationContext(), IsonActivity.class);
-        activity.startActivity(intent);
+        finish();
+        Intent intent = new Intent(getApplicationContext(), IsonActivity.class);
+        startActivity(intent);
     }
 
 }
