@@ -35,8 +35,8 @@ public class SoundSetLoader extends Activity {
     }
 
     public void setUpComponents() {
-        bar1 = (ProgressBar)this.findViewById(R.id.progressBar1);
-        bar2 = (ProgressBar)this.findViewById(R.id.progressBar2);
+        bar1 = this.findViewById(R.id.progressBar1);
+        bar2 = this.findViewById(R.id.progressBar2);
     }
 
     public class Loader extends AsyncTask<Integer, Integer, Integer> {

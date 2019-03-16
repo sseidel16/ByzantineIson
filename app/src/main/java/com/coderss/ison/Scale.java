@@ -11,14 +11,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 
 public class Scale {
 
     static final String[] noteNames = {"Nh", "Pa", "Bou", "Ga", "Di", "Ke", "Zw"};
 
     public static ArrayList<Scale> loadScales(Context context) {
-        ArrayList<Scale> scales = new ArrayList<Scale>(4);
+        ArrayList<Scale> scales = new ArrayList<>(4);
         DataInputStream dis = null;
         File filev2 = new File(context.getFilesDir().getPath() + "/scales.v2");
         File filev1 = new File(context.getFilesDir().getPath() + "/scales.txt");
