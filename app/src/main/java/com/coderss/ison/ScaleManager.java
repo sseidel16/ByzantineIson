@@ -18,10 +18,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.coderss.ison.utility.Scale;
 
 public class ScaleManager extends FragmentActivity {
 
@@ -37,7 +38,7 @@ public class ScaleManager extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+        setTheme(R.style.LightAppTheme);
 
         super.onCreate(savedInstanceState);
         scales = Scale.loadScales(this.getApplicationContext());
@@ -145,7 +146,7 @@ public class ScaleManager extends FragmentActivity {
         ArrayAdapter<String> baseNoteAdapter =
                 new ArrayAdapter<String>(this,
                         android.R.layout.simple_spinner_item,
-                        Scale.noteNames) {
+                        Scale.NOTE_NAMES) {
                     public View getView(int position, View convertView, ViewGroup parent) {
                         TextView view = (TextView)super.getView(position, convertView, parent);
                         view.setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));

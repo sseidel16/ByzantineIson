@@ -1,12 +1,5 @@
 package com.coderss.ison;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +12,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+
+import com.coderss.ison.utility.Scale;
 
 public class AppSettings extends AppCompatActivity {
 
@@ -34,7 +29,7 @@ public class AppSettings extends AppCompatActivity {
     private Spinner buttonHeight;
 
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+        setTheme(R.style.LightAppTheme);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_settings);

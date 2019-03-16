@@ -21,6 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.coderss.ison.utility.Player;
+import com.coderss.ison.utility.Scale;
+import com.coderss.ison.utility.SoundSet;
+
 public class DockService extends Service {
 
     float initialWindowX;
@@ -245,9 +249,9 @@ public class DockService extends Service {
                 scales.get(currentScaleIndex).baseNote + Scale.BASE_NOTE_INDEX);
         for (int i = 0; i <Scale.TOTAL_KEYS; ++i) {
             if (i == Scale.BASE_NOTE_INDEX)
-                button[i].setText("<" + Scale.noteNames[currentNote] + ">");
+                button[i].setText("<" + Scale.NOTE_NAMES[currentNote] + ">");
             else
-                button[i].setText(Scale.noteNames[currentNote]);
+                button[i].setText(Scale.NOTE_NAMES[currentNote]);
             currentNote = Scale.correctZeroToSix(currentNote - 1);
         }
     }

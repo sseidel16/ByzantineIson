@@ -38,7 +38,7 @@ static int api_level;
 extern "C" {
 
 // create the engine and output mix objects
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1createEngine(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1createEngine(
         JNIEnv *env,
         jclass clazz,
         jint j_api_level) {
@@ -81,7 +81,7 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1createEngine(
     SLASSERT(result);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1destroyEngine(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1destroyEngine(
         JNIEnv *env,
         jclass type) {
 
@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1destroyEngine(
     }
 }
 
-JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer(
+JNIEXPORT jobject JNICALL Java_com_coderss_ison_utility_Player_native_1createAudioPlayer(
         JNIEnv *env,
         jclass clazz,
         jint j_frame_rate,
@@ -126,7 +126,7 @@ JNIEXPORT jobject JNICALL Java_com_coderss_ison_Player_native_1createAudioPlayer
     return player->getAudioTrack();
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1destroyAudioPlayer(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1destroyAudioPlayer(
         JNIEnv *env,
         jclass type) {
 
@@ -141,21 +141,21 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1destroyAudioPlayer(
     LOGV("Destroy checkpoint E");
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setFrequency(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setFrequency(
         JNIEnv *env,
         jclass clazz,
         jfloat frequency) {
     synth->setFrequency(frequency);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setVolume(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setVolume(
         JNIEnv *env,
         jclass clazz,
         jfloat volume) {
     synth->setVolume(volume);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setPlayerPreferences(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setPlayerPreferences(
         JNIEnv *env,
         jclass clazz,
         jfloat frequency_change_time,
@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setPlayerPreferences
     synth->setPreferences(frequency_change_time, volume_change_time);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSounds(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setSounds(
         JNIEnv *env,
         jclass clazz,
         jobjectArray sound_data_array,
@@ -171,14 +171,14 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setSounds(
     synth->setSounds(env, sound_data_array, frequency_array);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setWorkCycles(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setWorkCycles(
         JNIEnv *env,
         jclass clazz,
         jint workCycles) {
     synth->setWorkCycles((int) workCycles);
 }
 
-JNIEXPORT void JNICALL Java_com_coderss_ison_Player_native_1setLoadStabilizationEnabled(
+JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setLoadStabilizationEnabled(
         JNIEnv *env,
         jclass clazz,
         jboolean is_enabled) {

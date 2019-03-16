@@ -1,4 +1,4 @@
-package com.coderss.ison;
+package com.coderss.ison.utility;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

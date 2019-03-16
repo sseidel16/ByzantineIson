@@ -1,4 +1,4 @@
-package com.coderss.ison;
+package com.coderss.ison.utility;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -14,7 +14,16 @@ import android.content.Context;
 
 public class Scale {
 
-    static final String[] noteNames = {"Nh", "Pa", "Bou", "Ga", "Di", "Ke", "Zw"};
+    public static final int BASE_NOTE_INDEX = 4;
+    public static final int TOTAL_KEYS = 13;
+    public static final String[] NOTE_NAMES = {"Nh", "Pa", "Bou", "Ga", "Di", "Ke", "Zw"};
+
+    public String name;
+    public int[] notes;//lo ga to hi pa
+    public int[] widths;
+    public int totalSteps;
+    public int baseNote;//0-6
+
 
     public static ArrayList<Scale> loadScales(Context context) {
         ArrayList<Scale> scales = new ArrayList<>(4);
@@ -115,14 +124,6 @@ public class Scale {
             e.printStackTrace();
         }
     }
-
-    static final int BASE_NOTE_INDEX = 4;
-    static final int TOTAL_KEYS = 13;
-    String name;
-    int[] notes;//lo ga to hi pa
-    int[] widths;
-    int totalSteps;
-    int baseNote;//0-6
 
     private Scale() {
     }

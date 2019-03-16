@@ -34,6 +34,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.coderss.ison.utility.Player;
+import com.coderss.ison.utility.Scale;
+import com.coderss.ison.utility.SoundSet;
+
 public class IsonActivity extends AppCompatActivity {
 
     //Statics set by AppSettings
@@ -77,7 +81,7 @@ public class IsonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+        setTheme(R.style.LightAppTheme);
 
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
@@ -432,9 +436,9 @@ public class IsonActivity extends AppCompatActivity {
         //corresponding to the current note name
         for (int i = 0; i < Scale.TOTAL_KEYS; ++i) {
             if (i == Scale.BASE_NOTE_INDEX)
-                button[i].setText("<" + Scale.noteNames[currentNoteIndex] + ">");
+                button[i].setText("<" + Scale.NOTE_NAMES[currentNoteIndex] + ">");
             else
-                button[i].setText(Scale.noteNames[currentNoteIndex]);
+                button[i].setText(Scale.NOTE_NAMES[currentNoteIndex]);
             currentNoteIndex = Scale.correctZeroToSix(currentNoteIndex + 1);
         }
     }
