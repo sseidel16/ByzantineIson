@@ -21,12 +21,15 @@ This transition time is provided as a new preference (see updates)
 
 Updates:
 * Preference features added
+  * Layout preferences
+    * Preference for note button height
+    * Dark and light theme preference (dark helps when in church)
   * Audio preferences
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
     * Preference for volume change time
-  * Layout preferences
-    * Dark and light theme preference (dark helps when in church)
+  * Advanced Layout Preferences
+    * Preference for notes vertical and horizontal flow directions
 * Sound set loading activity removed because performance drastically improved
 * Frequency changes gradually and audio buffers blend for a smooth transition
 * Volume changes gradually
@@ -40,12 +43,10 @@ Known issues:
 
 Future features:
 * Add layout preferences
-  * Preference for notes arrangement (grid vs list)
-  * If grid, preference for flow direction by row vs by column
-  * Preference for notes ordering (increasing vs decreasing)
+  * Advanced layout preference for grid dimension
+  * Advanced layout preference for flow direction by row vs by column
   * Preference for total buttons below base note
   * Preference for total buttons above base note
-  * Preference for note button height
   * Preference for width of the ison dock
 
 ## Please help me out!!
