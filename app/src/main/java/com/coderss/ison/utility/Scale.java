@@ -14,15 +14,12 @@ import android.content.Context;
 
 public class Scale {
 
-    public static final int BASE_NOTE_INDEX = 4;
-    public static final int TOTAL_KEYS = 13;
     public static final String[] NOTE_NAMES = {"Nh", "Pa", "Bou", "Ga", "Di", "Ke", "Zw"};
 
     public String name;
-    public int[] notes;//lo ga to hi pa
     public int[] widths;
     public int totalSteps;
-    public int baseNote;//0-6
+    public int baseNote; //0-6
 
 
     public static ArrayList<Scale> loadScales(Context context) {
@@ -131,43 +128,51 @@ public class Scale {
     public Scale(int[] widths, String name, int baseNote) {
         this.name = name;
         this.baseNote = baseNote;
-        totalSteps = 0;
+        this.totalSteps = 0;
         this.widths = new int[widths.length];
+
         for (int i = 0; i < 7; ++i) {
             this.widths[i] = widths[i];
             totalSteps += widths[i];
         }
 
+    }
+
+    // lowest note to highest note
+    public int[] getNotes(int totalNotes, int notesBelow) {
+
         //currentNoteIndex is from 0 to 6 start at the bottom button
-        int currentNoteIndex = baseNote - BASE_NOTE_INDEX;
+        int currentNoteIndex = baseNote - notesBelow;
         System.out.println(name + baseNote);
         currentNoteIndex = correctZeroToSix(currentNoteIndex);
 
-        notes = new int[TOTAL_KEYS];
+        int[] notes = new int[totalNotes];
         int totalMoriaToBaseNote = 0;//moria from button[0] to button[BASE_NOTE_INDEX]
-        for (int i = 0; i < TOTAL_KEYS; ++i) {
-            if (i == 0) {
-                notes[i] = 0;
+        for (int noteI = 0; noteI < totalNotes; ++noteI) {
+            if (noteI == 0) {
+                notes[noteI] = 0;
             } else {
-                if (i <= BASE_NOTE_INDEX)
+                if (noteI <= notesBelow) {
                     totalMoriaToBaseNote += widths[correctZeroToSix(currentNoteIndex - 1)];
-                notes[i] = notes[i - 1] + widths[correctZeroToSix(currentNoteIndex - 1)];
+                }
+
+                notes[noteI] = notes[noteI - 1] + widths[correctZeroToSix(currentNoteIndex - 1)];
             }
             currentNoteIndex = correctZeroToSix(currentNoteIndex + 1);
         }
 
-        for (int i = 0; i < TOTAL_KEYS; ++i) {
-            notes[i] -= totalMoriaToBaseNote;
+        for (int noteI = 0; noteI < totalNotes; ++noteI) {
+            notes[noteI] -= totalMoriaToBaseNote;
         }
+
+        return notes;
     }
 
     public Scale copy() {
         Scale copy = new Scale();
         copy.name = name;
-        copy.notes = new int[notes.length];
-        for (int i = 0; i < notes.length; ++i) copy.notes[i] = notes[i];
         copy.widths = new int[widths.length];
-        for (int i = 0; i < widths.length; ++i) copy.widths[i] = widths[i];
+        System.arraycopy(widths, 0, copy.widths, 0, widths.length);
         copy.totalSteps = totalSteps;
         copy.baseNote = baseNote;
         return copy;

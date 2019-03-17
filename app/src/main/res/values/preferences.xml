@@ -44,15 +44,6 @@
         <item>continuous</item>
     </string-array>
 
-    <string-array name="prefNoteLayoutEntries">
-        <item>List</item>
-        <item>Grid</item>
-    </string-array>
-    <string-array name="prefNoteLayoutEntryValues">
-        <item>list</item>
-        <item>grid</item>
-    </string-array>
-
     <string-array name="prefChangeTimeEntries">
         <item>Immediate</item>
         <item>25 ms</item>
@@ -103,6 +94,80 @@
     <string-array name="prefVerticalDirectionEntryValues">
         <item>t2b</item>
         <item>b2t</item>
+    </string-array>
+
+    <string-array name="prefFlowDimensionEntries">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+    </string-array>
+    <string-array name="prefFlowDimensionEntryValues">
+        <item>horizontal</item>
+        <item>vertical</item>
+    </string-array>
+
+    <string-array name="prefDimensionLimitEntries">
+        <item>1 button</item>
+        <item>2 buttons</item>
+        <item>3 buttons</item>
+        <item>4 buttons</item>
+        <item>5 buttons</item>
+        <item>6 buttons</item>
+        <item>7 buttons</item>
+        <item>8 buttons</item>
+        <item>9 buttons</item>
+        <item>10 buttons</item>
+        <item>11 buttons</item>
+        <item>12 buttons</item>
+        <item>13 buttons</item>
+    </string-array>
+    <string-array name="prefDimensionLimitEntryValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+
+    <string-array name="prefNotesBelowEntries">
+        <item>1 note</item>
+        <item>2 notes</item>
+        <item>3 notes</item>
+        <item>4 notes</item>
+    </string-array>
+    <string-array name="prefNotesBelowEntryValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="prefNotesAboveEntries">
+        <item>1 note</item>
+        <item>2 notes</item>
+        <item>3 notes</item>
+        <item>4 notes</item>
+        <item>5 notes</item>
+        <item>6 notes</item>
+        <item>7 notes</item>
+        <item>8 notes</item>
+    </string-array>
+    <string-array name="prefNotesAboveEntryValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
 
 </resources>

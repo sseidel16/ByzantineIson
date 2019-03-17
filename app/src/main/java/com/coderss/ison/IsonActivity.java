@@ -42,11 +42,6 @@ import static android.widget.LinearLayout.VERTICAL;
 
 public class IsonActivity extends AppCompatActivity {
 
-    //Statics set by AppSettings
-    static int COLUMNS = 1;
-    static int ROWS = 13;
-    static boolean BY_ROW = false;
-
     //Button array referring to the different note buttons
     private Button[] button;
 
@@ -178,8 +173,10 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     public void setUpComponents() {
+        int notesBelow = preferences.getNotesBelow();
+        int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
 
-        button = new Button[Scale.TOTAL_KEYS];
+        button = new Button[totalNotes];
         TableLayout buttonTable = this.findViewById(R.id.buttonTable);
         buttonTable.removeAllViews();
         TableRow.LayoutParams buttonParams = new TableRow.LayoutParams(
@@ -188,8 +185,8 @@ public class IsonActivity extends AppCompatActivity {
                         preferences.getButtonHeight()),
                 VERTICAL);
 
-        for (int i = 0; i < Scale.TOTAL_KEYS; ++i) {
-            button[i] = new AppCompatButton(this) {
+        for (int buttonI = 0; buttonI < totalNotes; buttonI++) {
+            button[buttonI] = new AppCompatButton(this) {
                 public boolean performClick() {
                     buttonPressed(getId());
                     return super.performClick();
@@ -206,33 +203,41 @@ public class IsonActivity extends AppCompatActivity {
             };
         }
 
+        boolean isFlowHorizontal = preferences.isFlowHorizontal();
         boolean isLeftToRight = preferences.isLeftToRight();
         boolean isTopToBottom = preferences.isTopToBottom();
-        for (int y = 0; y < ROWS; ++y) {
+        int dimensionLimit = preferences.getDimensionLimit();
+        int columns = (isFlowHorizontal
+                ? Math.min(dimensionLimit, totalNotes)
+                : (int)Math.ceil(totalNotes / (float)dimensionLimit));
+        int rows = (!isFlowHorizontal
+                ? Math.min(dimensionLimit, totalNotes)
+                : (int)Math.ceil(totalNotes / (float)dimensionLimit));
+        for (int y = 0; y < rows; ++y) {
             TableRow row = new TableRow(this);
-            for (int x = 0; x < COLUMNS; ++x) {
+            for (int x = 0; x < columns; ++x) {
                 int index;
 
                 int realX, realY;
                 if (isLeftToRight) {
                     realX = x;
                 } else {
-                    realX = (COLUMNS - 1) - x;
+                    realX = (columns - 1) - x;
                 }
 
                 if (isTopToBottom) {
                     realY = y;
                 } else {
-                    realY = (ROWS - 1) - y;
+                    realY = (rows - 1) - y;
                 }
 
-                if (BY_ROW) {
-                    index = (realY * COLUMNS) + realX;
+                if (isFlowHorizontal) {
+                    index = (realY * columns) + realX;
                 } else {
-                    index = (realX * ROWS) + realY;
+                    index = (realX * rows) + realY;
                 }
 
-                if (index >= 0 && index < Scale.TOTAL_KEYS) {
+                if (index >= 0 && index < totalNotes) {
                     button[index].setId(index);
                     button[index].setTypeface(Typeface.createFromAsset(getResources().getAssets(), "greek.ttf"));
                     button[index].setLayoutParams(buttonParams);
@@ -246,7 +251,7 @@ public class IsonActivity extends AppCompatActivity {
             buttonTable.addView(row);
         }
 
-        setButtonText();
+        setButtonText(totalNotes, notesBelow);
         addButtonColorFilter();
         halt = this.findViewById(R.id.halt);
         setHaltButtonText();
@@ -305,7 +310,8 @@ public class IsonActivity extends AppCompatActivity {
         for (int index = 1; index < scaleStrings.length; ++index) {
             scaleStrings[index] = scales.get(index - 1).name;
         }
-        Spinner j = this.findViewById(R.id.numberOfColumns);
+
+        Spinner j = this.findViewById(R.id.scaleSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -336,8 +342,11 @@ public class IsonActivity extends AppCompatActivity {
                     IsonActivity.this.startActivity(intent);
                     finish();
                 } else {
+                    int notesBelow = preferences.getNotesBelow();
+                    int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
+
                     setScale(arg2 - 1);
-                    setButtonText();
+                    setButtonText(totalNotes, notesBelow);
                     setFrequencyText();
                 }
             }
@@ -366,12 +375,17 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     public void setScale(int pick) {
+        int notesBelow = preferences.getNotesBelow();
+        int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
+
         currentScaleIndex = pick;
-        frequencies = new double[scales.get(pick).notes.length];
-        for (int i = 0; i < frequencies.length; ++i) {
-            frequencies[i] = base *
+        int[] notes = scales.get(currentScaleIndex).getNotes(totalNotes, notesBelow);
+
+        frequencies = new double[notes.length];
+        for (int noteI = 0; noteI < frequencies.length; ++noteI) {
+            frequencies[noteI] = base *
                     Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps),
-                            (double)scales.get(pick).notes[i]);
+                            (double)notes[noteI]);
         }
         player.changeFreq((float)getFrequency());
     }
@@ -428,16 +442,16 @@ public class IsonActivity extends AppCompatActivity {
         }
     }
 
-    public void setButtonText() {
-        int currentNoteIndex = Scale.correctZeroToSix(
-                scales.get(currentScaleIndex).baseNote - Scale.BASE_NOTE_INDEX);
+    public void setButtonText(int totalNotes, int notesBelow) {
+        int currentNoteIndex = Scale.correctZeroToSix(scales.get(currentScaleIndex).baseNote - notesBelow);
+
         //current note is a number 0 to 6
         //corresponding to the current note name
-        for (int i = 0; i < Scale.TOTAL_KEYS; ++i) {
-            if (i == Scale.BASE_NOTE_INDEX)
-                button[i].setText("<" + Scale.NOTE_NAMES[currentNoteIndex] + ">");
+        for (int buttonI = 0; buttonI < totalNotes; ++buttonI) {
+            if (buttonI == notesBelow)
+                button[buttonI].setText("<" + Scale.NOTE_NAMES[currentNoteIndex] + ">");
             else
-                button[i].setText(Scale.NOTE_NAMES[currentNoteIndex]);
+                button[buttonI].setText(Scale.NOTE_NAMES[currentNoteIndex]);
             currentNoteIndex = Scale.correctZeroToSix(currentNoteIndex + 1);
         }
     }

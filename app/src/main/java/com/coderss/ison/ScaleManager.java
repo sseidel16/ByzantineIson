@@ -124,7 +124,7 @@ public class ScaleManager extends FragmentActivity {
             //must be after the listener so it is called
         }
 
-        scaleSelector = findViewById(R.id.numberOfColumns);
+        scaleSelector = findViewById(R.id.scaleSpinner);
         updateSpinner(this);
         scaleSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

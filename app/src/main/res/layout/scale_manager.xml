@@ -28,7 +28,7 @@
         android:descendantFocusability="beforeDescendants"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:layout_below="@+id/numberOfColumns" >
+        android:layout_below="@+id/scaleSpinner" >
 
         <TableLayout
             android:layout_width="match_parent"
@@ -317,7 +317,7 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/numberOfColumns"
+        android:layout_alignBottom="@+id/scaleSpinner"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView5"
         android:gravity="center"
@@ -325,7 +325,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Spinner
-        android:id="@+id/numberOfColumns"
+        android:id="@+id/scaleSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

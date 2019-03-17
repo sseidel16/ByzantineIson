@@ -10,13 +10,33 @@ public class Preferences {
         this.sharedPreferences = sharedPreferences;
     }
 
-    public boolean isBaseNoteSliderDiscrete() {
-        return sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
+    public float getButtonHeight() {
+        int sixteenths;
+        try {
+            sixteenths = Integer.parseInt(sharedPreferences.getString("keyButtonHeight", "05"), 16);
+        } catch (Throwable th) {
+            th.printStackTrace();
+            sixteenths = 5;
+        }
+        return sixteenths / 16f;
     }
 
-    public float getFrequencyChangeTime() {
+    public boolean isDarkTheme() {
+        return sharedPreferences.getString("keyTheme", "dark").equals("dark");
+    }
+
+    public int getNotesBelow() {
         try {
-            return Float.parseFloat(sharedPreferences.getString("listFrequencyChangeTime", "0.0"));
+            return Integer.parseInt(sharedPreferences.getString("keyNotesBelow", "4"));
+        } catch (Throwable th) {
+            th.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int getNotesAbove() {
+        try {
+            return Integer.parseInt(sharedPreferences.getString("keyNotesAbove", "8"));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -32,8 +52,17 @@ public class Preferences {
         }
     }
 
-    public boolean isDarkTheme() {
-        return sharedPreferences.getString("keyTheme", "dark").equals("dark");
+    public float getFrequencyChangeTime() {
+        try {
+            return Float.parseFloat(sharedPreferences.getString("listFrequencyChangeTime", "0.0"));
+        } catch (Throwable th) {
+            th.printStackTrace();
+            return 0;
+        }
+    }
+
+    public boolean isBaseNoteSliderDiscrete() {
+        return sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
     }
 
     public boolean isLeftToRight() {
@@ -44,15 +73,17 @@ public class Preferences {
         return sharedPreferences.getString("keyVerticalDirection", "b2t").equals("t2b");
     }
 
-    public float getButtonHeight() {
-        int sixteenths;
+    public boolean isFlowHorizontal() {
+        return sharedPreferences.getString("keyFlowDirection", "horizontal").equals("horizontal");
+    }
+
+    public int getDimensionLimit() {
         try {
-            sixteenths = Integer.parseInt(sharedPreferences.getString("keyButtonHeight", "05"), 16);
+            return Integer.parseInt(sharedPreferences.getString("keyDimensionLimit", "1"));
         } catch (Throwable th) {
             th.printStackTrace();
-            sixteenths = 5;
+            return 0;
         }
-        return sixteenths / 16f;
     }
 
 }

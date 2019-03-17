@@ -22,8 +22,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.coderss.ison.utility.Player;
+import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 import com.coderss.ison.utility.SoundSet;
+
+import androidx.preference.PreferenceManager;
 
 public class DockService extends Service {
 
@@ -46,7 +49,7 @@ public class DockService extends Service {
 
     WindowManager.LayoutParams dockParams;
 
-    LinearLayout parentCloseLayout;
+    private Preferences preferences;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -55,6 +58,10 @@ public class DockService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+        int notesBelow = preferences.getNotesBelow();
+        int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
+
         player = new Player(this, 0, 0);
         if (SoundSet.soundSetIndex != -1) {
             SoundSet.loadSoundSet(player, getAssets(), 0);
@@ -64,7 +71,9 @@ public class DockService extends Service {
         currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
         base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
         note = -1;//no note pressed
-        setScale(currentScaleIndex);
+
+        setScale(currentScaleIndex, totalNotes, notesBelow);
+
         wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(metrics);
@@ -76,25 +85,31 @@ public class DockService extends Service {
                         : WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.RGBA_8888);
+
         dockParams.gravity = Gravity.START | Gravity.TOP;
         dockParams.x = 0;
         dockParams.y = 0;
+
         parentDockLayout = new LinearLayout(this);
         parentDockLayout.setOrientation(LinearLayout.VERTICAL);
+
         TextView move = new TextView(this);
         move.setText("<<>>");
         move.setTextSize(metrics.densityDpi / 6f);
         move.setGravity(Gravity.CENTER_HORIZONTAL);
         parentDockLayout.addView(move);
+
         scroller = new ScrollView(this);
         layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        setUpButtons(layout);
+        setUpButtons(layout, totalNotes, notesBelow);
         scroller.setVerticalScrollBarEnabled(true);
         scroller.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         scroller.addView(layout);
         parentDockLayout.addView(scroller);
+
         parentDockLayout.setBackgroundColor(0xFFFFFFFF);
+
         parentDockLayout.setOnTouchListener(new View.OnTouchListener() {
             boolean closeWindowOnDrop = false;
             @Override
@@ -141,27 +156,29 @@ public class DockService extends Service {
         return Service.START_NOT_STICKY;
     }
 
-    public void setUpButtons(LinearLayout layout) {
-        button = new Button[Scale.TOTAL_KEYS];
+    public void setUpButtons(LinearLayout layout, int totalNotes, int notesBelow) {
+
+        button = new Button[totalNotes];
         //layout.removeAllViews();
         LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        for (int y = 0; y < Scale.TOTAL_KEYS; ++y) {
-            int realY = (Scale.TOTAL_KEYS - y) - 1;
+        boolean isTopToBottom = preferences.isTopToBottom();
+        for (int buttonI = 0; buttonI < totalNotes; buttonI++) {
+
+            int realY;
+            if (isTopToBottom) {
+                realY = buttonI;
+            } else {
+                realY = (totalNotes - buttonI) - 1;
+            }
+
             button[realY] = new Button(this);
             button[realY].setId(realY);
             button[realY].setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
             button[realY].setLayoutParams(params);
-            button[realY].setOnClickListener(new Button.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    buttonPressed(v.getId());
-                }
-
-            });
+            button[realY].setOnClickListener(v -> buttonPressed(v.getId()));
             layout.addView(button[realY]);
         }
-        setButtonText();
+        setButtonText(totalNotes, notesBelow);
         addButtonColorFilter();
         halt = new Button(this);
         halt.setText("Stop");
@@ -200,13 +217,14 @@ public class DockService extends Service {
         wm.removeView(parentDockLayout);
     }
 
-    public void setScale(int pick) {
+    public void setScale(int pick, int totalNotes, int notesBelow) {
         currentScaleIndex = pick;
-        frequencies = new double[scales.get(pick).notes.length];
+
+        int notes[] = scales.get(currentScaleIndex).getNotes(totalNotes, notesBelow);
+        frequencies = new double[notes.length];
         for (int i = 0; i < frequencies.length; ++i) {
             frequencies[i] = base *
-                    Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps),
-                            (double)scales.get(pick).notes[i]);
+                    Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps), notes[i]);
         }
         player.changeFreq((float)getFrequency());
     }
@@ -244,15 +262,16 @@ public class DockService extends Service {
         }
     }
 
-    public void setButtonText() {
+    public void setButtonText(int totalNotes, int notesBelow) {
         int currentNote = Scale.correctZeroToSix(
-                scales.get(currentScaleIndex).baseNote + Scale.BASE_NOTE_INDEX);
-        for (int i = 0; i <Scale.TOTAL_KEYS; ++i) {
-            if (i == Scale.BASE_NOTE_INDEX)
-                button[i].setText("<" + Scale.NOTE_NAMES[currentNote] + ">");
-            else
-                button[i].setText(Scale.NOTE_NAMES[currentNote]);
-            currentNote = Scale.correctZeroToSix(currentNote - 1);
+                scales.get(currentScaleIndex).baseNote - notesBelow);
+        for (int buttonI = 0; buttonI < totalNotes; buttonI++) {
+            if (buttonI == notesBelow) {
+                button[buttonI].setText("<" + Scale.NOTE_NAMES[currentNote] + ">");
+            } else {
+                button[buttonI].setText(Scale.NOTE_NAMES[currentNote]);
+            }
+            currentNote = Scale.correctZeroToSix(currentNote + 1);
         }
     }
 
