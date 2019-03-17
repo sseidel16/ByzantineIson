@@ -1,14 +1,11 @@
 package com.coderss.ison;
 
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-
-import android.view.KeyEvent;
 
 import com.coderss.ison.utility.Player;
 import com.coderss.ison.utility.Preferences;
@@ -38,16 +35,6 @@ public class AppSettings extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings_container, new MySettingsFragment())
                 .commit();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent intent = new Intent(getApplicationContext(), IsonActivity.class);
-            startActivity(intent);
-            finish();
-            return true;
-        } else return super.onKeyDown(keyCode, event);
     }
 
     public static class MySettingsFragment extends PreferenceFragmentCompat {

@@ -154,7 +154,6 @@ public class IsonActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.openLayoutSettings) {
             Intent intent = new Intent(getApplicationContext(), AppSettings.class);
             startActivity(intent);
-            finish();
             return true;
         } else return super.onOptionsItemSelected(item);
     }
@@ -173,21 +172,8 @@ public class IsonActivity extends AppCompatActivity {
                 VERTICAL);
 
         for (int buttonI = 0; buttonI < totalNotes; buttonI++) {
-            button[buttonI] = new AppCompatButton(this) {
-                public boolean performClick() {
-                    buttonPressed(getId());
-                    return super.performClick();
-                }
-
-                @Override
-                public boolean onTouchEvent(MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        performClick();
-                        return true;
-                    }
-                    return false;
-                }
-            };
+            button[buttonI] = new AppCompatButton(this);
+            button[buttonI].setOnClickListener(v -> buttonPressed(v.getId()));
         }
 
         boolean isFlowHorizontal = preferences.isFlowHorizontal();
