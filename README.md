@@ -25,6 +25,8 @@ Updates:
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
     * Preference for volume change time
+  * Layout preferences
+    * Dark and light theme preference (dark helps when in church)
 * Sound set loading activity removed because performance drastically improved
 * Frequency changes gradually and audio buffers blend for a smooth transition
 * Volume changes gradually
@@ -45,7 +47,6 @@ Future features:
   * Preference for total buttons above base note
   * Preference for note button height
   * Preference for width of the ison dock
-* Dark mode for when in church
 
 ## Please help me out!!
 1. If you know of an issue, please add it and I will look into it. Feel free to request a feature as well!
