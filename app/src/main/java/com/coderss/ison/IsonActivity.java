@@ -3,15 +3,12 @@ package com.coderss.ison;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.preference.PreferenceManager;
@@ -36,7 +33,6 @@ import android.widget.TextView;
 import com.coderss.ison.utility.Player;
 import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
-import com.coderss.ison.utility.SoundSet;
 
 import static android.widget.LinearLayout.VERTICAL;
 
@@ -44,9 +40,6 @@ public class IsonActivity extends AppCompatActivity {
 
     //Button array referring to the different note buttons
     private Button[] button;
-
-    //Button instance referring to the Stop/Select Sound button
-    private Button halt;
 
     //TextView that is updated to show frequency
     private TextView frequency;
@@ -87,22 +80,17 @@ public class IsonActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             // if we are resuming the app, then resume the previous state
-            double volume = savedInstanceState.getDouble("Volume");
-            double freq = savedInstanceState.getDouble("Frequency");
             base = savedInstanceState.getDouble("Base");
             note = savedInstanceState.getInt("Note");
-            player = new Player(this, (float)volume, (float)freq); //create Player
+            player = new Player(this); //create Player
         } else {
-            note = -1;			//no button pressed at first
-            base = 261.6;		//default base is 261.6
-            player = new Player(this, 0, 0); //create player
+            Intent intent = getIntent();
+            currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
+            base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
+            note = intent.getIntExtra("com.coderss.ison.note", -1);
+            player = new Player(this); //create player
         }
         scales = Scale.loadScales(this); //load all scales
-
-        // ensure we have a sound set
-        if (SoundSet.soundSetIndex == -1) {
-            SoundSet.loadSoundSet(player, getAssets(), 0);
-        }
 
         // send preferences to player
         float frequencyChangeTime = preferences.getFrequencyChangeTime();
@@ -112,6 +100,8 @@ public class IsonActivity extends AppCompatActivity {
         setScale(0); //set the current scale to Diatonic (index 0)
         //the setScale method is defined below
 
+        preferences.initializeSoundSet(player, getAssets());
+
         setContentView(R.layout.activity_main);
     }
 
@@ -120,8 +110,6 @@ public class IsonActivity extends AppCompatActivity {
         //this code saves the app state.
         //For example, if the app is closed it saves the note and base frequency
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putDouble("Volume", player.getVolume());
-        savedInstanceState.putDouble("Frequency", player.getFrequency());
         savedInstanceState.putInt("Note", note);
         savedInstanceState.putDouble("Base", base);
         System.out.println("Saving");
@@ -156,8 +144,7 @@ public class IsonActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         //this is called if somebody touches the Dock button
         if (item.getItemId() == R.id.openDock) {
-            Intent dockIntent =
-                    new Intent(IsonActivity.this, DockService.class);
+            Intent dockIntent = new Intent(IsonActivity.this, DockService.class);
             dockIntent.putExtra("com.coderss.ison.currentScaleIndex", currentScaleIndex);
             dockIntent.putExtra("com.coderss.ison.base", base);
             dockIntent.putExtra("com.coderss.ison.note", note);
@@ -253,16 +240,8 @@ public class IsonActivity extends AppCompatActivity {
 
         setButtonText(totalNotes, notesBelow);
         addButtonColorFilter();
-        halt = this.findViewById(R.id.halt);
-        setHaltButtonText();
-        halt.setOnClickListener(arg0 -> {
-            if (player.getVolume() > 0.0) {
-                buttonPressed(-1);
-            } else {
-                SoundPicker dialog = new SoundPicker();
-                dialog.show(getSupportFragmentManager(), "dialog");
-            }
-        });
+        Button halt = this.findViewById(R.id.halt);
+        halt.setOnClickListener(arg0 -> buttonPressed(-1));
 
         double[] bases = {
                 196.00, 207.65, 220.00, 233.08, 246.94,
@@ -361,19 +340,6 @@ public class IsonActivity extends AppCompatActivity {
         setFrequencyText();
     }
 
-    public static class SoundPicker extends DialogFragment {
-        public Dialog onCreateDialog(Bundle savedInstance) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            IsonActivity isonActivity = (IsonActivity)getActivity();
-            builder.setSingleChoiceItems(
-                    SoundSet.getSoundSets(getResources().getAssets()),
-                    SoundSet.soundSetIndex,
-                    (dialog, which) -> SoundSet.loadSoundSet(isonActivity.player, getResources().getAssets(), which)
-            );
-            return builder.create();
-        }
-    }
-
     public void setScale(int pick) {
         int notesBelow = preferences.getNotesBelow();
         int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
@@ -399,7 +365,6 @@ public class IsonActivity extends AppCompatActivity {
             player.setVolume(0);
         }
         addButtonColorFilter();
-        setHaltButtonText();
         setFrequencyText();
     }
 
@@ -411,20 +376,12 @@ public class IsonActivity extends AppCompatActivity {
         } else return super.onKeyDown(keyCode, event);
     }
 
-    public void setHaltButtonText() {
-        if (player.getVolume() == 0.0) {
-            halt.setText("Select Sound");
-        } else {
-            halt.setText("Stop");
-        }
-    }
-
     public void setFrequencyText() {
-        if (player.getVolume() == 0.0) {
+        if (note == -1) {
             frequency.setText("Frequency");
         } else {
             DecimalFormat format = new DecimalFormat("###.#Hz");
-            String formatted = format.format(player.getFrequency());
+            String formatted = format.format(getFrequency());
             frequency.setText(formatted);
         }
     }

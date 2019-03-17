@@ -77,10 +77,10 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/seekBar1"
-        android:layout_alignEnd="@+id/scaleSpinner"
         android:layout_below="@+id/scaleSpinner"
-        android:text="Select Sound" />
+        android:layout_alignEnd="@+id/scaleSpinner"
+        android:layout_alignBottom="@+id/seekBar1"
+        android:text="Stop" />
 
     <TextView
         android:id="@+id/textView4"

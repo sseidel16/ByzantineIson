@@ -30,24 +30,20 @@ import androidx.preference.PreferenceManager;
 
 public class DockService extends Service {
 
-    float initialWindowX;
-    float initialTouchX;
+    private float initialWindowX;
+    private float initialTouchX;
 
-    Button[] button;
-    Button halt;
-    Button back;
-    Player player;
-    double[] frequencies;
-    int currentScaleIndex;
-    double base;
-    int note;
-    ArrayList<Scale> scales;
-    LinearLayout parentDockLayout;
-    ScrollView scroller;
-    LinearLayout layout;
-    WindowManager wm;
+    private Button[] button;
+    private Player player;
+    private double[] frequencies;
+    private int currentScaleIndex;
+    private double base;
+    private int note;
+    private ArrayList<Scale> scales;
+    private LinearLayout parentDockLayout;
+    private WindowManager wm;
 
-    WindowManager.LayoutParams dockParams;
+    private WindowManager.LayoutParams dockParams;
 
     private Preferences preferences;
 
@@ -62,15 +58,12 @@ public class DockService extends Service {
         int notesBelow = preferences.getNotesBelow();
         int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
 
-        player = new Player(this, 0, 0);
-        if (SoundSet.soundSetIndex != -1) {
-            SoundSet.loadSoundSet(player, getAssets(), 0);
-        }
+        player = new Player(this);
 
         scales = Scale.loadScales(this);
         currentScaleIndex = intent.getIntExtra("com.coderss.ison.currentScaleIndex", 0);
         base = intent.getDoubleExtra("com.coderss.ison.base", 261.6);
-        note = -1;//no note pressed
+        note = intent.getIntExtra("com.coderss.ison.note", -1);
 
         setScale(currentScaleIndex, totalNotes, notesBelow);
 
@@ -99,8 +92,8 @@ public class DockService extends Service {
         move.setGravity(Gravity.CENTER_HORIZONTAL);
         parentDockLayout.addView(move);
 
-        scroller = new ScrollView(this);
-        layout = new LinearLayout(this);
+        ScrollView scroller = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         setUpButtons(layout, totalNotes, notesBelow);
         scroller.setVerticalScrollBarEnabled(true);
@@ -180,26 +173,29 @@ public class DockService extends Service {
         }
         setButtonText(totalNotes, notesBelow);
         addButtonColorFilter();
-        halt = new Button(this);
+
+        Button halt = new Button(this);
         halt.setText("Stop");
-        setHaltButtonText();
-        halt.setOnClickListener(arg0 -> {
-            if (player.getVolume() > 0.0) {
-                buttonPressed(-1);
-            } else {
-                DockService.this.stopSelf();
-            }
-        });
+        halt.setOnClickListener(arg0 -> buttonPressed(-1));
         layout.addView(halt);
-        back = new Button(this);
+
+        Button back = new Button(this);
         back.setText("Return");
         back.setOnClickListener(arg0 -> {
             Intent intent = new Intent(getBaseContext(), IsonActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplication().startActivity(intent);
+            intent.putExtra("com.coderss.ison.currentScaleIndex", currentScaleIndex);
+            intent.putExtra("com.coderss.ison.base", base);
+            intent.putExtra("com.coderss.ison.note", note);
+            startActivity(intent);
             stopSelf();
         });
         layout.addView(back);
+
+        Button exit = new Button(this);
+        exit.setText("Exit");
+        exit.setOnClickListener(arg0 -> stopSelf());
+        layout.addView(exit);
     }
 
 //	@Override
@@ -238,15 +234,6 @@ public class DockService extends Service {
             player.setVolume(0);
         }
         addButtonColorFilter();
-        setHaltButtonText();
-    }
-
-    public void setHaltButtonText() {
-        if (player.getVolume() == 0.0) {
-            halt.setText("Exit");
-        } else {
-            halt.setText("Stop");
-        }
     }
 
     public void removeButtonColorFilter() {

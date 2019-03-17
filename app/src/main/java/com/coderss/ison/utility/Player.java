@@ -51,9 +51,7 @@ public class Player {
     private AtomicReference<Float> freq = new AtomicReference<>();
     private AtomicReference<Float> volume = new AtomicReference<>();
 
-    public Player(Context context, float volume, float freq) {
-        this.freq.set(freq);
-        this.volume.set(volume);
+    public Player(Context context) {
 
         System.out.println("Grabbing audio parameters");
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -79,15 +77,12 @@ public class Player {
     }
 
     public void start() {
-        //startJavaSpeaker();
-
-        System.out.println("Native setFrequency in: " + freq.get());
-        native_setFrequency(freq.get());
-        System.out.println("Native setFrequency out");
-
-        System.out.println("Native setVolume in: " + volume.get());
-        native_setVolume(volume.get());
-        System.out.println("Native setVolume out");
+        //System.out.println("Native setFrequency in: " + freq.get());
+        //native_setFrequency(freq.get());
+        //System.out.println("Native setFrequency out");
+        //System.out.println("Native setVolume in: " + volume.get());
+        //native_setVolume(volume.get());
+        //System.out.println("Native setVolume out");
         //native_setWorkCycles(60000);
     }
 
@@ -97,8 +92,6 @@ public class Player {
     }
 
     public void setVolume(float volume) {
-        this.volume.set(volume);
-
         System.out.println("Native_setVolume in: " + volume);
         native_setVolume(volume);
         System.out.println("Native_setVolume out");
@@ -111,19 +104,9 @@ public class Player {
     }
 
     public void changeFreq(float frequency) {
-        if (freq.get() <= 0) freq.set(frequency);
-
         System.out.println("Native setFrequency in" + frequency);
         native_setFrequency(frequency);
         System.out.println("Native setFrequency out");
-    }
-
-    public double getVolume() {
-        return volume.get();
-    }
-
-    public double getFrequency() {
-        return freq.get();
     }
 
     private void destroy() {

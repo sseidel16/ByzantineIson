@@ -48,6 +48,11 @@
     <PreferenceCategory android:title="Audio Preferences">
 
         <ListPreference
+            android:key="keySelectSound"
+            android:title="Select sound"
+            android:summary="%s" />
+
+        <ListPreference
             android:entries="@array/prefChangeTimeEntries"
             android:entryValues="@array/prefChangeTimeEntryValues"
             android:key="listVolumeChangeTime"

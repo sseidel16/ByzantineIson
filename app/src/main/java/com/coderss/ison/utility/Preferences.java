@@ -1,13 +1,24 @@
 package com.coderss.ison.utility;
 
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 
 public class Preferences {
 
+    private static boolean soundSetInitialized = false;
     private SharedPreferences sharedPreferences;
 
     public Preferences(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
+
+    public void initializeSoundSet(Player player, AssetManager assets) {
+        if (!soundSetInitialized) {
+            int soundSetI = getSelectSound();
+            SoundSet.loadSoundSet(player, assets, soundSetI);
+
+            soundSetInitialized = true;
+        }
     }
 
     public float getButtonHeight() {
@@ -37,6 +48,15 @@ public class Preferences {
     public int getNotesAbove() {
         try {
             return Integer.parseInt(sharedPreferences.getString("keyNotesAbove", "8"));
+        } catch (Throwable th) {
+            th.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int getSelectSound() {
+        try {
+            return Integer.parseInt(sharedPreferences.getString("keySelectSound", "0"));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
