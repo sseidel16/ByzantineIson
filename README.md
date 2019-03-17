@@ -24,12 +24,16 @@ Updates:
   * Layout preferences
     * Preference for note button height
     * Dark and light theme preference (dark helps when in church)
+  * Scale preferences
+    * Preference for total buttons below base note
+    * Preference for total buttons above base note
   * Audio preferences
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
     * Preference for volume change time
   * Advanced Layout Preferences
     * Preference for notes vertical and horizontal flow directions
+    * Advanced layout preference for flow direction by row vs by column
 * Sound set loading activity removed because performance drastically improved
 * Frequency changes gradually and audio buffers blend for a smooth transition
 * Volume changes gradually
@@ -43,10 +47,6 @@ Known issues:
 
 Future features:
 * Add layout preferences
-  * Advanced layout preference for grid dimension
-  * Advanced layout preference for flow direction by row vs by column
-  * Preference for total buttons below base note
-  * Preference for total buttons above base note
   * Preference for width of the ison dock
 
 ## Please help me out!!
