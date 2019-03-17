@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="prefButtonHeightEntries">
+        <item>2/16 (1/8) inch</item>
+        <item>3/16 inch</item>
+        <item>4/16 (1/4) inch</item>
+        <item>5/16 inch</item>
+        <item>6/16 (3/8) inch</item>
+        <item>7/16 inch</item>
+        <item>8/16 (1/2) inch</item>
+        <item>9/16 inch</item>
+        <item>10/16 (5/8) inch</item>
+        <item>11/16 inch</item>
+        <item>12/16 (3/4) inch</item>
+        <item>13/16 inch</item>
+        <item>14/16 (7/8) inch</item>
+        <item>15/16 inch</item>
+        <item>16/16 (1) inch</item>
+    </string-array>
+    <string-array name="prefButtonHeightEntryValues">
+        <item>02</item>
+        <item>03</item>
+        <item>04</item>
+        <item>05</item>
+        <item>06</item>
+        <item>07</item>
+        <item>08</item>
+        <item>09</item>
+        <item>0A</item>
+        <item>0B</item>
+        <item>0C</item>
+        <item>0D</item>
+        <item>0E</item>
+        <item>0F</item>
+        <item>10</item>
+    </string-array>
+
     <string-array name="prefBaseSliderTypeEntries">
         <item>Discrete</item>
         <item>Continuous</item>
@@ -50,6 +85,24 @@
     <string-array name="prefThemeEntryValues">
         <item>dark</item>
         <item>light</item>
+    </string-array>
+
+    <string-array name="prefHorizontalDirectionEntries">
+        <item>Left-to-right</item>
+        <item>Right-to-left</item>
+    </string-array>
+    <string-array name="prefHorizontalDirectionEntryValues">
+        <item>l2r</item>
+        <item>r2l</item>
+    </string-array>
+
+    <string-array name="prefVerticalDirectionEntries">
+        <item>Top-to-bottom</item>
+        <item>Bottom-to-top</item>
+    </string-array>
+    <string-array name="prefVerticalDirectionEntryValues">
+        <item>t2b</item>
+        <item>b2t</item>
     </string-array>
 
 </resources>

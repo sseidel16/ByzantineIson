@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -39,15 +38,13 @@ import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 import com.coderss.ison.utility.SoundSet;
 
+import static android.widget.LinearLayout.VERTICAL;
+
 public class IsonActivity extends AppCompatActivity {
 
     //Statics set by AppSettings
-    static int OFFSET = 0;
     static int COLUMNS = 1;
     static int ROWS = 13;
-    static float BUTTON_HEIGHT = 5f / 16f;//fraction of an inch
-    static boolean TOP_TO_BOTTOM = false;
-    static boolean LEFT_TO_RIGHT = true;
     static boolean BY_ROW = false;
 
     //Button array referring to the different note buttons
@@ -187,7 +184,9 @@ public class IsonActivity extends AppCompatActivity {
         buttonTable.removeAllViews();
         TableRow.LayoutParams buttonParams = new TableRow.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
-                (int)(this.getResources().getDisplayMetrics().densityDpi * BUTTON_HEIGHT), 1);
+                (int)(this.getResources().getDisplayMetrics().densityDpi *
+                        preferences.getButtonHeight()),
+                VERTICAL);
 
         for (int i = 0; i < Scale.TOTAL_KEYS; ++i) {
             button[i] = new AppCompatButton(this) {
@@ -206,21 +205,31 @@ public class IsonActivity extends AppCompatActivity {
                 }
             };
         }
+
+        boolean isLeftToRight = preferences.isLeftToRight();
+        boolean isTopToBottom = preferences.isTopToBottom();
         for (int y = 0; y < ROWS; ++y) {
             TableRow row = new TableRow(this);
             for (int x = 0; x < COLUMNS; ++x) {
                 int index;
 
                 int realX, realY;
-                if (LEFT_TO_RIGHT) realX = x;
-                else realX = (COLUMNS - 1) - x;
-                if (TOP_TO_BOTTOM) realY = y;
-                else realY = (ROWS - 1) - y;
+                if (isLeftToRight) {
+                    realX = x;
+                } else {
+                    realX = (COLUMNS - 1) - x;
+                }
+
+                if (isTopToBottom) {
+                    realY = y;
+                } else {
+                    realY = (ROWS - 1) - y;
+                }
 
                 if (BY_ROW) {
-                    index = (realY * COLUMNS) + realX - OFFSET;
+                    index = (realY * COLUMNS) + realX;
                 } else {
-                    index = (realX * ROWS) + realY - OFFSET;
+                    index = (realX * ROWS) + realY;
                 }
 
                 if (index >= 0 && index < Scale.TOTAL_KEYS) {
