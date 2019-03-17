@@ -35,6 +35,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.coderss.ison.utility.Player;
+import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 import com.coderss.ison.utility.SoundSet;
 
@@ -77,11 +78,17 @@ public class IsonActivity extends AppCompatActivity {
     private ArrayList<Scale> scales;
 
     // application preferences
-    private SharedPreferences sharedPreferences;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.LightAppTheme);
+        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+
+        if (preferences.isDarkTheme()) {
+            setTheme(R.style.DarkAppTheme);
+        } else {
+            setTheme(R.style.LightAppTheme);
+        }
 
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
@@ -105,25 +112,9 @@ public class IsonActivity extends AppCompatActivity {
             SoundSet.loadSoundSet(player, getAssets(), 0);
         }
 
-        // load shared preferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
         // send preferences to player
-        float frequencyChangeTime, volumeChangeTime;
-        try {
-            frequencyChangeTime =
-                    Float.parseFloat(sharedPreferences.getString("listFrequencyChangeTime", "0.0"));
-        } catch (Throwable th) {
-            th.printStackTrace();
-            frequencyChangeTime = 0;
-        }
-        try {
-            volumeChangeTime =
-                    Float.parseFloat(sharedPreferences.getString("listVolumeChangeTime", "0.0"));
-        } catch (Throwable th) {
-            th.printStackTrace();
-            volumeChangeTime = 0;
-        }
+        float frequencyChangeTime = preferences.getFrequencyChangeTime();
+        float volumeChangeTime = preferences.getVolumeChangeTime();
         player.setPreferences(frequencyChangeTime, volumeChangeTime);
 
         setScale(0); //set the current scale to Diatonic (index 0)
@@ -262,11 +253,10 @@ public class IsonActivity extends AppCompatActivity {
         double[] bases = {
                 196.00, 207.65, 220.00, 233.08, 246.94,
                 261.63, 277.18, 293.66, 311.13, 329.63};
-        boolean isBaseNoteSliderDiscrete =
-                sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
 
         SeekBar baseNoteSlider = this.findViewById(R.id.seekBar1);
 
+        boolean isBaseNoteSliderDiscrete = preferences.isBaseNoteSliderDiscrete();
         if (isBaseNoteSliderDiscrete) {
             baseNoteSlider.setMax(bases.length - 1);
             baseNoteSlider.setProgress(5);

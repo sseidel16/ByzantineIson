@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,9 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 
 public class AppSettings extends AppCompatActivity {
+
+    private Preferences preferences;
 
     private RadioButton byRow;
     private RadioButton byColumn;
@@ -29,7 +34,13 @@ public class AppSettings extends AppCompatActivity {
     private Spinner buttonHeight;
 
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.LightAppTheme);
+        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+
+        if (preferences.isDarkTheme()) {
+            setTheme(R.style.DarkAppTheme);
+        } else {
+            setTheme(R.style.LightAppTheme);
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_settings);

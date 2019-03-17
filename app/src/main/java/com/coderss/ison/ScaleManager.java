@@ -11,6 +11,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceManager;
+
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +24,12 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 
 public class ScaleManager extends FragmentActivity {
+
+    private Preferences preferences;
 
     private int selectedScale = 0;
     private Scale editedScale;
@@ -38,7 +43,13 @@ public class ScaleManager extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.LightAppTheme);
+        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+
+        if (preferences.isDarkTheme()) {
+            setTheme(R.style.DarkAppTheme);
+        } else {
+            setTheme(R.style.LightAppTheme);
+        }
 
         super.onCreate(savedInstanceState);
         scales = Scale.loadScales(this.getApplicationContext());
