@@ -2,6 +2,7 @@ package com.coderss.ison;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Space;
 import android.widget.TextView;
 
 import com.coderss.ison.utility.Player;
@@ -52,6 +55,7 @@ public class DockService extends Service {
         return null;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public int onStartCommand(Intent intent, int flags, int startId) {
         preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
         int notesBelow = preferences.getNotesBelow();
@@ -70,7 +74,7 @@ public class DockService extends Service {
         DisplayMetrics metrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(metrics);
         dockParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                (int)(getResources().getDisplayMetrics().densityDpi * preferences.getDockWidth()),
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                         ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -85,18 +89,20 @@ public class DockService extends Service {
         parentDockLayout = new LinearLayout(this);
         parentDockLayout.setOrientation(LinearLayout.VERTICAL);
 
-        TextView move = new TextView(this);
-        move.setText("<<>>");
-        move.setTextSize(metrics.densityDpi / 6f);
-        move.setGravity(Gravity.CENTER_HORIZONTAL);
-        parentDockLayout.addView(move);
+        Space moveSpace = new Space(this);
+        moveSpace.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT,
+                        (int)(getResources().getDisplayMetrics().densityDpi * 0.25))
+        );
+        parentDockLayout.addView(moveSpace);
 
         ScrollView scroller = new ScrollView(this);
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
+
         setUpButtons(layout, totalNotes, notesBelow);
         scroller.setVerticalScrollBarEnabled(true);
-        scroller.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        scroller.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         scroller.addView(layout);
         parentDockLayout.addView(scroller);
 
@@ -113,21 +119,17 @@ public class DockService extends Service {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     initialWindowX = dockParams.x;
                     initialTouchX = event.getRawX();
-//					dockParams.gravity = Gravity.LEFT | Gravity.TOP;
                     dockParams.x = (int)(initialWindowX + (event.getRawX() - initialTouchX));
                     dockParams.alpha = 1.0f;
                     closeWindowOnDrop = false;
                     wm.updateViewLayout(parentDockLayout, dockParams);
                 } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     if (event.getRawY() < metrics.heightPixels / 2) {
-//						dockParams.gravity = Gravity.LEFT | Gravity.TOP;
                         dockParams.x = (int)(initialWindowX + (event.getRawX() - initialTouchX));
                         dockParams.alpha = 1.0f;
                         closeWindowOnDrop = false;
                         wm.updateViewLayout(parentDockLayout, dockParams);
                     } else {
-//						dockParams.gravity = Gravity.LEFT | Gravity.TOP;
-//						dockParams.x = (int)(initialWindowX + (event.getRawX() - initialTouchX));
                         dockParams.alpha = (metrics.heightPixels - event.getRawY()) / (metrics.heightPixels * (2.0f / 3.0f));
                         closeWindowOnDrop = true;
                         wm.updateViewLayout(parentDockLayout, dockParams);
@@ -151,8 +153,7 @@ public class DockService extends Service {
     public void setUpButtons(LinearLayout layout, int totalNotes, int notesBelow) {
 
         button = new Button[totalNotes];
-        //layout.removeAllViews();
-        LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         boolean isTopToBottom = preferences.isTopToBottom();
         for (int buttonI = 0; buttonI < totalNotes; buttonI++) {
 
@@ -197,16 +198,6 @@ public class DockService extends Service {
         layout.addView(exit);
     }
 
-//	@Override
-//	public void onSaveInstanceState(Bundle savedInstanceState) {
-//		super.onSaveInstanceState(savedInstanceState);
-//		savedInstanceState.putDouble("Volume", player.volume);
-//		savedInstanceState.putDouble("Frequency", player.freq);
-//		savedInstanceState.putInt("Note", note);
-//		savedInstanceState.putDouble("Base", base);
-//		System.out.println("Saving");
-//	}
-
     public void onDestroy() {
         super.onDestroy();
         wm.removeView(parentDockLayout);
@@ -219,7 +210,7 @@ public class DockService extends Service {
         frequencies = new double[notes.length];
         for (int i = 0; i < frequencies.length; ++i) {
             frequencies[i] = base *
-                    Math.pow(Math.pow(2.0, 1.0/scales.get(pick).totalSteps), notes[i]);
+                    Math.pow(Math.pow(2.0, 1.0 / scales.get(pick).totalSteps), notes[i]);
         }
         player.changeFreq((float)getFrequency());
     }

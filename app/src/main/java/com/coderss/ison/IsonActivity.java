@@ -175,7 +175,7 @@ public class IsonActivity extends AppCompatActivity {
         buttonTable.removeAllViews();
         TableRow.LayoutParams buttonParams = new TableRow.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
-                (int)(this.getResources().getDisplayMetrics().densityDpi *
+                (int)(getResources().getDisplayMetrics().densityDpi *
                         preferences.getButtonHeight()),
                 VERTICAL);
 

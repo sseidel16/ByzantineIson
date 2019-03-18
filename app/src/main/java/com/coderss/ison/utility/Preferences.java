@@ -32,6 +32,17 @@ public class Preferences {
         return sixteenths / 16f;
     }
 
+    public float getDockWidth() {
+        int sixteenths;
+        try {
+            sixteenths = Integer.parseInt(sharedPreferences.getString("keyDockWidth", "08"), 16);
+        } catch (Throwable th) {
+            th.printStackTrace();
+            sixteenths = 8;
+        }
+        return sixteenths / 16f;
+    }
+
     public boolean isDarkTheme() {
         return sharedPreferences.getString("keyTheme", "dark").equals("dark");
     }

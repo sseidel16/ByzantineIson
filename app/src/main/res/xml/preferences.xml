@@ -16,6 +16,14 @@
             android:defaultValue="05"/>
 
         <ListPreference
+            android:entries="@array/prefDockWidthEntries"
+            android:entryValues="@array/prefDockWidthEntryValues"
+            android:key="keyDockWidth"
+            android:title="Ison dock width"
+            android:summary="%s"
+            android:defaultValue="08"/>
+
+        <ListPreference
             android:entries="@array/prefThemeEntries"
             android:entryValues="@array/prefThemeEntryValues"
             android:key="keyTheme"
