@@ -63,6 +63,18 @@ public class Preferences {
         }
     }
 
+    public boolean isBaseNoteSliderDiscrete() {
+        return sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
+    }
+
+    public boolean isShowingMinorChangers() {
+        return sharedPreferences.getBoolean("keyShowMinorChangers", false);
+    }
+
+    public boolean isShowingMajorChangers() {
+        return sharedPreferences.getBoolean("keyShowMajorChangers", false);
+    }
+
     public float getVolumeChangeTime() {
         try {
             return Float.parseFloat(sharedPreferences.getString("listVolumeChangeTime", "0.0"));
@@ -79,10 +91,6 @@ public class Preferences {
             th.printStackTrace();
             return 0;
         }
-    }
-
-    public boolean isBaseNoteSliderDiscrete() {
-        return sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
     }
 
     public boolean isLeftToRight() {

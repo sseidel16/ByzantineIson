@@ -6,7 +6,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -24,34 +23,11 @@ public class Scale {
 
     public static ArrayList<Scale> loadScales(Context context) {
         ArrayList<Scale> scales = new ArrayList<>(4);
-        DataInputStream dis = null;
         File filev2 = new File(context.getFilesDir().getPath() + "/scales.v2");
-        File filev1 = new File(context.getFilesDir().getPath() + "/scales.txt");
-        System.out.println(filev1.exists() + "," + filev2.exists());
+        System.out.println("Existing scales file: " + filev2.exists());
         scales.clear();
-        if (filev1.exists()) {//get scales from old file format
-            try {
-                System.out.println("Upgrading");
-                BufferedReader br = new BufferedReader(
-                        new FileReader(filev1));
-                while (true) {
-                    String name = br.readLine();
-                    if (name == null || name.equals("")) break;
-                    int[] widths = new int[7];
-                    for (int i = 0; i < 7; ++i) {
-                        widths[i] = Integer.parseInt(br.readLine());
-                    }
-                    int baseNote = 0;//base note that didnt exist
-                    scales.add(new Scale(widths, name, baseNote));
-                }
-                br.close();
-                filev1.delete();
-                writeScales(context, scales);
-            } catch (Exception e) {
-                e.printStackTrace();
-                emergencyReset(context);
-            }
-        } else if (filev2.exists()) {//get scales from new written file
+        if (filev2.exists()) {//get scales from new written file
+            DataInputStream dis;
             try {
                 dis = new DataInputStream(
                         new FileInputStream(filev2));
@@ -70,8 +46,8 @@ public class Scale {
                 e.printStackTrace();
                 emergencyReset(context);
             }
-        }
-        if (!filev1.exists() && !filev2.exists()) {//get scales from assets (last resort)
+        } else {
+            //get scales from assets (last resort)
             try {
                 BufferedReader br = new BufferedReader(
                         new InputStreamReader(context.getResources().getAssets().open("scales.txt")));
@@ -97,9 +73,7 @@ public class Scale {
 
     public static void emergencyReset(Context context) {
         File filev2 = new File(context.getFilesDir().getPath() + "/scales.v2");
-        File filev1 = new File(context.getFilesDir().getPath() + "/scales.txt");
         System.out.println("Deleting");
-        if (filev1 != null && filev1.exists()) filev1.delete();
         if (filev2 != null && filev2.exists()) filev2.delete();
     }
 

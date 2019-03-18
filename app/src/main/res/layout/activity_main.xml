@@ -8,56 +8,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".IsonActivity" >
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:text="Byzantine Ison - CoderS_S"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <SeekBar
-        android:id="@+id/seekBar1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView2"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/halt" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBar1"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/seekBar1"
-        android:text="Adjust base note"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Spinner
-        android:id="@+id/scaleSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView1"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/width1"
-        android:drawSelectorOnTop="true" />
-
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/scaleSpinner"
         android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true">
 
         <TableLayout
             android:id="@+id/buttonTable"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </TableLayout>
+            android:layout_height="wrap_content"></TableLayout>
 
     </ScrollView>
 
@@ -65,30 +28,95 @@
         android:id="@+id/width1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/scaleSpinner"
         android:layout_alignBottom="@+id/scaleSpinner"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/scaleSpinner"
         android:gravity="center"
         android:text="Scale:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/halt"
-        style="?android:attr/buttonStyleSmall"
+    <Spinner
+        android:id="@+id/scaleSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/scaleSpinner"
-        android:layout_alignEnd="@+id/scaleSpinner"
-        android:layout_alignBottom="@+id/seekBar1"
-        android:text="Stop" />
+        android:layout_above="@+id/mainButtonLayout"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/width1"
+        android:drawSelectorOnTop="true" />
+
+    <LinearLayout
+        android:id="@+id/mainButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBar1"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/minus3"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="---" />
+
+        <Button
+            android:id="@+id/minus1"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="-" />
+
+        <Button
+            android:id="@+id/halt"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stop" />
+
+        <Button
+            android:id="@+id/plus1"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="+" />
+
+        <Button
+            android:id="@+id/plus3"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="+++" />
+
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:text="Byzantine Ison - CoderS_S"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textView2"
+        android:layout_alignEnd="@+id/seekBar1"
         android:layout_alignBottom="@+id/textView2"
-        android:layout_alignEnd="@+id/halt"
         android:text="Frequency"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

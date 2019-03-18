@@ -53,6 +53,24 @@
             android:summary="%s" />
 
         <ListPreference
+            android:entries="@array/prefBaseSliderTypeEntries"
+            android:entryValues="@array/prefBaseSliderTypeEntryValues"
+            android:key="listBaseSlider"
+            android:title="Base note slider type"
+            android:summary="%s"
+            android:defaultValue="discrete"/>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="keyShowMinorChangers"
+            android:title="Show minor frequency change buttons" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="keyShowMajorChangers"
+            android:title="Show major frequency change buttons" />
+
+        <ListPreference
             android:entries="@array/prefChangeTimeEntries"
             android:entryValues="@array/prefChangeTimeEntryValues"
             android:key="listVolumeChangeTime"
@@ -67,14 +85,6 @@
             android:title="Frequency change time"
             android:summary="%s"
             android:defaultValue="0.050"/>
-
-        <ListPreference
-            android:entries="@array/prefBaseSliderTypeEntries"
-            android:entryValues="@array/prefBaseSliderTypeEntryValues"
-            android:key="listBaseSlider"
-            android:title="Base note slider type"
-            android:summary="%s"
-            android:defaultValue="discrete"/>
 
     </PreferenceCategory>
 

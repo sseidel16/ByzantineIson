@@ -20,10 +20,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager.LayoutParams;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -37,6 +38,8 @@ import com.coderss.ison.utility.Scale;
 import static android.widget.LinearLayout.VERTICAL;
 
 public class IsonActivity extends AppCompatActivity {
+
+    public static final double[] BASES = {196.00, 207.65, 220.00, 233.08, 246.94, 261.63, 277.18, 293.66, 311.13, 329.63};
 
     //Button array referring to the different note buttons
     private Button[] button;
@@ -90,7 +93,12 @@ public class IsonActivity extends AppCompatActivity {
             note = intent.getIntExtra("com.coderss.ison.note", -1);
             player = new Player(this); //create player
         }
-        scales = Scale.loadScales(this); //load all scales
+
+        // make sure native player is off if no note is selected
+        if (note == -1) player.setVolume(0);
+
+        // load all scales
+        scales = Scale.loadScales(this);
 
         // send preferences to player
         float frequencyChangeTime = preferences.getFrequencyChangeTime();
@@ -112,7 +120,6 @@ public class IsonActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putInt("Note", note);
         savedInstanceState.putDouble("Base", base);
-        System.out.println("Saving");
     }
 
     protected void onStart() {
@@ -154,6 +161,7 @@ public class IsonActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.openLayoutSettings) {
             Intent intent = new Intent(getApplicationContext(), AppSettings.class);
             startActivity(intent);
+            finish();
             return true;
         } else return super.onOptionsItemSelected(item);
     }
@@ -226,18 +234,37 @@ public class IsonActivity extends AppCompatActivity {
 
         setButtonText(totalNotes, notesBelow);
         addButtonColorFilter();
+
+        Button majorMinus = findViewById(R.id.minus3);
+        majorMinus.setOnClickListener(v -> changeBaseFrequency(base * Math.pow(2, -1.0 / 12.0)));
+        Button majorPlus = findViewById(R.id.plus3);
+        majorPlus.setOnClickListener(v -> changeBaseFrequency(base * Math.pow(2, 1.0 / 12.0)));
+        Button minorMinus = findViewById(R.id.minus1);
+        minorMinus.setOnClickListener(v -> changeBaseFrequency(base * Math.pow(2, -1.0 / 36.0)));
+        Button minorPlus = findViewById(R.id.plus1);
+        minorPlus.setOnClickListener(v -> changeBaseFrequency(base * Math.pow(2, 1.0 / 36.0)));
+
+        boolean isShowingMinorChangers = preferences.isShowingMinorChangers();
+        boolean isShowingMajorChangers = preferences.isShowingMajorChangers();
+
+        if (!isShowingMinorChangers) {
+            minorMinus.setVisibility(View.GONE);
+            minorPlus.setVisibility(View.GONE);
+        }
+
+        if (!isShowingMajorChangers) {
+            majorMinus.setVisibility(View.GONE);
+            majorPlus.setVisibility(View.GONE);
+        }
+
         Button halt = this.findViewById(R.id.halt);
         halt.setOnClickListener(arg0 -> buttonPressed(-1));
-
-        double[] bases = {
-                196.00, 207.65, 220.00, 233.08, 246.94,
-                261.63, 277.18, 293.66, 311.13, 329.63};
 
         SeekBar baseNoteSlider = this.findViewById(R.id.seekBar1);
 
         boolean isBaseNoteSliderDiscrete = preferences.isBaseNoteSliderDiscrete();
         if (isBaseNoteSliderDiscrete) {
-            baseNoteSlider.setMax(bases.length - 1);
+            baseNoteSlider.setMax(BASES.length - 1);
             baseNoteSlider.setProgress(5);
         } else {
             baseNoteSlider.setMax(100);
@@ -249,14 +276,10 @@ public class IsonActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress,
                                           boolean fromUser) {
                 if (isBaseNoteSliderDiscrete) {
-                    base = bases[progress];
+                    changeBaseFrequency(BASES[progress]);
                 } else {
-                    base = bases[0] + (bases[bases.length - 1] - bases[0]) * progress / seekBar.getMax();
+                    changeBaseFrequency(BASES[0] + (BASES[BASES.length - 1] - BASES[0]) * progress / seekBar.getMax());
                 }
-
-                setScale(currentScaleIndex);
-                player.changeFreq((float)getFrequency());
-                setFrequencyText();
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -377,6 +400,16 @@ public class IsonActivity extends AppCompatActivity {
             button[note].getBackground().clearColorFilter();
             button[note].invalidate();
         }
+    }
+
+    private void changeBaseFrequency(double base) {
+        if (base < BASES[0]) base = BASES[0];
+        else if (base > BASES[BASES.length - 1]) base = BASES[BASES.length - 1];
+
+        this.base = base;
+        setScale(currentScaleIndex);
+        player.changeFreq((float)getFrequency());
+        setFrequencyText();
     }
 
     public void addButtonColorFilter() {

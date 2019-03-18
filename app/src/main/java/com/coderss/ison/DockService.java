@@ -15,7 +15,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.coderss.ison.utility.Player;
 import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
-import com.coderss.ison.utility.SoundSet;
 
 import androidx.preference.PreferenceManager;
 
