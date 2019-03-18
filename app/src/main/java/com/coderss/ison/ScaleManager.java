@@ -43,7 +43,7 @@ public class ScaleManager extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+        preferences = new Preferences(getBaseContext());
 
         if (preferences.isDarkTheme()) {
             setTheme(R.style.DarkAppTheme);

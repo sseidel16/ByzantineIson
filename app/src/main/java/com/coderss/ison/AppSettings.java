@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.coderss.ison.utility.Player;
 import com.coderss.ison.utility.Preferences;
@@ -20,7 +19,7 @@ public class AppSettings extends AppCompatActivity {
     private Player player;
 
     protected void onCreate(Bundle savedInstanceState) {
-        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+        preferences = new Preferences(getBaseContext());
 
         if (preferences.isDarkTheme()) {
             setTheme(R.style.DarkAppTheme);

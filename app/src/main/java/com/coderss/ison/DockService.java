@@ -57,7 +57,7 @@ public class DockService extends Service {
 
     @SuppressLint("ClickableViewAccessibility")
     public int onStartCommand(Intent intent, int flags, int startId) {
-        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+        preferences = new Preferences(getBaseContext());
         int notesBelow = preferences.getNotesBelow();
         int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
 

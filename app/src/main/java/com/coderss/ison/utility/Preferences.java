@@ -1,21 +1,27 @@
 package com.coderss.ison.utility;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
+
+import com.coderss.ison.R;
+
+import androidx.preference.PreferenceManager;
 
 public class Preferences {
 
     private static boolean soundSetInitialized = false;
     private SharedPreferences sharedPreferences;
+    private Context baseContext;
 
-    public Preferences(SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
+    public Preferences(Context baseContext) {
+        this.baseContext = baseContext;
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext);
     }
 
-    public void initializeSoundSet(Player player, AssetManager assets) {
+    public void initializeSoundSet(Player player) {
         if (!soundSetInitialized) {
             int soundSetI = getSelectSound();
-            SoundSet.loadSoundSet(player, assets, soundSetI);
+            SoundSet.loadSoundSet(player, baseContext.getAssets(), soundSetI);
 
             soundSetInitialized = true;
         }
@@ -24,7 +30,8 @@ public class Preferences {
     public float getButtonHeight() {
         int sixteenths;
         try {
-            sixteenths = Integer.parseInt(sharedPreferences.getString("keyButtonHeight", "05"), 16);
+            sixteenths = Integer.parseInt(sharedPreferences.getString("keyButtonHeight",
+                    baseContext.getString(R.string.keyButtonHeightDefault)), 16);
         } catch (Throwable th) {
             th.printStackTrace();
             sixteenths = 5;
@@ -35,7 +42,8 @@ public class Preferences {
     public float getDockWidth() {
         int sixteenths;
         try {
-            sixteenths = Integer.parseInt(sharedPreferences.getString("keyDockWidth", "08"), 16);
+            sixteenths = Integer.parseInt(sharedPreferences.getString("keyDockWidth",
+                    baseContext.getString(R.string.keyDockWidthDefault)), 16);
         } catch (Throwable th) {
             th.printStackTrace();
             sixteenths = 8;
@@ -44,12 +52,14 @@ public class Preferences {
     }
 
     public boolean isDarkTheme() {
-        return sharedPreferences.getString("keyTheme", "dark").equals("dark");
+        return sharedPreferences.getString("keyTheme",
+                baseContext.getString(R.string.keyThemeDefault)).equals("dark");
     }
 
     public int getNotesBelow() {
         try {
-            return Integer.parseInt(sharedPreferences.getString("keyNotesBelow", "4"));
+            return Integer.parseInt(sharedPreferences.getString("keyNotesBelow",
+                    baseContext.getString(R.string.keyNotesBelowDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -58,7 +68,8 @@ public class Preferences {
 
     public int getNotesAbove() {
         try {
-            return Integer.parseInt(sharedPreferences.getString("keyNotesAbove", "8"));
+            return Integer.parseInt(sharedPreferences.getString("keyNotesAbove",
+                    baseContext.getString(R.string.keyNotesAboveDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -67,7 +78,8 @@ public class Preferences {
 
     public int getSelectSound() {
         try {
-            return Integer.parseInt(sharedPreferences.getString("keySelectSound", "0"));
+            return Integer.parseInt(sharedPreferences.getString("keySelectSound",
+                    baseContext.getString(R.string.keySelectSoundDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -75,20 +87,24 @@ public class Preferences {
     }
 
     public boolean isBaseNoteSliderDiscrete() {
-        return sharedPreferences.getString("keyBaseSlider", "discrete").equals("discrete");
+        return sharedPreferences.getString("keyBaseSlider",
+                baseContext.getString(R.string.keyBaseSliderDefault)).equals("discrete");
     }
 
     public boolean isShowingMinorChangers() {
-        return sharedPreferences.getBoolean("keyShowMinorChangers", false);
+        return sharedPreferences.getBoolean("keyShowMinorChangers",
+                baseContext.getString(R.string.keyShowMinorChangersDefault).equals("true"));
     }
 
     public boolean isShowingMajorChangers() {
-        return sharedPreferences.getBoolean("keyShowMajorChangers", false);
+        return sharedPreferences.getBoolean("keyShowMajorChangers",
+                baseContext.getString(R.string.keyShowMajorChangersDefault).equals("true"));
     }
 
     public float getVolumeChangeTime() {
         try {
-            return Float.parseFloat(sharedPreferences.getString("keyVolumeChangeTime", "0.0"));
+            return Float.parseFloat(sharedPreferences.getString("keyVolumeChangeTime",
+                    baseContext.getString(R.string.keyVolumeChangeTimeDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -97,7 +113,8 @@ public class Preferences {
 
     public float getFrequencyChangeTime() {
         try {
-            return Float.parseFloat(sharedPreferences.getString("keyFrequencyChangeTime", "0.0"));
+            return Float.parseFloat(sharedPreferences.getString("keyFrequencyChangeTime",
+                    baseContext.getString(R.string.keyFrequencyChangeTimeDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -105,20 +122,24 @@ public class Preferences {
     }
 
     public boolean isLeftToRight() {
-        return sharedPreferences.getString("keyHorizontalDirection", "l2r").equals("l2r");
+        return sharedPreferences.getString("keyHorizontalDirection",
+                baseContext.getString(R.string.keyHorizontalDirectionDefault)).equals("l2r");
     }
 
     public boolean isTopToBottom() {
-        return sharedPreferences.getString("keyVerticalDirection", "b2t").equals("t2b");
+        return sharedPreferences.getString("keyVerticalDirection",
+                baseContext.getString(R.string.keyVerticalDirectionDefault)).equals("t2b");
     }
 
     public boolean isFlowHorizontal() {
-        return sharedPreferences.getString("keyFlowDirection", "horizontal").equals("horizontal");
+        return sharedPreferences.getString("keyFlowDirection",
+                baseContext.getString(R.string.keyFlowDirectionDefault)).equals("horizontal");
     }
 
     public int getDimensionLimit() {
         try {
-            return Integer.parseInt(sharedPreferences.getString("keyDimensionLimit", "1"));
+            return Integer.parseInt(sharedPreferences.getString("keyDimensionLimit",
+                    baseContext.getString(R.string.keyDimensionLimitDefault)));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;

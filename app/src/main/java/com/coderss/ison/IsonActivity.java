@@ -70,7 +70,7 @@ public class IsonActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        preferences = new Preferences(PreferenceManager.getDefaultSharedPreferences(getBaseContext()));
+        preferences = new Preferences(getBaseContext());
 
         if (preferences.isDarkTheme()) {
             setTheme(R.style.DarkAppTheme);
@@ -108,7 +108,7 @@ public class IsonActivity extends AppCompatActivity {
         setScale(0); //set the current scale to Diatonic (index 0)
         //the setScale method is defined below
 
-        preferences.initializeSoundSet(player, getAssets());
+        preferences.initializeSoundSet(player);
 
         setContentView(R.layout.activity_main);
     }
