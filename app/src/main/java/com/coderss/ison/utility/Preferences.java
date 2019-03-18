@@ -75,7 +75,7 @@ public class Preferences {
     }
 
     public boolean isBaseNoteSliderDiscrete() {
-        return sharedPreferences.getString("listBaseSlider", "discrete").equals("discrete");
+        return sharedPreferences.getString("keyBaseSlider", "discrete").equals("discrete");
     }
 
     public boolean isShowingMinorChangers() {
@@ -88,7 +88,7 @@ public class Preferences {
 
     public float getVolumeChangeTime() {
         try {
-            return Float.parseFloat(sharedPreferences.getString("listVolumeChangeTime", "0.0"));
+            return Float.parseFloat(sharedPreferences.getString("keyVolumeChangeTime", "0.0"));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;
@@ -97,7 +97,7 @@ public class Preferences {
 
     public float getFrequencyChangeTime() {
         try {
-            return Float.parseFloat(sharedPreferences.getString("listFrequencyChangeTime", "0.0"));
+            return Float.parseFloat(sharedPreferences.getString("keyFrequencyChangeTime", "0.0"));
         } catch (Throwable th) {
             th.printStackTrace();
             return 0;

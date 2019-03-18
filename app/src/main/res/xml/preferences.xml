@@ -11,25 +11,25 @@
             android:entries="@array/prefButtonHeightEntries"
             android:entryValues="@array/prefButtonHeightEntryValues"
             android:key="keyButtonHeight"
-            android:title="Note button height"
+            android:title="@string/keyButtonHeightTitle"
             android:summary="%s"
-            android:defaultValue="05"/>
+            android:defaultValue="@string/keyButtonHeightDefault"/>
 
         <ListPreference
             android:entries="@array/prefDockWidthEntries"
             android:entryValues="@array/prefDockWidthEntryValues"
             android:key="keyDockWidth"
-            android:title="Ison dock width"
+            android:title="@string/keyDockWidthTitle"
             android:summary="%s"
-            android:defaultValue="08"/>
+            android:defaultValue="@string/keyDockWidthDefault"/>
 
         <ListPreference
             android:entries="@array/prefThemeEntries"
             android:entryValues="@array/prefThemeEntryValues"
             android:key="keyTheme"
-            android:title="Application theme"
+            android:title="@string/keyThemeTitle"
             android:summary="%s"
-            android:defaultValue="dark"/>
+            android:defaultValue="@string/keyThemeDefault"/>
 
     </PreferenceCategory>
 
@@ -39,17 +39,17 @@
             android:entries="@array/prefNotesBelowEntries"
             android:entryValues="@array/prefNotesBelowEntryValues"
             android:key="keyNotesBelow"
-            android:title="Notes below base note"
+            android:title="@string/keyNotesBelowTitle"
             android:summary="%s"
-            android:defaultValue="4"/>
+            android:defaultValue="@string/keyNotesBelowDefault"/>
 
         <ListPreference
             android:entries="@array/prefNotesAboveEntries"
             android:entryValues="@array/prefNotesAboveEntryValues"
             android:key="keyNotesAbove"
-            android:title="Notes above base note"
+            android:title="@string/keyNotesAboveTitle"
             android:summary="%s"
-            android:defaultValue="8"/>
+            android:defaultValue="@string/keyNotesAboveDefault"/>
 
     </PreferenceCategory>
 
@@ -57,42 +57,43 @@
 
         <ListPreference
             android:key="keySelectSound"
-            android:title="Select sound"
-            android:summary="%s" />
+            android:title="@string/keySelectSoundTitle"
+            android:summary="%s"
+            android:defaultValue="@string/keySelectSoundDefault"/>
 
         <ListPreference
             android:entries="@array/prefBaseSliderTypeEntries"
             android:entryValues="@array/prefBaseSliderTypeEntryValues"
-            android:key="listBaseSlider"
-            android:title="Base note slider type"
+            android:key="keyBaseSlider"
+            android:title="@string/keyBaseSliderTitle"
             android:summary="%s"
-            android:defaultValue="discrete"/>
+            android:defaultValue="@string/keyBaseSliderDefault"/>
 
         <SwitchPreference
-            android:defaultValue="false"
             android:key="keyShowMinorChangers"
-            android:title="Show minor frequency change buttons" />
+            android:title="@string/keyShowMinorChangersTitle"
+            android:defaultValue="@string/keyShowMinorChangersDefault" />
 
         <SwitchPreference
-            android:defaultValue="true"
             android:key="keyShowMajorChangers"
-            android:title="Show major frequency change buttons" />
+            android:title="@string/keyShowMajorChangersTitle"
+            android:defaultValue="@string/keyShowMajorChangersDefault" />
 
         <ListPreference
             android:entries="@array/prefChangeTimeEntries"
             android:entryValues="@array/prefChangeTimeEntryValues"
-            android:key="listVolumeChangeTime"
-            android:title="Volume change time"
+            android:key="keyVolumeChangeTime"
+            android:title="@string/keyVolumeChangeTimeTitle"
             android:summary="%s"
-            android:defaultValue="0.200"/>
+            android:defaultValue="@string/keyVolumeChangeTimeDefault"/>
 
         <ListPreference
             android:entries="@array/prefChangeTimeEntries"
             android:entryValues="@array/prefChangeTimeEntryValues"
-            android:key="listFrequencyChangeTime"
-            android:title="Frequency change time"
+            android:key="keyFrequencyChangeTime"
+            android:title="@string/keyFrequencyChangeTimeTitle"
             android:summary="%s"
-            android:defaultValue="0.050"/>
+            android:defaultValue="@string/keyFrequencyChangeTimeDefault"/>
 
     </PreferenceCategory>
 
@@ -102,33 +103,33 @@
             android:entries="@array/prefHorizontalDirectionEntries"
             android:entryValues="@array/prefHorizontalDirectionEntryValues"
             android:key="keyHorizontalDirection"
-            android:title="Horizontal direction"
+            android:title="@string/keyHorizontalDirectionTitle"
             android:summary="%s"
-            android:defaultValue="l2r"/>
+            android:defaultValue="@string/keyHorizontalDirectionDefault"/>
 
         <ListPreference
             android:entries="@array/prefVerticalDirectionEntries"
             android:entryValues="@array/prefVerticalDirectionEntryValues"
             android:key="keyVerticalDirection"
-            android:title="Vertical direction"
+            android:title="@string/keyVerticalDirectionTitle"
             android:summary="%s"
-            android:defaultValue="b2t"/>
+            android:defaultValue="@string/keyVerticalDirectionDefault"/>
 
         <ListPreference
             android:entries="@array/prefFlowDimensionEntries"
             android:entryValues="@array/prefFlowDimensionEntryValues"
             android:key="keyFlowDirection"
-            android:title="Primary button flow dimension"
+            android:title="@string/keyFlowDirectionTitle"
             android:summary="%s"
-            android:defaultValue="horizontal"/>
+            android:defaultValue="@string/keyFlowDirectionDefault"/>
 
         <ListPreference
             android:entries="@array/prefDimensionLimitEntries"
             android:entryValues="@array/prefDimensionLimitEntryValues"
             android:key="keyDimensionLimit"
-            android:title="Primary dimension button limit"
+            android:title="@string/keyDimensionLimitTitle"
             android:summary="%s"
-            android:defaultValue="1"/>
+            android:defaultValue="@string/keyDimensionLimitDefault"/>
 
     </PreferenceCategory>
 

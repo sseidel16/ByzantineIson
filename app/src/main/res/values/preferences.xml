@@ -201,4 +201,35 @@
         <item>8</item>
     </string-array>
 
+    <string name="keyButtonHeightTitle">Note button height</string>
+    <string name="keyButtonHeightDefault">05</string>
+    <string name="keyDockWidthTitle">Ison dock width</string>
+    <string name="keyDockWidthDefault">08</string>
+    <string name="keyThemeTitle">Application theme</string>
+    <string name="keyThemeDefault">dark</string>
+    <string name="keyNotesBelowTitle">Notes below base note</string>
+    <string name="keyNotesBelowDefault">4</string>
+    <string name="keyNotesAboveTitle">Notes above base note</string>
+    <string name="keyNotesAboveDefault">8</string>
+    <string name="keySelectSoundTitle">Select sound</string>
+    <string name="keySelectSoundDefault">0</string>
+    <string name="keyBaseSliderTitle">Base note slider type</string>
+    <string name="keyBaseSliderDefault">discrete</string>
+    <string name="keyShowMinorChangersTitle">Show minor frequency change buttons</string>
+    <string name="keyShowMinorChangersDefault">false</string>
+    <string name="keyShowMajorChangersTitle">Show major frequency change buttons</string>
+    <string name="keyShowMajorChangersDefault">true</string>
+    <string name="keyVolumeChangeTimeTitle">Volume change time</string>
+    <string name="keyVolumeChangeTimeDefault">0.200</string>
+    <string name="keyFrequencyChangeTimeTitle">Frequency change time</string>
+    <string name="keyFrequencyChangeTimeDefault">0.050</string>
+    <string name="keyHorizontalDirectionTitle">Horizontal direction</string>
+    <string name="keyHorizontalDirectionDefault">l2r</string>
+    <string name="keyVerticalDirectionTitle">Vertical direction</string>
+    <string name="keyVerticalDirectionDefault">b2t</string>
+    <string name="keyFlowDirectionTitle">Primary button flow dimension</string>
+    <string name="keyFlowDirectionDefault">horizontal</string>
+    <string name="keyDimensionLimitTitle">Primary dimension button limit</string>
+    <string name="keyDimensionLimitDefault">1</string>
+
 </resources>

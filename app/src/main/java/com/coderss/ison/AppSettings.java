@@ -63,7 +63,6 @@ public class AppSettings extends AppCompatActivity {
 
             prefSelectSound.setEntries(soundSetEntries);
             prefSelectSound.setEntryValues(soundSetEntryValues);
-            prefSelectSound.setDefaultValue(soundSetEntryValues[0]);
             prefSelectSound.setOnPreferenceChangeListener((Preference preference, Object newValue) -> {
                 System.out.println("Setting sound set");
                 AppSettings appSettings = (AppSettings) getActivity();
