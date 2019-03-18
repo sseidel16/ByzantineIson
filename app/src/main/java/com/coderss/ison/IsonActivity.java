@@ -150,7 +150,7 @@ public class IsonActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         //this is called if somebody touches the Dock button
-        if (item.getItemId() == R.id.openDock) {
+        if (item.getItemId() == R.id.openIsonDock) {
             Intent dockIntent = new Intent(IsonActivity.this, DockService.class);
             dockIntent.putExtra("com.coderss.ison.currentScaleIndex", currentScaleIndex);
             dockIntent.putExtra("com.coderss.ison.base", base);
@@ -158,8 +158,13 @@ public class IsonActivity extends AppCompatActivity {
             startService(dockIntent);
             finish();
             return true;
-        } else if (item.getItemId() == R.id.openLayoutSettings) {
+        } else if (item.getItemId() == R.id.openAppSettings) {
             Intent intent = new Intent(getApplicationContext(), AppSettings.class);
+            startActivity(intent);
+            finish();
+            return true;
+        } else if (item.getItemId() == R.id.openScaleManager) {
+            Intent intent = new Intent(getApplicationContext(), ScaleManager.class);
             startActivity(intent);
             finish();
             return true;
@@ -293,56 +298,34 @@ public class IsonActivity extends AppCompatActivity {
             }
         });
 
-        String[] scaleStrings = new String[scales.size() + 1];
-        scaleStrings[0] = "Manage Scales";
-        for (int index = 1; index < scaleStrings.length; ++index) {
-            scaleStrings[index] = scales.get(index - 1).name;
+        String[] scaleStrings = new String[scales.size()];
+        for (int index = 0; index < scaleStrings.length; index++) {
+            scaleStrings[index] = scales.get(index).name;
         }
 
-        Spinner j = this.findViewById(R.id.scaleSpinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_spinner_item,
-                scaleStrings) {
-            public View getView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView)super.getView(position, convertView, parent);
-                return view;
-            }
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView)super.getDropDownView(position, convertView, parent);
-                System.out.println(position + "," + view.getText());
-                if (position == 0) view.setTypeface(Typeface.DEFAULT_BOLD);
-                else view.setTypeface(Typeface.DEFAULT);
-                return view;
-            }
-        };
+        Spinner scaleSpinner = this.findViewById(R.id.scaleSpinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, scaleStrings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        j.setAdapter(adapter);
-        j.setSelection(1);
-        j.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        scaleSpinner.setAdapter(adapter);
+        scaleSpinner.setSelection(0);
+        scaleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int arg2, long arg3) {
                 // TODO Auto-generated method stub
-                if (arg2 == 0) {
-                    Intent intent = new Intent(IsonActivity.this, ScaleManager.class);
-                    IsonActivity.this.startActivity(intent);
-                    finish();
-                } else {
-                    int notesBelow = preferences.getNotesBelow();
-                    int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
+                int notesBelow = preferences.getNotesBelow();
+                int totalNotes = notesBelow + 1 + preferences.getNotesAbove();
 
-                    setScale(arg2 - 1);
-                    setButtonText(totalNotes, notesBelow);
-                    setFrequencyText();
-                }
+                setScale(arg2);
+                setButtonText(totalNotes, notesBelow);
+                setFrequencyText();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
-
             }
         });
         frequency = this.findViewById(R.id.textView4);

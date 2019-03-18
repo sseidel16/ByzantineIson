@@ -36,6 +36,7 @@ public class ScaleManager extends FragmentActivity {
     private SeekBar[] seekBar;
     private EditText nameBox;
     private Spinner scaleSelector;
+
     //changed by ChangeScaleConfirmation
     private Spinner baseNoteSelector;
     static ArrayList<Scale> scales;
@@ -53,12 +54,12 @@ public class ScaleManager extends FragmentActivity {
 
         super.onCreate(savedInstanceState);
         scales = Scale.loadScales(this.getApplicationContext());
-        System.out.println("created");
         if (editedScale == null) {
             editedScale = scales.get(selectedScale).copy();
             System.out.println(editedScale);
         }
         setContentView(R.layout.scale_manager);
+        setTitle("Scale Manager");
         setUpButtons();
     }
 
@@ -82,6 +83,7 @@ public class ScaleManager extends FragmentActivity {
                 setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
         ((TextView)this.findViewById(R.id.textViewGreek7)).
                 setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
+
         TextView[] width = new TextView[7];
         width[0] = this.findViewById(R.id.width1);
         width[1] = this.findViewById(R.id.width2);
@@ -90,6 +92,7 @@ public class ScaleManager extends FragmentActivity {
         width[4] = this.findViewById(R.id.width5);
         width[5] = this.findViewById(R.id.width6);
         width[6] = this.findViewById(R.id.width7);
+
         seekBar = new SeekBar[7];
         seekBar[0] = this.findViewById(R.id.seekBar1);
         seekBar[1] = this.findViewById(R.id.seekBar2);
@@ -98,6 +101,7 @@ public class ScaleManager extends FragmentActivity {
         seekBar[4] = this.findViewById(R.id.seekBar5);
         seekBar[5] = this.findViewById(R.id.seekBar6);
         seekBar[6] = this.findViewById(R.id.seekBar7);
+
         for (int i = 0; i < 7; ++i) {
             width[i].setWidth(width[i].getLineHeight() * 2);
             final int index = i;
@@ -189,11 +193,6 @@ public class ScaleManager extends FragmentActivity {
             dialog.show(getSupportFragmentManager(),"dialog");
         });
 
-        Button cancel = this.findViewById(R.id.cancel);
-        cancel.setOnClickListener(arg0 -> {
-            cancelButton();
-        });
-
         Button delete = this.findViewById(R.id.delete);
         delete.setOnClickListener(arg0 -> {
             DeleteConfirmation dialog = new DeleteConfirmation();
@@ -236,11 +235,9 @@ public class ScaleManager extends FragmentActivity {
             ScaleManager scaleManager = (ScaleManager) getActivity();
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? All created and edited scales will be lost");
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Scale.emergencyReset(getActivity());
-                    scaleManager.goBackToIsonActivity();
-                }
+            builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
+                Scale.emergencyReset(getActivity());
+                scaleManager.goBackToIsonActivity();
             });
             builder.setNegativeButton("Cancel", null);
             return builder.create();
@@ -284,10 +281,8 @@ public class ScaleManager extends FragmentActivity {
             builder.setMessage("Are you sure? Your changes to " +
                     scaleManager.scales.get(scaleManager.selectedScale).name +
                     " will be lost");
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    scaleManager.goBackToIsonActivity();
-                }
+            builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
+                scaleManager.goBackToIsonActivity();
             });
             builder.setNegativeButton("Cancel", null);
             return builder.create();

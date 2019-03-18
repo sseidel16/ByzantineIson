@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/openDock"
+    <item android:id="@+id/openIsonDock"
         android:title="Dock"
         app:showAsAction="ifRoom"
         />
-    <item android:id="@+id/openLayoutSettings"
+    <item android:id="@+id/openAppSettings"
         android:title="Preferences"
         app:showAsAction="ifRoom"
         />
-
+    <item android:id="@+id/openScaleManager"
+        android:title="Scale Manager"
+        app:showAsAction="ifRoom"
+        />
 </menu>
