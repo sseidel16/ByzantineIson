@@ -23,6 +23,7 @@ Updates:
 * Preference features added
   * Layout preferences
     * Preference for note button height
+    * Preference for width of the ison dock
     * Dark and light theme preference (dark helps when in church)
   * Scale preferences
     * Preference for total buttons below base note
@@ -44,11 +45,8 @@ Known issues:
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 * Preferences do not load their default values
-* Switching from ison activity to dock and vice versa does not persist note that is playing
 
-Future features:
-* Add layout preferences
-  * Preference for width of the ison dock
+Future features: None at this moment
 
 ## Please help me out!!
 1. If you know of an issue, please add it and I will look into it. Feel free to request a feature as well!
