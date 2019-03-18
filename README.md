@@ -44,7 +44,6 @@ Updates:
 Known issues:
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
-* Preferences do not load their default values
 
 Future features: None at this moment
 
