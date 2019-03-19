@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.preference.PreferenceManager;
 
+import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -80,6 +83,13 @@ public class IsonActivity extends AppCompatActivity {
 
         //this is called when the view/activity is loaded
         super.onCreate(savedInstanceState);
+
+        // keep the screen on if appropriate preference is set
+        if (preferences.isKeepingScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
 
         if (savedInstanceState != null) {
             // if we are resuming the app, then resume the previous state
@@ -151,12 +161,21 @@ public class IsonActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         //this is called if somebody touches the Dock button
         if (item.getItemId() == R.id.openIsonDock) {
+
+            // check if we have permission to draw overlays before opening the dock
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                startActivity(intent);
+                return false;
+            }
+
             Intent dockIntent = new Intent(IsonActivity.this, DockService.class);
             dockIntent.putExtra("com.coderss.ison.currentScaleIndex", currentScaleIndex);
             dockIntent.putExtra("com.coderss.ison.base", base);
             dockIntent.putExtra("com.coderss.ison.note", note);
             startService(dockIntent);
             finish();
+
             return true;
         } else if (item.getItemId() == R.id.openAppSettings) {
             Intent intent = new Intent(getApplicationContext(), AppSettings.class);

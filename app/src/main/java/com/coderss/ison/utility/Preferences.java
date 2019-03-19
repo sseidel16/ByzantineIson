@@ -91,6 +91,11 @@ public class Preferences {
                 baseContext.getString(R.string.keyBaseSliderDefault)).equals("discrete");
     }
 
+    public boolean isKeepingScreenOn() {
+        return sharedPreferences.getBoolean("keyKeepScreenOn",
+                baseContext.getString(R.string.keyKeepScreenOnDefault).equals("true"));
+    }
+
     public boolean isShowingMinorChangers() {
         return sharedPreferences.getBoolean("keyShowMinorChangers",
                 baseContext.getString(R.string.keyShowMinorChangersDefault).equals("true"));

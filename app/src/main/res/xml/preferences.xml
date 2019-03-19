@@ -69,16 +69,6 @@
             android:summary="%s"
             android:defaultValue="@string/keyBaseSliderDefault"/>
 
-        <SwitchPreference
-            android:key="keyShowMinorChangers"
-            android:title="@string/keyShowMinorChangersTitle"
-            android:defaultValue="@string/keyShowMinorChangersDefault" />
-
-        <SwitchPreference
-            android:key="keyShowMajorChangers"
-            android:title="@string/keyShowMajorChangersTitle"
-            android:defaultValue="@string/keyShowMajorChangersDefault" />
-
         <ListPreference
             android:entries="@array/prefChangeTimeEntries"
             android:entryValues="@array/prefChangeTimeEntryValues"
@@ -94,6 +84,25 @@
             android:title="@string/keyFrequencyChangeTimeTitle"
             android:summary="%s"
             android:defaultValue="@string/keyFrequencyChangeTimeDefault"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Screen Preferences">
+
+        <SwitchPreference
+            android:key="keyKeepScreenOn"
+            android:title="@string/keyKeepScreenOnTitle"
+            android:defaultValue="@string/keyKeepScreenOnDefault" />
+
+        <SwitchPreference
+            android:key="keyShowMinorChangers"
+            android:title="@string/keyShowMinorChangersTitle"
+            android:defaultValue="@string/keyShowMinorChangersDefault" />
+
+        <SwitchPreference
+            android:key="keyShowMajorChangers"
+            android:title="@string/keyShowMajorChangersTitle"
+            android:defaultValue="@string/keyShowMajorChangersDefault" />
 
     </PreferenceCategory>
 

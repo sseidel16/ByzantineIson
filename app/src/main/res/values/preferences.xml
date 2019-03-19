@@ -215,6 +215,8 @@
     <string name="keySelectSoundDefault">0</string>
     <string name="keyBaseSliderTitle">Base note slider type</string>
     <string name="keyBaseSliderDefault">discrete</string>
+    <string name="keyKeepScreenOnTitle">Keep device on when the main screen is active</string>
+    <string name="keyKeepScreenOnDefault">false</string>
     <string name="keyShowMinorChangersTitle">Show minor frequency change buttons</string>
     <string name="keyShowMinorChangersDefault">false</string>
     <string name="keyShowMajorChangersTitle">Show major frequency change buttons</string>
