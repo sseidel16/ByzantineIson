@@ -44,8 +44,12 @@ Updates:
 Known issues:
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
+* Scale manager does not handle its state well at all, especially on rotates
+* Save button appears in scale manager even when there is nothing to save
 
-Future features: None at this moment
+Future features:
+* Add preference for enable/disable sound blending
+* Add preference for enable/disable play note on touch down
 
 ## Please help me out!!
 1. If you know of an issue, please add it and I will look into it. Feel free to request a feature as well!
