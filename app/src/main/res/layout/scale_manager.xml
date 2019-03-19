@@ -360,13 +360,6 @@
             android:layout_weight="1"
             android:text="Delete" />
 
-        <Button
-            android:id="@+id/reset"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Reset Scales" />
-
     </LinearLayout>
 
 </RelativeLayout>

@@ -233,5 +233,7 @@
     <string name="keyFlowDirectionDefault">horizontal</string>
     <string name="keyDimensionLimitTitle">Primary dimension button limit</string>
     <string name="keyDimensionLimitDefault">1</string>
+    <string name="keyScaleResetTitle">Reset scales</string>
+    <string name="keyScaleResetSummary">Delete all saved scales and revert to the original scales packaged with the application</string>
 
 </resources>

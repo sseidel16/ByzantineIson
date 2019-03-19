@@ -152,7 +152,7 @@ public class IsonActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        //dont worry about this method
+        // no need to worry about this method
         MenuInflater inflator = getMenuInflater();
         inflator.inflate(R.menu.main_activity_actions, menu);
         return super.onCreateOptionsMenu(menu);

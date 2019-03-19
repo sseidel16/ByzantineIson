@@ -187,12 +187,6 @@ public class ScaleManager extends FragmentActivity {
             goBackToIsonActivity();
         });
 
-        Button reset = this.findViewById(R.id.reset);
-        reset.setOnClickListener(arg0 -> {
-            ResetConfirmation dialog = new ResetConfirmation();
-            dialog.show(getSupportFragmentManager(),"dialog");
-        });
-
         Button delete = this.findViewById(R.id.delete);
         delete.setOnClickListener(arg0 -> {
             DeleteConfirmation dialog = new DeleteConfirmation();
@@ -226,20 +220,6 @@ public class ScaleManager extends FragmentActivity {
                 scaleManager.scaleSelector.setSelection(scaleManager.selectedScale);//revert
                 dialogOpen = false;
             });
-            return builder.create();
-        }
-    }
-
-    public static class ResetConfirmation extends DialogFragment {
-        public Dialog onCreateDialog(Bundle savedInstance) {
-            ScaleManager scaleManager = (ScaleManager) getActivity();
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Are you sure? All created and edited scales will be lost");
-            builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
-                Scale.emergencyReset(getActivity());
-                scaleManager.goBackToIsonActivity();
-            });
-            builder.setNegativeButton("Cancel", null);
             return builder.create();
         }
     }

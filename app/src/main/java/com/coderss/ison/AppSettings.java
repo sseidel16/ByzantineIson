@@ -1,16 +1,21 @@
 package com.coderss.ison;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.coderss.ison.utility.Player;
 import com.coderss.ison.utility.Preferences;
+import com.coderss.ison.utility.Scale;
 import com.coderss.ison.utility.SoundSet;
 
 public class AppSettings extends AppCompatActivity {
@@ -74,6 +79,23 @@ public class AppSettings extends AppCompatActivity {
                     return false;
                 }
             });
+
+            Preference resetScales = findPreference("keyScaleReset");
+            resetScales.setOnPreferenceClickListener(preference -> {
+                ResetConfirmation dialog = new ResetConfirmation();
+                dialog.show(getActivity().getSupportFragmentManager(),"dialog");
+                return false;
+            });
+        }
+    }
+
+    public static class ResetConfirmation extends DialogFragment {
+        public Dialog onCreateDialog(Bundle savedInstance) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Are you sure? All created and edited scales will be lost");
+            builder.setPositiveButton("OK", (dialog, id) -> Scale.emergencyReset(getActivity()));
+            builder.setNegativeButton("Cancel", null);
+            return builder.create();
         }
     }
 

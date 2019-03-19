@@ -51,6 +51,11 @@
             android:summary="%s"
             android:defaultValue="@string/keyNotesAboveDefault"/>
 
+        <Preference
+            android:key="keyScaleReset"
+            android:title="@string/keyScaleResetTitle"
+            android:summary="@string/keyScaleResetSummary"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Audio Preferences">
