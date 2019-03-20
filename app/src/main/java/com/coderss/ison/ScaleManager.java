@@ -342,9 +342,9 @@ public class ScaleManager extends AppCompatActivity {
         editedScale = null;
         scales.clear();
 
-        finish();
         Intent intent = new Intent(getApplicationContext(), IsonActivity.class);
         startActivity(intent);
+        finish();
     }
 
 }
