@@ -51,6 +51,7 @@ Known issues:
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 * Scale manager does not handle its state well at all, especially on rotates
 * Save button appears in scale manager even when there is nothing to save
+* Scale always resets when returning to main screen from dock
 
 Future features:
 
