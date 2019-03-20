@@ -13,11 +13,12 @@ These files can be found in the cpp directory under main.
 ## Sound blending
 The application can play any audio frequency by distorting recorded audio sounds.
 However, the more these sounds are distorted, the less natural and more robotic the output sound becomes.
-Sound sets are therefore used which are multiple recordings at several different frequencies, and the application chooses the recording to use based on how close its frequency is to the desired output frequency.
+Sound sets are therefore used which are multiple recordings at several different frequencies, and the application chooses the recorded sounds to use based on how close their frequencies are to the desired output frequency.
 The goal is to minimize distortion.
-When a note changes, however, the result is often that a separate audio buffer is played, and this results in a slight sound glitch as the buffer switches.
-The application therefore changes frequency over a short period of time and blends the two sounds together, fading the first out while the second fades in, to provide a smooth transition between notes.
-This transition time is provided as a new preference (see updates)
+There are 3 sound blending modes provided by the application, that can be changed in preferences under Audio Preferences, and are listed below:
+1 Always blend: This mode chooses the recorded buffer with the closest frequency below the desired frequency and the recorded buffer with the closest frequency above the desired frequency, and blends these 2 buffers together. The 2 buffers are not blended equally, but proportional to how close their frequencies are to the desired frequency. This mode provides a smooth sound across all frequencies and is the default mode.
+1 Blend only on transition: Some sounds, such as a sine wave, do not blend well since one buffer ends up cancelling out part of the other buffer instead of just blending over it. In this scenario, it is often desireable to only play a single buffer. If the buffer changes due to a frequency change, however, the output sound glitches as the buffer switches. In this mode, the application changes frequency over a short period of time and blends the two buffers together, fading the first out while the second fades in, to provide a smooth transition between notes. This transition time is provided as a new preference (see updates).
+1 Never blend: This mode only plays a single buffer no matter what. When the buffer switches, a small sound glitch will likely be heard.
 
 Updates:
 * Preference features added
@@ -32,6 +33,7 @@ Updates:
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
     * Preference for volume change time
+    * Add preference for enable/disable sound blending
   * Advanced Layout Preferences
     * Preference for notes vertical and horizontal flow directions
     * Advanced layout preference for flow direction by row vs by column
@@ -48,7 +50,6 @@ Known issues:
 * Save button appears in scale manager even when there is nothing to save
 
 Future features:
-* Add preference for enable/disable sound blending
 * Add preference for enable/disable play note on touch down
 
 ## Please help me out!!
