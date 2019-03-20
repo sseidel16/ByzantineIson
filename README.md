@@ -16,11 +16,13 @@ However, the more these sounds are distorted, the less natural and more robotic 
 Sound sets are therefore used which are multiple recordings at several different frequencies, and the application chooses the recorded sounds to use based on how close their frequencies are to the desired output frequency.
 The goal is to minimize distortion.
 There are 3 sound blending modes provided by the application, that can be changed in preferences under Audio Preferences, and are listed below:
-1 Always blend: This mode chooses the recorded buffer with the closest frequency below the desired frequency and the recorded buffer with the closest frequency above the desired frequency, and blends these 2 buffers together. The 2 buffers are not blended equally, but proportional to how close their frequencies are to the desired frequency. This mode provides a smooth sound across all frequencies and is the default mode.
-1 Blend only on transition: Some sounds, such as a sine wave, do not blend well since one buffer ends up cancelling out part of the other buffer instead of just blending over it. In this scenario, it is often desireable to only play a single buffer. If the buffer changes due to a frequency change, however, the output sound glitches as the buffer switches. In this mode, the application changes frequency over a short period of time and blends the two buffers together, fading the first out while the second fades in, to provide a smooth transition between notes. This transition time is provided as a new preference (see updates).
-1 Never blend: This mode only plays a single buffer no matter what. When the buffer switches, a small sound glitch will likely be heard.
+
+1. Always blend: This mode chooses the recorded buffer with the closest frequency below the desired frequency and the recorded buffer with the closest frequency above the desired frequency, and blends these 2 buffers together. The 2 buffers are not blended equally, but proportional to how close their frequencies are to the desired frequency. This mode provides a smooth sound across all frequencies and is the default mode.
+2. Blend only on transition: Some sounds, such as a sine wave, do not blend well since one buffer ends up cancelling out part of the other buffer instead of just blending over it. In this scenario, it is often desireable to only play a single buffer. If the buffer changes due to a frequency change, however, the output sound glitches as the buffer switches. In this mode, the application changes frequency over a short period of time and blends the two buffers together, fading the first out while the second fades in, to provide a smooth transition between notes. This transition time is provided as a new preference (see updates).
+3. Never blend: This mode only plays a single buffer no matter what. When the buffer switches, a small sound glitch will likely be heard.
 
 Updates:
+
 * Preference features added
   * Layout preferences
     * Preference for note button height
@@ -44,12 +46,14 @@ Updates:
 * The delay moving from note to note has been fixed. Switching is now more or less instant
 
 Known issues:
+
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 * Scale manager does not handle its state well at all, especially on rotates
 * Save button appears in scale manager even when there is nothing to save
 
 Future features:
+
 * Add preference for enable/disable play note on touch down
 
 ## Please help me out!!
