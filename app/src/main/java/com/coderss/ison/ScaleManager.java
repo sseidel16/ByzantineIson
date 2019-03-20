@@ -2,16 +2,15 @@ package com.coderss.ison;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.preference.PreferenceManager;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,7 +26,7 @@ import android.widget.TextView;
 import com.coderss.ison.utility.Preferences;
 import com.coderss.ison.utility.Scale;
 
-public class ScaleManager extends FragmentActivity {
+public class ScaleManager extends AppCompatActivity {
 
     private Preferences preferences;
 
