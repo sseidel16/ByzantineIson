@@ -47,11 +47,13 @@ private:
     float java_volume;
     float java_frequency_change_time;
     float java_volume_change_time;
+    int java_blend_mode;
 
     float retrieve(int sound_i);
+    void getBestSound(float frequency, int &sound1_i);
     void getBestSound(float frequency, int& sound1_i, int& sound2_i,
             float& sound1_volume, float& sound2_volume);
-
+    void setIncrement(float &sound_index_increment, int sound_i, float frequency);
 
 public:
     Synthesizer(int num_audio_channels, int frame_rate);
@@ -59,7 +61,7 @@ public:
     virtual int render(int num_samples, int16_t *audio_buffer);
     void setVolume(float volume);
     void setFrequency(float frequency);
-    void setPreferences(float frequency_change_time, float volume_change_time);
+    void setPreferences(float frequency_change_time, float volume_change_time, int blend_mode);
     void setSounds(JNIEnv *env, jobjectArray sound_data_array, jfloatArray frequency_array);
     void setWorkCycles(int work_cycles);
     ~Synthesizer();

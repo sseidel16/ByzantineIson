@@ -113,7 +113,8 @@ public class IsonActivity extends AppCompatActivity {
         // send preferences to player
         float frequencyChangeTime = preferences.getFrequencyChangeTime();
         float volumeChangeTime = preferences.getVolumeChangeTime();
-        player.setPreferences(frequencyChangeTime, volumeChangeTime);
+        int blendMode = preferences.getBlendMode();
+        player.setPreferences(frequencyChangeTime, volumeChangeTime, blendMode);
 
         setScale(0); //set the current scale to Diatonic (index 0)
         //the setScale method is defined below

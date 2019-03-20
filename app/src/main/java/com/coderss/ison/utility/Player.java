@@ -9,6 +9,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Player {
 
+    // CAUTION! These blend mode constants must match those in native code (synthesizer.cc)
+    public static final int BLEND_ALWAYS      = 1;
+    public static final int BLEND_TRANSITION  = 2;
+    public static final int BLEND_NEVER       = 3;
+
     private static final int NUM_BUFFERS = 2;
 
     static {
@@ -23,9 +28,7 @@ public class Player {
     private static native void native_setFrequency(float frequency);
     private static native void native_setVolume(float volume);
     private static native void native_setSounds(short[][] soundDataArray, float[] frequencyArray);
-    private static native void native_setPlayerPreferences(
-            float frequencyChangeTime,
-            float volumeChangeTime);
+    private static native void native_setPlayerPreferences(float frequencyChangeTime, float volumeChangeTime, int blendMode);
 
     private static native void native_setWorkCycles(int workCycles);
     private static native void native_setLoadStabilizationEnabled(boolean isEnabled);
@@ -97,10 +100,12 @@ public class Player {
         System.out.println("Native_setVolume out");
     }
 
-    public void setPreferences(float frequencyChangeTime, float volumeChangeTime) {
-        native_setPlayerPreferences(
-                frequencyChangeTime,
-                volumeChangeTime);
+    public void setPreferences(float frequencyChangeTime, float volumeChangeTime, int blendMode) {
+        if (blendMode != BLEND_ALWAYS && blendMode != BLEND_TRANSITION && blendMode != BLEND_NEVER) {
+            blendMode = BLEND_ALWAYS;
+        }
+
+        native_setPlayerPreferences(frequencyChangeTime, volumeChangeTime, blendMode);
     }
 
     public void changeFreq(float frequency) {

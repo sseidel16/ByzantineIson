@@ -159,8 +159,9 @@ JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setPlayerPre
         JNIEnv *env,
         jclass clazz,
         jfloat frequency_change_time,
-        jfloat volume_change_time) {
-    synth->setPreferences(frequency_change_time, volume_change_time);
+        jfloat volume_change_time,
+        jint blend_mode) {
+    synth->setPreferences(frequency_change_time, volume_change_time, blend_mode);
 }
 
 JNIEXPORT void JNICALL Java_com_coderss_ison_utility_Player_native_1setSounds(

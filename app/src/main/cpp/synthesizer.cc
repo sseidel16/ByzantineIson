@@ -22,6 +22,10 @@
 
 #define DEFAULT_SINE_WAVE_FREQUENCY 440.0
 
+#define BLEND_ALWAYS        1
+#define BLEND_TRANSITION    2
+#define BLEND_NEVER         3
+
 Synthesizer::Synthesizer(
         int num_audio_channels,
         int frame_rate) :
@@ -30,8 +34,10 @@ Synthesizer::Synthesizer(
 
     soundDataArray = nullptr;
 
+    // set defaults
     setFrequency(DEFAULT_SINE_WAVE_FREQUENCY);
     setVolume(0);
+    setPreferences(0, 0, BLEND_ALWAYS);
 
 }
 
@@ -50,13 +56,13 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
         x = x / (y * z);
     }
 
-    // this variable indicates whether the sound samples are positive or negative
-    static int sound1_i = 0;
-    static int sound2_i = 0;
+    static int blend_mode = BLEND_NEVER;
+    static int sound1_i = -1;
+    static int sound2_i = -1;
     static float sound1_volume = 0;
     static float sound2_volume = 0;
-    static float sound1_index_increment = 1;
-    static float sound2_index_increment = 1;
+    static float sound1_index_increment = 0;
+    static float sound2_index_increment = 0;
     static float frequency = DEFAULT_SINE_WAVE_FREQUENCY;
     static float desired_frequency = frequency;
     static float volume = 0;
@@ -76,6 +82,7 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
 
     if (soundDataArray != nullptr && soundLock.try_lock()) {
 
+        // lock the Java lock and look for any changes from the Java layer
         if (java_lock.try_lock()) {
             // check for new preferences
             if (java_frequency_change_time != frequency_change_time) {
@@ -83,6 +90,9 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             }
             if (java_volume_change_time != volume_change_time) {
                 volume_change_time = java_volume_change_time;
+            }
+            if (java_blend_mode != blend_mode) {
+                blend_mode = java_blend_mode;
             }
 
             // check for new frequency
@@ -94,6 +104,28 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
                             (desired_frequency - frequency) / frequency_change_time / frame_rate_;
                 } else {
                     frequency_delta_per_frame = desired_frequency - frequency;
+                }
+
+                // frequency changed
+                if (blend_mode == BLEND_TRANSITION) {
+                    // move current primary sound to secondary
+                    sound2_i = sound1_i;
+                    sound2_index_increment = sound1_index_increment;
+
+                    // set sound sound and reset increments after sound change
+                    getBestSound(desired_frequency, sound1_i);
+                    setIncrement(sound1_index_increment, sound1_i, frequency);
+
+                    if (sound1_i == sound2_i) {
+                        // no need to blend anything
+                        sound2_i = -1; // invalidate identical secondary sound
+                        sound1_volume = 1;
+                        sound2_volume = 0;
+                    } else {
+                        // blend when actually frequency changes
+                        sound1_volume = 0;
+                        sound2_volume = 1;
+                    }
                 }
             }
 
@@ -112,13 +144,29 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             java_lock.unlock();
         }
 
+        int16_t data;
         for (int i = 0; i < frames; i++) {
-            int16_t data = (int16_t) (volume *
-                                      (retrieve(sound1_i) * sound1_volume +
-                                       retrieve(sound2_i) * sound2_volume)
-            );
+            data = 0;
+            if (sound1_i != -1) data += (int16_t) (volume * sound1_volume * retrieve(sound1_i));
+            if (sound2_i != -1) data += (int16_t) (volume * sound2_volume * retrieve(sound2_i));
+
             for (int j = 0; j < num_audio_channels_; j++) {
                 audio_buffer[sample_count++] = data;
+            }
+
+            // if we are never blending, than change sound1_i when data crosses from negative to positive (sound2_i is always -1)
+            if (blend_mode == BLEND_NEVER) {
+                static int16_t previous = data;
+                if (previous <= 0 && data >= 0) {
+                    // set sound sound and reset increments after sound change
+                    getBestSound(frequency, sound1_i);
+                    setIncrement(sound1_index_increment, sound1_i, frequency);
+
+                    sound2_i = -1;
+                    sound1_volume = 1;
+                    sound2_volume = 0;
+                }
+                previous = data;
             }
 
             // change our frequency if it is not as desired
@@ -130,15 +178,24 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
                     frequency += frequency_delta_per_frame;
                 }
 
-                // recalculate best sounds for frequency change
-                getBestSound(frequency, sound1_i, sound2_i, sound1_volume, sound2_volume);
+                if (blend_mode == BLEND_ALWAYS) {
+                    // recalculate best sounds for frequency change
+                    getBestSound(frequency, sound1_i, sound2_i, sound1_volume, sound2_volume);
 
-                // sound1 is below the desired frequency and will be raised
-                // sound2 is above the desired frequency and will be lowered
-                sound1_index_increment = ((44100 * frequency) /
-                                          (frame_rate_ * frequencyArray[sound1_i]));
-                sound2_index_increment = ((44100 * frequency) /
-                                          (frame_rate_ * frequencyArray[sound2_i]));
+                    // sound1 is below the desired frequency and will be raised
+                    // sound2 is above the desired frequency and will be lowered
+                } else if (blend_mode == BLEND_TRANSITION) {
+                    if (sound2_i != -1) {
+                        float change_ratio = (frequency - desired_frequency) /
+                                (frequency - frequency_delta_per_frame - desired_frequency);
+                        sound2_volume *= change_ratio;
+                        sound1_volume = 1 - sound2_volume;
+                    }
+                }
+
+                // reset increments after frequency change
+                setIncrement(sound1_index_increment, sound1_i, frequency);
+                setIncrement(sound2_index_increment, sound2_i, frequency);
             }
 
             // change our volume if it is not as desired
@@ -152,8 +209,8 @@ int Synthesizer::render(int num_samples, int16_t *audio_buffer) {
             }
 
             // increment our sample position
-            if (sound1_volume > 0) samplePositions[sound1_i] += sound1_index_increment;
-            if (sound2_volume > 0) samplePositions[sound2_i] += sound2_index_increment;
+            if (sound1_i != -1) samplePositions[sound1_i] += sound1_index_increment;
+            if (sound2_i != -1) samplePositions[sound2_i] += sound2_index_increment;
         }
 
         soundLock.unlock();
@@ -198,18 +255,29 @@ void Synthesizer::getBestSound(
 
     sound1_volume = sound2_best_margin / (sound1_best_margin + sound2_best_margin);
     sound2_volume = sound1_best_margin / (sound1_best_margin + sound2_best_margin);
-
-    // ensure sounds are valid (volume will simply be 0 if sound index was -1)
-    if (sound1_i < 0) {
-        sound1_i = 0;
-        sound1_volume = 0;
-    }
-    if (sound2_i < 0) {
-        sound2_i = 0;
-        sound2_volume = 0;
-    }
-
 }
+
+void Synthesizer::getBestSound(float frequency, int &sound1_i) {
+
+    sound1_i = -1;
+    float sound1_best_margin = MAXFLOAT;
+    float margin;
+
+    for (int sound_i = 0; sound_i < sounds_n; sound_i++) {
+        margin = abs(frequency - frequencyArray[sound_i]);
+        if (margin < sound1_best_margin) {
+            sound1_i = sound_i;
+            sound1_best_margin = margin;
+        }
+    }
+}
+
+void Synthesizer::setIncrement(float &sound_index_increment, int sound_i, float frequency) {
+    if (sound_i != -1) {
+        sound_index_increment = ((44100 * frequency) / (frame_rate_ * frequencyArray[sound_i]));
+    }
+}
+
 
 float Synthesizer::retrieve(int sound_i) {
     // IF NEEDED: bring position back into range
@@ -239,10 +307,11 @@ void Synthesizer::setFrequency(float frequency) {
     java_lock.unlock();
 }
 
-void Synthesizer::setPreferences(float frequency_change_time, float volume_change_time) {
+void Synthesizer::setPreferences(float frequency_change_time, float volume_change_time, int blend_mode) {
     java_lock.lock();
     java_frequency_change_time = frequency_change_time;
     java_volume_change_time = volume_change_time;
+    java_blend_mode = blend_mode;
     java_lock.unlock();
 }
 

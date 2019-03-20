@@ -100,6 +100,17 @@
         <item>2.000</item>
     </string-array>
 
+    <string-array name="prefBlendModeEntries">
+        <item>Always blend the closest sounds</item>
+        <item>Blend sounds only when transitioning</item>
+        <item>Never blend (switch to best sound instantly)</item>
+    </string-array>
+    <string-array name="prefBlendModeEntryValues">
+        <item>always</item>
+        <item>transition</item>
+        <item>never</item>
+    </string-array>
+
     <string-array name="prefThemeEntries">
         <item>Dark theme</item>
         <item>Light theme</item>
@@ -225,6 +236,8 @@
     <string name="keyVolumeChangeTimeDefault">0.200</string>
     <string name="keyFrequencyChangeTimeTitle">Frequency change time</string>
     <string name="keyFrequencyChangeTimeDefault">0.050</string>
+    <string name="keyBlendModeTitle">Sound blend mode</string>
+    <string name="keyBlendModeDefault">always</string>
     <string name="keyHorizontalDirectionTitle">Horizontal direction</string>
     <string name="keyHorizontalDirectionDefault">l2r</string>
     <string name="keyVerticalDirectionTitle">Vertical direction</string>

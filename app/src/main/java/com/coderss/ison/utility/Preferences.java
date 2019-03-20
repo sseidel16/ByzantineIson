@@ -126,6 +126,21 @@ public class Preferences {
         }
     }
 
+    public int getBlendMode() {
+        String blendMode = sharedPreferences.getString("keyBlendMode",
+                    baseContext.getString(R.string.keyBlendModeDefault));
+
+        if (blendMode.equals("always")) {
+            return Player.BLEND_ALWAYS;
+        } else if (blendMode.equals("transition")) {
+            return Player.BLEND_TRANSITION;
+        } else if (blendMode.equals("never")) {
+            return Player.BLEND_NEVER;
+        } else {
+            return Player.BLEND_ALWAYS;
+        }
+    }
+
     public boolean isLeftToRight() {
         return sharedPreferences.getString("keyHorizontalDirection",
                 baseContext.getString(R.string.keyHorizontalDirectionDefault)).equals("l2r");

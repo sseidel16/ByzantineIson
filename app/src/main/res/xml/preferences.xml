@@ -90,6 +90,14 @@
             android:summary="%s"
             android:defaultValue="@string/keyFrequencyChangeTimeDefault"/>
 
+        <ListPreference
+            android:entries="@array/prefBlendModeEntries"
+            android:entryValues="@array/prefBlendModeEntryValues"
+            android:key="keyBlendMode"
+            android:title="@string/keyBlendModeTitle"
+            android:summary="%s"
+            android:defaultValue="@string/keyBlendModeDefault"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Screen Preferences">
