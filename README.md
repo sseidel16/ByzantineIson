@@ -56,6 +56,7 @@ Known issues:
 Future features:
 
 * Add preference for enable/disable play note on touch down
+* Add ability to load new sound sets from mic or from audio file
 
 ## Please help me out!!
 1. If you know of an issue, please add it and I will look into it. Feel free to request a feature as well!
