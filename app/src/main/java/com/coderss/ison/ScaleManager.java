@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -30,16 +31,18 @@ public class ScaleManager extends AppCompatActivity {
 
     private Preferences preferences;
 
-    private int selectedScale = 0;
-    private Scale editedScale;
-    private SeekBar[] seekBar;
+    private int previousScale;
+
+    private TextView[] widths;
+    private Button save;
+
     private EditText nameBox;
     private Spinner scaleSelector;
 
     //changed by ChangeScaleConfirmation
+    private SeekBar[] seekBar;
     private Spinner baseNoteSelector;
     private ArrayList<Scale> scales;
-    private boolean dialogOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +56,7 @@ public class ScaleManager extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         scales = Scale.loadScales(this.getApplicationContext());
-        if (editedScale == null) {
-            editedScale = scales.get(selectedScale).copy();
-            System.out.println(editedScale);
-        }
+
         setContentView(R.layout.scale_manager);
         setTitle("Scale Manager");
         setUpButtons();
@@ -68,6 +68,13 @@ public class ScaleManager extends AppCompatActivity {
     }
 
     public void setUpButtons() {
+        // grab the spinners and set adapters
+        scaleSelector = findViewById(R.id.scaleSpinner);
+        updateScaleSpinnerAdapter();
+
+        baseNoteSelector = this.findViewById(R.id.spinner2);
+        updateBaseSpinnerAdapter();
+
         ((TextView)this.findViewById(R.id.textViewGreek1)).
                 setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
         ((TextView)this.findViewById(R.id.textViewGreek2)).
@@ -83,14 +90,14 @@ public class ScaleManager extends AppCompatActivity {
         ((TextView)this.findViewById(R.id.textViewGreek7)).
                 setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
 
-        TextView[] width = new TextView[7];
-        width[0] = this.findViewById(R.id.width1);
-        width[1] = this.findViewById(R.id.width2);
-        width[2] = this.findViewById(R.id.width3);
-        width[3] = this.findViewById(R.id.width4);
-        width[4] = this.findViewById(R.id.width5);
-        width[5] = this.findViewById(R.id.width6);
-        width[6] = this.findViewById(R.id.width7);
+        widths = new TextView[7];
+        widths[0] = this.findViewById(R.id.width1);
+        widths[1] = this.findViewById(R.id.width2);
+        widths[2] = this.findViewById(R.id.width3);
+        widths[3] = this.findViewById(R.id.width4);
+        widths[4] = this.findViewById(R.id.width5);
+        widths[5] = this.findViewById(R.id.width6);
+        widths[6] = this.findViewById(R.id.width7);
 
         seekBar = new SeekBar[7];
         seekBar[0] = this.findViewById(R.id.seekBar1);
@@ -101,16 +108,22 @@ public class ScaleManager extends AppCompatActivity {
         seekBar[5] = this.findViewById(R.id.seekBar6);
         seekBar[6] = this.findViewById(R.id.seekBar7);
 
+        nameBox = this.findViewById(R.id.editText1);
+
+        save = this.findViewById(R.id.save);
+
+        // update initial seek bar positions
+        setScale(scaleSelector.getSelectedItemPosition());
+
         for (int i = 0; i < 7; ++i) {
-            width[i].setWidth(width[i].getLineHeight() * 2);
-            final int index = i;
-            final TextView currentWidth = width[i];
+            widths[i].setWidth(widths[i].getLineHeight() * 2);
             seekBar[i].setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress,
                                               boolean fromUser) {
-                    currentWidth.setText(progress + "");
-                    editedScale.widths[index] = progress;
+                    updateWidthTextsFromSeekBars();
+
+                    updateSaveVisibility(widgetsDifferFromScale(scaleSelector.getSelectedItemPosition()));
                 }
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
@@ -123,64 +136,46 @@ public class ScaleManager extends AppCompatActivity {
 
                 }
             });
-            seekBar[i].setProgress(editedScale.widths[i]);
-            //must be after the listener so it is called
         }
 
-        scaleSelector = findViewById(R.id.scaleSpinner);
-        updateSpinner();
-
+        previousScale = -1;//scaleSelector.getSelectedItemPosition();
         scaleSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int newSelection, long arg3) {
-                if (newSelection != selectedScale) {
-                    if (hasBeenChanged()) {
-                        if (!dialogOpen) {
-                            ChangeScaleConfirmation dialog = new ChangeScaleConfirmation();
-                            Bundle args = new Bundle();
-                            args.putInt("selected_scale_position", selectedScale);
-                            args.putInt("new_scale_position", newSelection);
-                            dialog.setArguments(args);
-                            dialog.show(getSupportFragmentManager(),"dialog");
-                        }
-                    } else setScale(newSelection);
+                // make sure we are selecting a new scale before changing anything
+                if (previousScale == -1) {
+                    previousScale = newSelection;
+                    setScale(newSelection);
+                } else if (previousScale != newSelection) {
+                    if (widgetsDifferFromScale(previousScale)) {
+                        ChangeScaleConfirmation dialog = new ChangeScaleConfirmation();
+                        Bundle args = new Bundle();
+                        args.putInt("previous_scale_position", previousScale);
+                        args.putInt("new_scale_position", newSelection);
+                        dialog.setArguments(args);
+                        dialog.show(getSupportFragmentManager(), "dialog");
+                    } else {
+                        setScale(newSelection);
+                    }
                 }
             }
             @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
-
-            }
+            public void onNothingSelected(AdapterView<?> arg0) { }
         });
 
-        nameBox = this.findViewById(R.id.editText1);
-        nameBox.setText(scales.get(selectedScale).name);
+        baseNoteSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateSaveVisibility(widgetsDifferFromScale(scaleSelector.getSelectedItemPosition()));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
 
-        baseNoteSelector = this.findViewById(R.id.spinner2);
-        ArrayAdapter<String> baseNoteAdapter =
-                new ArrayAdapter<String>(this,
-                        android.R.layout.simple_spinner_item,
-                        Scale.NOTE_NAMES) {
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        TextView view = (TextView)super.getView(position, convertView, parent);
-                        view.setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
-                        return view;
-                    }
-                    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                        TextView view = (TextView)super.getDropDownView(position, convertView, parent);
-                        view.setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
-                        return view;
-                    }
-                };
-        baseNoteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        baseNoteSelector.setAdapter(baseNoteAdapter);
-        baseNoteSelector.setSelection(editedScale.baseNote);
-
-        Button save = this.findViewById(R.id.save);
         save.setOnClickListener(arg0 -> {
             scales.add(scaleSelector.getSelectedItemPosition(),
-                    new Scale(editedScale.widths, nameBox.getText().toString(),
+                    new Scale(getSelectedScale().widths, nameBox.getText().toString(),
                             baseNoteSelector.getSelectedItemPosition()));
             scales.remove(scaleSelector.getSelectedItemPosition() + 1);
             Scale.writeScales(ScaleManager.this, scales);
@@ -191,7 +186,7 @@ public class ScaleManager extends AppCompatActivity {
         delete.setOnClickListener(arg0 -> {
             DeleteConfirmation dialog = new DeleteConfirmation();
             Bundle args = new Bundle();
-            args.putInt("selected_scale_position", scaleSelector.getSelectedItemPosition());
+            args.putInt("delete_scale_position", scaleSelector.getSelectedItemPosition());
             dialog.setArguments(args);
             dialog.show(getSupportFragmentManager(),"dialog");
         });
@@ -199,26 +194,62 @@ public class ScaleManager extends AppCompatActivity {
         Button create = this.findViewById(R.id.create);
         create.setOnClickListener(arg0 -> {
             createNewScale();
-            updateSpinner();
+            updateScaleSpinnerAdapter();
             scaleSelector.setSelection(scales.size() - 1);
         });
+
+        updateSaveVisibility(widgetsDifferFromScale(scaleSelector.getSelectedItemPosition()));
+    }
+
+    private void updateNameBox() {
+        nameBox.setText(getSelectedScale().name);
+    }
+
+    private void updateSeekBarsFromScale() {
+        Scale scale = getSelectedScale();
+        for (int i = 0; i < 7; i++) {
+            seekBar[i].setProgress(scale.widths[i]);
+        }
+    }
+
+    private void updateWidthTextsFromSeekBars() {
+        for (int i = 0; i < 7; i++) {
+            widths[i].setText(Integer.toString(seekBar[i].getProgress()));
+        }
+    }
+
+    private boolean widgetsDifferFromScale(int scaleIndex) {
+        Scale scale = scales.get(scaleIndex);
+
+        boolean nameEdited = !nameBox.getText().toString().equals(scale.name);
+        boolean widthEdited = false;
+        for (int i = 0; i < 7; i++) {
+            widthEdited = widthEdited || seekBar[i].getProgress() != scale.widths[i];
+        }
+        boolean baseEdited = baseNoteSelector.getSelectedItemPosition() != scale.baseNote;
+
+        return nameEdited || widthEdited || baseEdited;
+    }
+
+    private void updateSaveVisibility(boolean edited) {
+        save.setVisibility(edited ? View.VISIBLE : View.INVISIBLE);
     }
 
     public static class ChangeScaleConfirmation extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
+            int previousSelection = getArguments().getInt("previous_scale_position", 0);
+            int newSelection = getArguments().getInt("new_scale_position", 0);
+
             ScaleManager scaleManager = (ScaleManager)getActivity();
-            scaleManager.dialogOpen = true;
             AlertDialog.Builder builder = new AlertDialog.Builder(scaleManager);
             builder.setMessage("Are you sure? Your changes to " +
-                    scaleManager.scales.get(scaleManager.selectedScale).name +
+                    scaleManager.scales.get(previousSelection).name +
                     " will be lost");
             builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
-                scaleManager.setScale(getArguments().getInt("new_scale_position"));
-                scaleManager.dialogOpen = false;
+                scaleManager.setScale(newSelection);
             });
             builder.setNegativeButton("Cancel", (DialogInterface dialog, int id) -> {
-                scaleManager.scaleSelector.setSelection(scaleManager.selectedScale);//revert
-                scaleManager.dialogOpen = false;
+                scaleManager.scaleSelector.setSelection(previousSelection);//revert
             });
             return builder.create();
         }
@@ -227,12 +258,14 @@ public class ScaleManager extends AppCompatActivity {
     public static class DeleteConfirmation extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
             ScaleManager scaleManager = (ScaleManager)getActivity();
+            int scaleSelection = scaleManager.scaleSelector.getSelectedItemPosition();
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? " +
-                    scaleManager.scales.get(scaleManager.selectedScale).name +
+                    scaleManager.scales.get(scaleSelection).name +
                     " will be lost");
             builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
-                scaleManager.scales.remove(getArguments().getInt("selected_scale_position"));
+                scaleManager.scales.remove(scaleSelection);
 
                 if (scaleManager.scales.isEmpty()) {
                     scaleManager.createNewScale();
@@ -241,17 +274,17 @@ public class ScaleManager extends AppCompatActivity {
                     scaleManager.scales = Scale.loadScales(scaleManager);
                 }
 
-                scaleManager.updateSpinner();
+                scaleManager.updateScaleSpinnerAdapter();
                 int newSelection;
 
                 //if the selectedScale was deleted, decrease the selectedScale
-                if (scaleManager.selectedScale >= scaleManager.scales.size()) {
+                if (scaleSelection >= scaleManager.scales.size()) {
                     newSelection = scaleManager.scales.size() - 1;
                 } else {
-                    newSelection = scaleManager.selectedScale;
+                    newSelection = scaleSelection;
                 }
 
-                //since the scale was deleted, no confirmation necessary
+                // since the scale was deleted, no confirmation necessary
                 scaleManager.setScale(newSelection);
                 scaleManager.scaleSelector.setSelection(newSelection);
             });
@@ -263,9 +296,11 @@ public class ScaleManager extends AppCompatActivity {
     public static class CancelConfirmation extends DialogFragment {
         public Dialog onCreateDialog(Bundle savedInstance) {
             ScaleManager scaleManager = (ScaleManager) getActivity();
+            int scaleSelection = scaleManager.scaleSelector.getSelectedItemPosition();
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Are you sure? Your changes to " +
-                    scaleManager.scales.get(scaleManager.selectedScale).name +
+                    scaleManager.scales.get(scaleSelection).name +
                     " will be lost");
             builder.setPositiveButton("OK", (DialogInterface dialog, int id) -> {
                 scaleManager.goBackToIsonActivity();
@@ -275,16 +310,37 @@ public class ScaleManager extends AppCompatActivity {
         }
     }
 
-    private void updateSpinner() {
+    private void updateScaleSpinnerAdapter() {
         String[] scaleStrings = new String[scales.size()];
-        for (int index = 0; index < scaleStrings.length; ++index)
+        for (int index = 0; index < scaleStrings.length; index++) {
             scaleStrings[index] = scales.get(index).name;
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,
                 android.R.layout.simple_spinner_item,
                 scaleStrings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         scaleSelector.setAdapter(adapter);
+    }
+
+    private void updateBaseSpinnerAdapter() {
+        ArrayAdapter<String> baseNoteAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                Scale.NOTE_NAMES) {
+            public View getView(int position, View convertView, ViewGroup parent) {
+                TextView view = (TextView)super.getView(position, convertView, parent);
+                view.setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
+                return view;
+            }
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+                TextView view = (TextView)super.getDropDownView(position, convertView, parent);
+                view.setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
+                return view;
+            }
+        };
+        baseNoteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        baseNoteSelector.setAdapter(baseNoteAdapter);
     }
 
     public void createNewScale() {
@@ -294,34 +350,21 @@ public class ScaleManager extends AppCompatActivity {
         scales = Scale.loadScales(getApplicationContext());
     }
 
-    public boolean hasBeenChanged() {
-        if (!nameBox.getText().toString().equals(getSelectedScale().name)) return true;
-        for (int i = 0; i < editedScale.widths.length; ++i)
-            if (editedScale.widths[i] != getSelectedScale().widths[i]) return true;
-        if (baseNoteSelector.getSelectedItemPosition() != getSelectedScale().baseNote) return true;
-        return false;
-    }
-
     public Scale getSelectedScale() {
-        return scales.get(selectedScale);
+        return scales.get(scaleSelector.getSelectedItemPosition());
     }
 
     public void setScale(int scaleIndex) {
         System.out.println("Switching to " + scaleIndex);
-        if (scaleIndex == 0) {
-            (new Exception()).printStackTrace();
-        }
-        selectedScale = scaleIndex;
-        editedScale = getSelectedScale().copy();
-        for (int i = 0; i < 7; ++i) {
-            seekBar[i].setProgress(editedScale.widths[i]);
-        }
-        nameBox.setText(getSelectedScale().name);
+        previousScale = scaleIndex;
+        updateNameBox();
+        updateSeekBarsFromScale();
+        updateWidthTextsFromSeekBars();
         baseNoteSelector.setSelection(getSelectedScale().baseNote);
     }
 
     public void cancelButton() {
-        if (hasBeenChanged()) {
+        if (widgetsDifferFromScale(scaleSelector.getSelectedItemPosition())) {
             CancelConfirmation dialog = new CancelConfirmation();
             dialog.show(getSupportFragmentManager(),"dialog");
         } else {
@@ -338,10 +381,6 @@ public class ScaleManager extends AppCompatActivity {
     }
 
     protected void goBackToIsonActivity() {
-        //these are static so we cannot wait around for onDestroy which is not called right away
-        editedScale = null;
-        scales.clear();
-
         Intent intent = new Intent(getApplicationContext(), IsonActivity.class);
         startActivity(intent);
         finish();
