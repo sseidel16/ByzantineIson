@@ -174,10 +174,13 @@ public class ScaleManager extends AppCompatActivity {
         });
 
         save.setOnClickListener(arg0 -> {
-            scales.add(scaleSelector.getSelectedItemPosition(),
-                    new Scale(getSelectedScale().widths, nameBox.getText().toString(),
+            int[] widths = new int[7];
+            for (int i = 0; i < 7; i++) {
+                widths[i] = seekBar[i].getProgress();
+            }
+            scales.set(scaleSelector.getSelectedItemPosition(),
+                    new Scale(widths, nameBox.getText().toString(),
                             baseNoteSelector.getSelectedItemPosition()));
-            scales.remove(scaleSelector.getSelectedItemPosition() + 1);
             Scale.writeScales(ScaleManager.this, scales);
             goBackToIsonActivity();
         });
