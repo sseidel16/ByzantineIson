@@ -23,6 +23,8 @@ There are 3 sound blending modes provided by the application, that can be change
 
 Updates:
 
+* Save button only appears in scale manager even when there is something to save
+* Reset scales button moved to preferences page under scale preferences
 * Preference features added
   * Layout preferences
     * Preference for note button height
@@ -31,6 +33,7 @@ Updates:
   * Scale preferences
     * Preference for total buttons below base note
     * Preference for total buttons above base note
+    * Preference for resetting scales to those that cam bundled with the application
   * Audio preferences
     * Preference for base note slider (discrete vs continuous)
     * Preference for frequency change time
@@ -50,13 +53,12 @@ Known issues:
 * Player is not destroyed and created properly
 * This bug is being avoided and will not occur (it is kept here because it was not completely fixed and seemingly harmless code changes could trigger it again): Nasty bug where OpenSLES objects are not handled correctly causing the app to hang when navigating back and forth between pages a few times. This can freeze up the entire device and force a (simulated) battery pull so be careful.
 * Scale manager does not handle its state well at all, especially on rotates
-* Save button appears in scale manager even when there is nothing to save
 * Scale always resets when returning to main screen from dock
 
 Future features:
 
 * Add preference for enable/disable play note on touch down
-* Add ability to load new sound sets from mic or from audio file
+* Far in future: Add ability to load new sound sets from mic or from audio file
 
 ## Please help me out!!
 1. If you know of an issue, please add it and I will look into it. Feel free to request a feature as well!
