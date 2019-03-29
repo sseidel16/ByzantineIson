@@ -20,8 +20,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.coderss.ison.utility.Preferences;
@@ -74,6 +77,42 @@ public class ScaleManager extends AppCompatActivity {
 
         baseNoteSelector = this.findViewById(R.id.spinner2);
         updateBaseSpinnerAdapter();
+
+        TableLayout tableLayout = findViewById(R.id.scaleTable);
+
+        for (int i = 0; i < 7; i++) {
+            String titleText =
+                    Scale.NOTE_NAMES[baseNoteSelector.getSelectedItemPosition() + wrapNoteIndex(i)] +
+                    '-' +
+                    Scale.NOTE_NAMES[baseNoteSelector.getSelectedItemPosition() + wrapNoteIndex(i + 1)];
+
+            TextView textViewGreek = new TextView(this);
+            textViewGreek.setText(titleText);
+            textViewGreek.setTextAppearance(this, R.style.TextAppearance_AppCompat_Medium);
+            textViewGreek.setTypeface(
+                    Typeface.createFromAsset(getResources().getAssets(),"greek.ttf")
+            );
+
+            TextView width = new TextView(this);
+            width.setText("0");
+            width.setTextAppearance(this, R.style.TextAppearance_AppCompat_Medium);
+            width.setWidth(width.getLineHeight() * 2);
+            SeekBar seekBar1 = new SeekBar(this);
+
+            LinearLayout innerLayout = new LinearLayout(this);
+            innerLayout.addView(width,
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            innerLayout.addView(seekBar1,
+                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+
+            TableRow tableRow = new TableRow(this);
+            tableRow.addView(textViewGreek,
+                    new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            tableRow.addView(innerLayout,
+                    new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+
+            tableLayout.addView(tableRow);
+        }
 
         ((TextView)this.findViewById(R.id.textViewGreek1)).
                 setTypeface(Typeface.createFromAsset(getResources().getAssets(),"greek.ttf"));
@@ -213,6 +252,13 @@ public class ScaleManager extends AppCompatActivity {
         for (int i = 0; i < 7; i++) {
             seekBar[i].setProgress(scale.widths[i]);
         }
+    }
+
+    private int wrapNoteIndex(int index) {
+        while (index < 0) index += 7;
+        while (index >= 7) index -= 7;
+
+        return index;
     }
 
     private void updateWidthTextsFromSeekBars() {
