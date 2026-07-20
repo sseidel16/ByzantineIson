@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    persistent="true"
-    selectable="true"
-    shouldDisableView="true">
-
-    <PreferenceCategory android:title="Layout Preferences">
+    <PreferenceCategory
+        android:title="Layout Preferences"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:entries="@array/prefButtonHeightEntries"
@@ -13,7 +12,8 @@
             android:key="keyButtonHeight"
             android:title="@string/keyButtonHeightTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyButtonHeightDefault"/>
+            android:defaultValue="@string/keyButtonHeightDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefDockWidthEntries"
@@ -21,7 +21,8 @@
             android:key="keyDockWidth"
             android:title="@string/keyDockWidthTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyDockWidthDefault"/>
+            android:defaultValue="@string/keyDockWidthDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefThemeEntries"
@@ -29,11 +30,14 @@
             android:key="keyTheme"
             android:title="@string/keyThemeTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyThemeDefault"/>
+            android:defaultValue="@string/keyThemeDefault"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Scale Preferences">
+    <PreferenceCategory
+        android:title="Scale Preferences"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:entries="@array/prefNotesBelowEntries"
@@ -41,7 +45,8 @@
             android:key="keyNotesBelow"
             android:title="@string/keyNotesBelowTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyNotesBelowDefault"/>
+            android:defaultValue="@string/keyNotesBelowDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefNotesAboveEntries"
@@ -49,22 +54,27 @@
             android:key="keyNotesAbove"
             android:title="@string/keyNotesAboveTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyNotesAboveDefault"/>
+            android:defaultValue="@string/keyNotesAboveDefault"
+            app:iconSpaceReserved="false"/>
 
         <Preference
             android:key="keyScaleReset"
             android:title="@string/keyScaleResetTitle"
-            android:summary="@string/keyScaleResetSummary"/>
+            android:summary="@string/keyScaleResetSummary"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Audio Preferences">
+    <PreferenceCategory
+        android:title="Audio Preferences"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:key="keySelectSound"
             android:title="@string/keySelectSoundTitle"
             android:summary="%s"
-            android:defaultValue="@string/keySelectSoundDefault"/>
+            android:defaultValue="@string/keySelectSoundDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefBaseSliderTypeEntries"
@@ -72,7 +82,8 @@
             android:key="keyBaseSlider"
             android:title="@string/keyBaseSliderTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyBaseSliderDefault"/>
+            android:defaultValue="@string/keyBaseSliderDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefChangeTimeEntries"
@@ -80,7 +91,8 @@
             android:key="keyVolumeChangeTime"
             android:title="@string/keyVolumeChangeTimeTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyVolumeChangeTimeDefault"/>
+            android:defaultValue="@string/keyVolumeChangeTimeDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefChangeTimeEntries"
@@ -88,7 +100,8 @@
             android:key="keyFrequencyChangeTime"
             android:title="@string/keyFrequencyChangeTimeTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyFrequencyChangeTimeDefault"/>
+            android:defaultValue="@string/keyFrequencyChangeTimeDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefBlendModeEntries"
@@ -96,30 +109,38 @@
             android:key="keyBlendMode"
             android:title="@string/keyBlendModeTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyBlendModeDefault"/>
+            android:defaultValue="@string/keyBlendModeDefault"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Screen Preferences">
+    <PreferenceCategory
+        android:title="Screen Preferences"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:key="keyKeepScreenOn"
             android:title="@string/keyKeepScreenOnTitle"
-            android:defaultValue="@string/keyKeepScreenOnDefault" />
+            android:defaultValue="@string/keyKeepScreenOnDefault"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:key="keyShowMinorChangers"
             android:title="@string/keyShowMinorChangersTitle"
-            android:defaultValue="@string/keyShowMinorChangersDefault" />
+            android:defaultValue="@string/keyShowMinorChangersDefault"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:key="keyShowMajorChangers"
             android:title="@string/keyShowMajorChangersTitle"
-            android:defaultValue="@string/keyShowMajorChangersDefault" />
+            android:defaultValue="@string/keyShowMajorChangersDefault"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Advanced Layout Preferences">
+    <PreferenceCategory
+        android:title="Advanced Layout Preferences"
+        app:iconSpaceReserved="false">
 
         <ListPreference
             android:entries="@array/prefHorizontalDirectionEntries"
@@ -127,7 +148,8 @@
             android:key="keyHorizontalDirection"
             android:title="@string/keyHorizontalDirectionTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyHorizontalDirectionDefault"/>
+            android:defaultValue="@string/keyHorizontalDirectionDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefVerticalDirectionEntries"
@@ -135,7 +157,8 @@
             android:key="keyVerticalDirection"
             android:title="@string/keyVerticalDirectionTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyVerticalDirectionDefault"/>
+            android:defaultValue="@string/keyVerticalDirectionDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefFlowDimensionEntries"
@@ -143,7 +166,8 @@
             android:key="keyFlowDirection"
             android:title="@string/keyFlowDirectionTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyFlowDirectionDefault"/>
+            android:defaultValue="@string/keyFlowDirectionDefault"
+            app:iconSpaceReserved="false"/>
 
         <ListPreference
             android:entries="@array/prefDimensionLimitEntries"
@@ -151,7 +175,8 @@
             android:key="keyDimensionLimit"
             android:title="@string/keyDimensionLimitTitle"
             android:summary="%s"
-            android:defaultValue="@string/keyDimensionLimitDefault"/>
+            android:defaultValue="@string/keyDimensionLimitDefault"
+            app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
 

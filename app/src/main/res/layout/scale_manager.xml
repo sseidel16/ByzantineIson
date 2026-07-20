@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scale_manager_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ScaleManager" >
 
     <TextView
@@ -18,6 +15,7 @@
         android:layout_alignBottom="@+id/scaleSpinner"
         android:layout_alignParentStart="true"
         android:gravity="center"
+        android:layout_marginEnd="@dimen/default_gap"
         android:text="Scale:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -27,7 +25,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/textView4" />
+        android:layout_toEndOf="@+id/textView4"
+        android:layout_marginTop="@dimen/default_gap"
+        android:layout_marginBottom="@dimen/default_gap" />
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -48,7 +48,9 @@
             <TableRow
                 android:id="@+id/tableRow1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textView1"
@@ -74,7 +76,9 @@
             <TableRow
                 android:id="@+id/tableRow2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek1"
@@ -106,7 +110,9 @@
             <TableRow
                 android:id="@+id/tableRow3"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek2"
@@ -139,7 +145,9 @@
             <TableRow
                 android:id="@+id/tableRow2_"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek3"
@@ -172,7 +180,9 @@
             <TableRow
                 android:id="@+id/tableRow8"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek4"
@@ -205,7 +215,9 @@
             <TableRow
                 android:id="@+id/tableRow33"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek5"
@@ -238,7 +250,9 @@
             <TableRow
                 android:id="@+id/tableRow5"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek6"
@@ -271,7 +285,9 @@
             <TableRow
                 android:id="@+id/tableRow6"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textViewGreek7"
@@ -304,7 +320,9 @@
             <TableRow
                 android:id="@+id/tableRow10"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/default_gap"
+                android:paddingBottom="@dimen/default_gap" >
 
                 <TextView
                     android:id="@+id/textView2"

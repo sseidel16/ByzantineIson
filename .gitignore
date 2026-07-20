@@ -1,4 +1,27 @@
-/.gradle
-/.idea
-/build
-/app/release
+# Gradle files
+.gradle/
+build/
+
+# Android Studio / IntelliJ files
+.idea/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Output files
+/app/release/
+/app/debug/
+*.apk
+*.aar
+
+# Log files
+*.log
+
+# Assistant artifacts
+.artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db

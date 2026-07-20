@@ -1,0 +1,23 @@
+[versions]
+appcompat = "1.7.1"
+activity = "1.13.0"
+core = "1.19.0"
+constraintlayout = "2.2.1"
+espresso-core = "3.7.0"
+agp = "9.3.0"
+junit = "4.13.2"
+preference = "1.2.1"
+runner = "1.7.0"
+
+[libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
